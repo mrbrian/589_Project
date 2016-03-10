@@ -2,9 +2,7 @@
 #include <QTextStream>
 #include <QOpenGLBuffer>
 #include <cmath>
-
-// intialization of a constant variable
-const int Renderer::NUM_OVAL_STEPS = 20;
+#include "trackball.h"
 
 // constructor
 Renderer::Renderer(QWidget *parent)
@@ -84,7 +82,6 @@ void Renderer::paintGL()
     m_program->bind();
 
 
-
     // deactivate the program
     m_program->release();
 
@@ -114,15 +111,167 @@ QVector2D Renderer::windowToWorld(QPoint point)
     return QVector2D((float)point.x() / (float)width() * 2.0 - 1.0,
                      -(float)point.y() / (float)height() * 2.0 + 1.0);
 }
+/*
+// generate a VBO for a given model
+void Renderer::makeVbo(Model *model)
+{
+    // get buffersizes
+    long cBufferSize = model->sizeColours;
+    long vBufferSize = model->sizeVerts;
+    long nBufferSize = model->sizeFaceNormals;
+    long uvBufferSize = model->sizeUvs;
+    long fnBufferSize = model->sizeFaceNormalLines;
+    long vnBufferSize = model->sizeVertNormalLines;
+
+    glGenBuffers(1, &model->m_modelVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, model->m_modelVbo);
+
+    // Allocate buffer
+    glBufferData(GL_ARRAY_BUFFER, vBufferSize + cBufferSize + 2 * nBufferSize + uvBufferSize + fnBufferSize + vnBufferSize, NULL, GL_STATIC_DRAW);
+
+    // Upload the data to the GPU
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vBufferSize, &model->verts[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, vBufferSize, cBufferSize, &model->colours[0]);
+
+    glBufferSubData(GL_ARRAY_BUFFER, vBufferSize + cBufferSize,
+                    nBufferSize,
+                    &model->vert_normals[0]);
+
+    glBufferSubData(GL_ARRAY_BUFFER,
+                    vBufferSize + cBufferSize + nBufferSize,
+                    nBufferSize,
+                    &model->face_normals[0]);
+
+    glBufferSubData(GL_ARRAY_BUFFER,
+                    vBufferSize + cBufferSize + 2 * nBufferSize,
+                    uvBufferSize,
+                    &model->uvs[0]);
+
+    glBufferSubData(GL_ARRAY_BUFFER,
+                    vBufferSize + cBufferSize + 2 * nBufferSize + uvBufferSize,
+                    fnBufferSize,
+                    &model->lines_face_normals[0]);
+
+    glBufferSubData(GL_ARRAY_BUFFER,
+                    vBufferSize + cBufferSize + 2 * nBufferSize + uvBufferSize + fnBufferSize,
+                    vnBufferSize,
+                    &model->lines_vert_normals[0]);
+
+}                   */
+
+// override mouse move event
+void Renderer::mouseMoveEvent(QMouseEvent * event)
+{
+    QTextStream cout(stdout);
+    cout << "Stub: Motion at " << event->x() << ", " << event->y() << ".\n";
+
+    prev_x = curr_x;
+    prev_y = curr_y;
+
+    curr_x = event->x();
+    curr_y = event->y();
+
+    handleInteraction();       // adjust the models or camera
+}
+
+// trackball rotation logic
+void Renderer::doTrackball()
+{
+    float diameter = width() * 0.75;    // trackball take up 3/4 of screen width
+    float vx, vy, vz;
+
+    float cx = curr_x - width() / 2;    // center mouse coords on the trackball
+    float cy = curr_y - height() / 2;
+
+    float px = prev_x - width() / 2;
+    float py = prev_y - height() / 2;
+
+    QMatrix4x4 q;
+    Trackball::vCalcRotVec(cx, cy, px, py, diameter, &vx, &vy, &vz);    // do trackball stuff
+    Trackball::vAxisRotMatrix(vx, -vy, vz, &q);
+
+    //applyTransform(&q);     // transform selected model or all models
+}
+
+// user interacting with the scene via mouse
+void Renderer::handleInteraction()
+{
+    QVector3D delta;
+    float dx = (float)(curr_x - prev_x) / 100;
+    float dy = (float)(curr_y - prev_y) / 100;
+
+    QMatrix4x4 modelTrans;
+
+    if (shiftDown)           // modify camera position
+    {
+        if (mouseButtons & Qt::LeftButton)
+        {
+            delta[0] = dx;
+            delta[1] = -dy;
+            camera.position += delta;
+        }
+        if (mouseButtons & Qt::MidButton)
+        {
+            delta[2] = dx;
+            camera.position  += delta;
+        }
+        if (mouseButtons & Qt::RightButton)
+        {
+            QMatrix4x4 m;
+            m.rotate(dx * 10, 0, 0, 1);
+            camera.up = m * camera.up;
+        }
+    }
+
+    if (ctrlDown)    // modify camera lookat target
+    {
+        if (mouseButtons & Qt::LeftButton)      // LB modifies along x-axis & y-axis
+        {
+            delta[0] = dx;
+            delta[1] = -dy;
+            camera.target += delta;
+        }
+        if (mouseButtons & Qt::MidButton)      // LB modifies along z-axis
+        {
+            delta[2] = dx;
+            camera.target += delta;
+        }
+    }
+
+    if (!shiftDown && !ctrlDown)                // translate / rotate the model
+    {
+        if (mouseButtons & Qt::LeftButton)      // LB modifies along x-axis & y-axis
+        {
+            delta[0] = dx;
+            delta[1] = -dy;
+            modelTrans.translate(delta);
+            //applyTransform(&modelTrans);
+        }
+        if (mouseButtons & Qt::MiddleButton)    // MB modifies  along z-axis
+        {
+            delta[2] = dx;
+            modelTrans.translate(delta);
+            //applyTransform(&modelTrans);
+        }
+        if (mouseButtons & Qt::RightButton)     // RB rotates model via trackball
+        {
+            doTrackball();
+        }
+    }
+}
 
 // override mouse press event
 void Renderer::mousePressEvent(QMouseEvent * event)
 {
-    if (event->button() == Qt::LeftButton)
-    {
-        // track mouse position
-        mStartPos = windowToWorld(event->pos());
-    }
+    QTextStream cout(stdout);
+    cout << "Stub: Button " << event->button() << " pressed.\n";
+    mouseButtons = event->buttons();
+
+    curr_x = event->x();
+    curr_y = event->y();
+
+    prev_x = curr_x;
+    prev_y = curr_y;
 }
 
 // override mouse release event

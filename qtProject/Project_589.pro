@@ -8,5 +8,9 @@ TARGET = a0
 INCLUDEPATH += .
 
 # Input
-HEADERS += renderer.h window.h
-SOURCES += main.cpp renderer.cpp window.cpp
+HEADERS += renderer.h window.h \
+    camera.h \
+    trackball.h
+SOURCES += main.cpp renderer.cpp window.cpp \
+    camera.cpp \
+    trackball.cpp

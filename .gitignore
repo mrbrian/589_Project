@@ -1,4 +1,6 @@
 *.user
-moc_.*
+moc_*.*
 *.pro.user
-
+build*/
+*.o
+*.

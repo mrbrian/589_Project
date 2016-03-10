@@ -8,6 +8,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+#define _USE_MATH_DEFINES
 #include <QWidget>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
@@ -15,6 +16,7 @@
 #include <QOpenGLShaderProgram>
 #include <QOpenGLShader>
 #include <QMouseEvent>
+#include "camera.h"
 
 using namespace std;
 
@@ -44,10 +46,23 @@ protected:
     void paintGL();
 
     // override mouse event functions
+    virtual void mouseMoveEvent(QMouseEvent * event);
     virtual void mousePressEvent(QMouseEvent * event);
     virtual void mouseReleaseEvent(QMouseEvent * event);
 
 private:
+    Camera camera;
+
+    float curr_x, curr_y;   // mouse positions
+    float prev_x, prev_y;
+
+    // mouse buttons that are currently pressed
+    int mouseButtons;
+    bool ctrlDown;
+    bool shiftDown;
+    float elapsedTime;
+
+    void handleInteraction();
 
     // constant for drawing ovals
     static const int NUM_OVAL_STEPS;
@@ -67,7 +82,8 @@ private:
 
     // converts mouse position to world coordinates
     QVector2D windowToWorld(QPoint point);
-
+    //void makeVbo(Model *model);
+    void doTrackball();
 };
 
 #endif // RENDERER_H
