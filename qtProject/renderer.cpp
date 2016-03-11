@@ -46,6 +46,61 @@ static const char *fragmentShaderSource =
     "}\n";
 
 
+
+// add vertices to rectangle list
+const float tri_vertList [] = {
+    0.0, 0.0, 0.0,  // bottom left triangle
+    1.0, 0.0, 0.0,
+    0.0, 1.0, 0.0,
+
+    9.0, 0.0, 0.0,  // bottom right triangle
+    10.0, 0.0, 0.0,
+    10.0, 1.0, 0.0,
+
+    0.0, 19.0, 0.0, // top left triangle
+    1.0, 20.0, 0.0,
+    0.0, 20.0, 0.0,
+
+    10.0, 19.0, 0.0,    // top right triangle
+    10.0, 20.0, 0.0,
+    9.0, 20.0, 0.0 };
+
+float tri_colourList [] = {
+    1, 0, 0,
+    1, 0, 0,    // all red verts
+    1, 0, 0,
+
+    1, 0, 0,
+    1, 0, 0,
+    1, 0, 0,
+
+    1, 0, 0,
+    1, 0, 0,
+    1, 0, 0,
+
+    1, 0, 0,
+    1, 0, 0,
+    1, 0, 0,
+};
+
+float tri_normalList [] = {
+    0.0f, 0.0f, 1.0f,    // facing viewer
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+    0.0f, 0.0f, 1.0f,
+};
+
 // called once by Qt GUI system, to allow initialization for OpenGL requirements
 void Renderer::initializeGL()
 {
@@ -62,11 +117,29 @@ void Renderer::initializeGL()
     m_program->link();
     m_posAttr = m_program->attributeLocation("posAttr");
     m_colAttr = m_program->attributeLocation("colAttr");
-    m_matrixUniform = m_program->uniformLocation("matrix");
+    m_MMatrixUniform = m_program->uniformLocation("matrix");
 
+    generateBorderTriangles();
     // ensure all arrays are cleared to start with
     clear();
+}
 
+void Renderer::generateBorderTriangles()
+{
+    long cBufferSize = sizeof(tri_colourList) * sizeof(float);
+    long vBufferSize = sizeof(tri_vertList) * sizeof(float);
+    long nBufferSize = sizeof(tri_normalList) * sizeof(float);
+
+    glGenBuffers(1, &m_triVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, m_triVbo);
+
+    // Allocate buffer
+    glBufferData(GL_ARRAY_BUFFER, vBufferSize + cBufferSize + nBufferSize, NULL, GL_STATIC_DRAW);
+
+    // Upload the data to the GPU
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vBufferSize, &tri_vertList[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, vBufferSize, cBufferSize, &tri_colourList[0]);
+    glBufferSubData(GL_ARRAY_BUFFER, vBufferSize + cBufferSize, nBufferSize, &tri_normalList[0]);
 }
 
 // called by the Qt GUI system, to allow OpenGL drawing commands
@@ -81,10 +154,59 @@ void Renderer::paintGL()
     // sets the current shader program
     m_program->bind();
 
+    QMatrix4x4 view_matrix;
+    view_matrix.translate(0.0f, 0.0f, -40.0f);
+
+   // glUniformMatrix4fv(m_VMatrixUniform, 1, false, view_matrix.data());
+
+    // Not implemented: set up lighting (if necessary)
+
+    // You'll be drawing unit cubes, so the game will have width
+    // 10 and height 24 (game = 20, stripe = 4).  Let's translate
+    // the game so that we can draw it starting at (0,0) but have
+    // it appear centered in the window.
+
+    QVector3D offset = QVector3D(-5.0f, -12.0f, 0.0f);
+
+    // generating the composition of transform functions  Rz * Ry * Rx * Scale * Translate
+    QMatrix4x4 transform;
+   /* transform.rotate(rotation.z(), 0, 0, 1);
+    transform.rotate(rotation.y(), 0, 1, 0);
+    transform.rotate(rotation.x(), 1, 0, 0);
+    transform.scale(scale);
+    transform.translate(offset);*/
+    drawTriangles(&transform);
 
     // deactivate the program
     m_program->release();
+}
 
+// helper function, draw corner triangles
+void Renderer::drawTriangles(QMatrix4x4 * transform)
+{
+    QMatrix4x4 model_matrix = *transform;
+    glUniformMatrix4fv(m_MMatrixUniform, 1, false, model_matrix.data());
+
+    long cBufferSize = sizeof(tri_colourList) * sizeof(float);
+    long vBufferSize = sizeof(tri_vertList) * sizeof(float);
+    long nBufferSize = sizeof(tri_normalList) * sizeof(float);
+
+    // Bind to the correct context
+    glBindBuffer(GL_ARRAY_BUFFER, this->m_triVbo);
+
+    // Enable the attribute arrays
+    glEnableVertexAttribArray(this->m_posAttr);
+    glEnableVertexAttribArray(this->m_colAttr);
+
+    // Specifiy where these are in the VBO
+    glVertexAttribPointer(this->m_posAttr, 3, GL_FLOAT, 0, GL_FALSE, (const GLvoid*)0);
+    glVertexAttribPointer(this->m_colAttr, 3, GL_FLOAT, 0, GL_FALSE, (const GLvoid*)(vBufferSize));
+
+    // Draw the triangles
+    glDrawArrays(GL_TRIANGLES, 0, 12); // 12 vertices
+
+    glDisableVertexAttribArray(m_colAttr);
+    glDisableVertexAttribArray(m_posAttr);
 }
 
 // called by the Qt GUI system, to allow OpenGL to respond to widget resizing
@@ -99,7 +221,7 @@ void Renderer::resizeGL(int w, int h)
     // hardcoded values and aspect ratios for the time being
     QMatrix4x4 matrix;
     matrix.ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.0f, 1.0f);
-    m_program->setUniformValue(m_matrixUniform, matrix);
+    m_program->setUniformValue(m_MMatrixUniform, matrix);
 
     glViewport(0, 0, width(), height());
 

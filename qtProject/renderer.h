@@ -8,7 +8,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
-#define _USE_MATH_DEFINES
+//#define _USE_MATH_DEFINES
 #include <QWidget>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions>
@@ -62,10 +62,9 @@ private:
     bool shiftDown;
     float elapsedTime;
 
-    void handleInteraction();
+    GLuint m_triVbo;
 
-    // constant for drawing ovals
-    static const int NUM_OVAL_STEPS;
+    void handleInteraction();
 
     // member variables for mouse tracking
     QVector2D mStartPos;
@@ -73,9 +72,12 @@ private:
     // member variables for shader manipulation
     GLuint m_posAttr;
     GLuint m_colAttr;
-    GLuint m_matrixUniform;
+    GLuint m_norAttr;
 
     QOpenGLShaderProgram *m_program;
+    GLuint m_MMatrixUniform; // model matrix
+    GLuint m_VMatrixUniform; // view matrix
+    GLuint m_PMatrixUniform; // projection matrix
 
     // helper function for loading shaders
     GLuint loadShader(GLenum type, const char *source);
@@ -84,6 +86,9 @@ private:
     QVector2D windowToWorld(QPoint point);
     //void makeVbo(Model *model);
     void doTrackball();
+    void generateBorderTriangles();
+    void drawTriangles(QMatrix4x4 * transform);
 };
+
 
 #endif // RENDERER_H

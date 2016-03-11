@@ -13,8 +13,8 @@ public:
     QVector3D target;
     QVector3D up;
     float fov;
-    float near;
-    float far;
+    float n;
+    float f;
     QMatrix4x4 transform;
 };
 
