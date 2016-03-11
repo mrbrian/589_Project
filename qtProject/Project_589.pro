@@ -5,6 +5,7 @@
 QT+=widgets
 TEMPLATE = app
 TARGET = Project_589
+INCLUDEPATH += . ..\glew-1.13.0\include ..\glm
 
 # Input
 HEADERS += renderer.h window.h \

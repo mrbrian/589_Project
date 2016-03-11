@@ -671,23 +671,7 @@ void Renderer::handleInteraction()
 
     QMatrix4x4 modelTrans;
 
-    if (ctrlDown)    // modify camera lookat target
-    {
-        if (mouseButtons & Qt::LeftButton)      // LB modifies along x-axis & y-axis
-        {
-            delta[0] = dx;
-            delta[1] = -dy;
-            camera.target += delta;
-        }
-        if (mouseButtons & Qt::MidButton)      // LB modifies along z-axis
-        {
-            delta[2] = dx;
-            camera.target += delta;
-        }
-        updateCamera();
-    }
-
-    if (!shiftDown && !ctrlDown)                // modify camera position
+    if (shiftDown)                // modify camera position
     {
         if (mouseButtons & Qt::LeftButton)
         {
@@ -707,6 +691,42 @@ void Renderer::handleInteraction()
             camera.up = m * camera.up;
         }
         updateCamera();
+    }
+    if (ctrlDown)    // modify camera lookat target
+    {
+        if (mouseButtons & Qt::LeftButton)      // LB modifies along x-axis & y-axis
+        {
+            delta[0] = dx;
+            delta[1] = -dy;
+            camera.target += delta;
+        }
+        if (mouseButtons & Qt::MidButton)      // LB modifies along z-axis
+        {
+            delta[2] = dx;
+            camera.target += delta;
+        }
+        updateCamera();
+    }
+
+    if (!shiftDown && !ctrlDown)                // translate / rotate the model
+    {
+        if (mouseButtons & Qt::LeftButton)      // LB modifies along x-axis & y-axis
+        {
+            delta[0] = dx;
+            delta[1] = -dy;
+            modelTrans.translate(delta);
+            applyTransform(&modelTrans);
+        }
+        if (mouseButtons & Qt::MiddleButton)    // MB modifies  along z-axis
+        {
+            delta[2] = dx;
+            modelTrans.translate(delta);
+            applyTransform(&modelTrans);
+        }
+        if (mouseButtons & Qt::RightButton)     // RB rotates model via trackball
+        {
+            doTrackball();
+        }
     }
 }
 
