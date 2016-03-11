@@ -1,0 +1,16 @@
+moc*.*
+*.o
+a3
+a3.pro
+astro
+Makefile
+a3.pro.*
+007/
+battroid/
+bobafett/
+bug/
+calvin/
+cobra/
+delirium/
+doom1/
+stormtrooper/
