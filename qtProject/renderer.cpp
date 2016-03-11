@@ -613,7 +613,7 @@ void Renderer::setModelTexture(QImage *image)
 void Renderer::updateCamera()
 {
     m_view = QMatrix4x4();
-    m_view.lookAt(camera.position, camera.target, camera.up);
+    m_view.lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
 }
 
 // triggers paint update
@@ -677,18 +677,18 @@ void Renderer::handleInteraction()
         {
             delta[0] = dx;
             delta[1] = -dy;
-            camera.position += delta;
+            camera.setPosition(camera.getPosition() + delta);
         }
         if (mouseButtons & Qt::MidButton)
         {
             delta[2] = dx;
-            camera.position += delta;
+            camera.setPosition(camera.getPosition() + delta);
         }
         if (mouseButtons & Qt::RightButton)
         {
             QMatrix4x4 m;
             m.rotate(dx * 10, 0, 0, 1);
-            camera.up = m * camera.up;
+            camera.setUp(m * camera.getUp());
         }
         updateCamera();
     }
@@ -698,12 +698,12 @@ void Renderer::handleInteraction()
         {
             delta[0] = dx;
             delta[1] = -dy;
-            camera.target += delta;
+            camera.setTarget(camera.getTarget() + delta);
         }
         if (mouseButtons & Qt::MidButton)      // LB modifies along z-axis
         {
             delta[2] = dx;
-            camera.target += delta;
+            camera.setTarget(camera.getTarget() + delta);
         }
         updateCamera();
     }
@@ -743,9 +743,9 @@ void Renderer::resetModels()
 // reset camera
 void Renderer::resetView()
 {
-    camera.target = QVector3D(0, 0, 0);    // camera points at the origin
-    camera.position = QVector3D(0, 0, 4);       // starting position
-    camera.up = QVector3D(0, 1, 0);        // up vector
+    camera.setTarget(QVector3D(0, 0, 0));    // camera points at the origin
+    camera.setPosition(QVector3D(0, 0, 4));       // starting position
+    camera.setUp(QVector3D(0, 1, 0));        // up vector
     updateCamera();                     // update view matrix
 }
 

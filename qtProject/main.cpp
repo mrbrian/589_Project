@@ -7,6 +7,7 @@
 
 #include "window.h"
 #include <QApplication>
+#include <QVector2D>
 
 int main(int argc, char *argv[])
 {
