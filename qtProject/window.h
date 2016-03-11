@@ -1,6 +1,6 @@
 /*
  * CPSC 453 - Introduction to Computer Graphics
- * Assignment 0
+ * Assignment 1
  *
  * Window - Fundamental GUI for interacting within the scene
  */
@@ -16,6 +16,9 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QActionGroup>
+#include <QFileDialog>
+#include <QLabel>
+#include "objModel.h"
 
 class Renderer;
 
@@ -33,8 +36,12 @@ public:
 
 
 private slots:
-    // Display a message box providing assistance with the line drawing function.
-    void lineHelp();
+    void load(QAction * action);
+    void setDrawMode(QAction *action);
+    void setNormalMode(QAction *action);
+    void clearModels();
+    void selectModel(QAction * action);
+    void updateModelLabel();
 
 private:
     // Main widget for drawing
@@ -43,15 +50,40 @@ private:
     // Menu items and actions
     QMenu * mFileMenu;
     QAction * mQuitAction;
+    QAction * mLoadModelAction;
+    QAction * mLoadTextureAction;
+    QAction * mResetModelsAction;
+    QAction * mResetViewAction;
+    QAction * mResetAllAction;
+    QAction * mClearAction;
 
-    QMenu * mToolsMenu;
+    QActionGroup * mLoadGroup;
+    QActionGroup * mDrawGroup;
+    QMenu * mDrawMenu;
+    QAction * mWireAction;
+    QAction * mFaceAction;
+    QAction * mTextureAction;
+    QAction * mNormalFaceAction;
+    QAction * mNormalVertAction;
+    QAction * mShowNormalAction;
+    QAction * mSelectModelAction;
 
-    QMenu * mHelpMenu;
-    QAction * mLineHelpAction;
+    QMenu * mNormalsMenu;
+    QActionGroup * mNormalsGroup;
+
+    QMenu * mSelectMenu;
+    QActionGroup * mSelectGroup;
+    QAction * mDeselectAction;
+    QAction * mCycleAction;
+    vector<QAction*> mSelectActions;
+
+    QLabel *modeLabel;
 
     // helper function for creating actions
     void createActions();
-
+    void addToSelectMenu(QString name);
+    void keyPressEvent(QKeyEvent *event);
+    void keyReleaseEvent(QKeyEvent *event);
 };
 
 #endif // WINDOW_H

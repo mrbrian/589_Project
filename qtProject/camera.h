@@ -12,9 +12,9 @@ public:
     QVector3D rotation;
     QVector3D target;
     QVector3D up;
-    float fov;
-    float n;
-    float f;
+    float _fov;
+    float _near;
+    float _far;
     QMatrix4x4 transform;
 };
 

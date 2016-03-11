@@ -1,6 +1,6 @@
 /*
  * CPSC 453 - Introduction to Computer Graphics
- * Assignment 0
+ * Assignment 1
  *
  * Entry point for execution into the program
  */
