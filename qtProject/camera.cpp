@@ -1,32 +1,35 @@
 #include "camera.h"
 
 Camera::Camera(){
-
+    _position = QVector3D(0,0,0);
+    _rotation = QVector3D(0,0,0);
+    _target = QVector3D(0,0,0);
+    _up = QVector3D(0,1,0);
 }
 
 Camera::Camera(QVector3D pos, QVector3D rot, QVector3D targ, QVector3D u){
-    position = pos;
-    rotation = rot;
-    target = targ;
-    up = u;
+    _position = pos;
+    _rotation = rot;
+    _target = targ;
+    _up = u;
 }
 
 //getters
 QVector3D Camera::getPosition(){
-    return(position);
+    return(_position);
     // update transform
 }
 
 QVector3D Camera::getRotation(){
-    return(rotation);
+    return(_rotation);
 }
 
 QVector3D Camera::getTarget(){
-    return(target);
+    return(_target);
 }
 
 QVector3D Camera::getUp(){
-    return(up);
+    return(_up);
 }
 
 float Camera::getFov(){
@@ -43,20 +46,20 @@ float Camera::getFarClip(){
 
 // setters
 void Camera::setPosition(QVector3D p){
-    position = p;
+    _position = p;
     // update transform
 }
 
 void Camera::setRotation(QVector3D r){
-    rotation = r;
+    _rotation = r;
 }
 
 void Camera::setTarget(QVector3D t){
-    target = t;
+    _target = t;
 }
 
 void Camera::setUp(QVector3D u){
-    up = u;
+    _up = u;
 }
 
 void Camera::setFov(float v){
@@ -72,5 +75,5 @@ void Camera::setFarClip(float v){
 }
 
 QMatrix4x4 *Camera::getTransform(){
-    return &transform;
+    return &_transform;
 }

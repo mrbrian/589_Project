@@ -11,8 +11,14 @@ INCLUDEPATH += . ..\glew-1.13.0\include ..\glm
 HEADERS += renderer.h window.h \
     trackball.h \ 
     model.h \
-    camera.h
+    camera.h \
+    revsurface.h \
+    bspline.h \
+    tests.h
 SOURCES += main.cpp renderer.cpp window.cpp \
     trackball.cpp \ 
     model.cpp \
-    camera.cpp
+    camera.cpp \
+    revsurface.cpp \
+    bspline.cpp \
+    test.cpp

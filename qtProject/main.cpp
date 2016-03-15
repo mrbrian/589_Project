@@ -8,9 +8,12 @@
 #include "window.h"
 #include <QApplication>
 #include <QVector2D>
+#include "tests.h"
 
 int main(int argc, char *argv[])
 {
+    Tests t;
+
     QApplication a(argc, argv);
     Window w;
     w.show();
