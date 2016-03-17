@@ -11,6 +11,7 @@ public:
     RevSurface(BSpline *u);
     BSpline *curve;
     QVector3D *eval(float u, float v);
+    vector<QVector3D*> *evalQuads(float u_step, float v_step);
 };
 
 #endif // REVSURFACE_H
