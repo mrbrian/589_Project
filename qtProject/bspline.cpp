@@ -59,6 +59,8 @@ QVector2D *BSpline::effSum(int d, float u, vector<QVector2D*> *geoPts, vector<QV
 
 	for (int i = 0; i <= k - 1; i++)
 	{
+        if (d - i < 0)
+            throw std::invalid_argument( "tried to access invalid array index" );
 		c[i] = *(*ctrlPts)[d - i];		//nonzero coefficients
 		if (convexPts)
 			convexPts->push_back((*ctrlPts)[d - i]);	// add as a contributing control point
@@ -91,8 +93,7 @@ QVector2D *BSpline::evalPoint(float u)
         throw std::invalid_argument( "not enough control points" );
 
     int d = 0;
-    while ((u < 1 && u >= knots[d + 1] && d < m + k)) ||
-        (u == 1 && knots[d + 1])
+    while (u < 1 && u >= knots[d + 1] && d < m + k)
         d++;
 
     return (effSum(d, u, 0, 0));	// evaluate the final curve point and store it

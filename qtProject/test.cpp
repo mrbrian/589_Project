@@ -68,39 +68,7 @@ void RevSurface_Quad1()
         cout << "RevSurface_Quad1 pass\n";
 }
 
-// tesselation test
-void RevSurface_Quad2()
-{
-    vector<QVector2D*> pts;
-    pts.push_back(new QVector2D(1, 0));
-    pts.push_back(new QVector2D(1, 1));
-    pts.push_back(new QVector2D(1, 2));
-
-    BSpline c = BSpline(2, &pts);  // m, pts, order, //..  standard knots
-
-    RevSurface rs = RevSurface(&c);
-    float ustep = 0.5;
-    float vstep = 0.25;
-
-    vector<QVector3D*> expected;
-    expected.push_back(new QVector3D(1, 0, 0));
-    expected.push_back(new QVector3D(1, 1, 0));
-    expected.push_back(new QVector3D(0, 1, 1));
-    expected.push_back(new QVector3D(0, 0, 1));
-
-    vector<QVector3D*> *actual = rs.evalQuads(ustep, vstep);
-
-    bool pass = true;
-    if (expected.size() != 4 * 8)
-        pass = false;
-    if (!pass)
-        cout << "RevSurface_Quad1 fail\n";
-    else
-        cout << "RevSurface_Quad1 pass\n";
-}
-
 Tests::Tests()
 {
     RevSurface_1();
-    RevSurface_Quad1();
 }
