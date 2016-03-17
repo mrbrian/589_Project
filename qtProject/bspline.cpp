@@ -91,7 +91,8 @@ QVector2D *BSpline::evalPoint(float u)
         throw std::invalid_argument( "not enough control points" );
 
     int d = 0;
-    while (u < 1 && u >= knots[d + 1] && d < m + k)
+    while ((u < 1 && u >= knots[d + 1] && d < m + k)) ||
+        (u == 1 && knots[d + 1])
         d++;
 
     return (effSum(d, u, 0, 0));	// evaluate the final curve point and store it

@@ -40,7 +40,7 @@ vector<QVector3D*> *RevSurface::evalQuads(float u_step, float v_step)
 
     float V_INCREMENT = v_step * M_PI * 2;
 
-    for (float u = 0; u < 1 - u_step; u += u_step)
+    for (float u = 0; u <= 1 - u_step; u += u_step)
     {
         for (float v = 0; v < M_PI * 2; v+= V_INCREMENT)
         {
@@ -49,18 +49,19 @@ vector<QVector3D*> *RevSurface::evalQuads(float u_step, float v_step)
             QVector2D *u_pt1 = curve->evalPoint(u);
             QVector2D *u_pt2 = curve->evalPoint(u + u_step);
 
-            quad[0] = new QVector3D
+            quad[0] = new QVector3D((*u_pt1)[0]  * cos(v), (*u_pt1)[1], (*u_pt1)[0] * sin(v));
+
+            quad[1] = new QVector3D
                     ((*u_pt1)[0]  * cos(v + V_INCREMENT),
                     (*u_pt1)[1],
                     (*u_pt1)[0] * sin(v + V_INCREMENT));
 
-            quad[1] = new QVector3D
+            quad[2] = new QVector3D
                     ((*u_pt2)[0] * cos(v + V_INCREMENT),
                     (*u_pt2)[1],
                     (*u_pt2)[0] * sin(v+V_INCREMENT));
 
-            quad[2] = new QVector3D((*u_pt2)[0]  * cos(v), (*u_pt2)[1], (*u_pt2)[0] * sin(v));
-            quad[3] = new QVector3D((*u_pt1)[0]  * cos(v), (*u_pt1)[1], (*u_pt1)[0] * sin(v));
+            quad[3] = new QVector3D((*u_pt2)[0]  * cos(v), (*u_pt2)[1], (*u_pt2)[0] * sin(v));
 
             for (int i = 0; i < 4; i++)
                 result->push_back(quad[i]);
