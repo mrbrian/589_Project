@@ -99,7 +99,7 @@ float * Model::readUVs(ObjModel *source, long *size)
     {
         for (int vertNum = 0; vertNum < 3; vertNum++)
         {
-            float vIdx = source->tris[i].index_uv[vertNum];
+            int vIdx = source->tris[i].index_uv[vertNum];
             for (int j = 0; j < 2; j++)
             {
                 float val = source->texs[vIdx - 1][j];

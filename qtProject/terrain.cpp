@@ -1,5 +1,68 @@
 #include "terrain.h"
 
+ObjModel *Terrain::getObjModel()
+{
+    ObjModel *result = new ObjModel();
+    result->num_tris = m_numQuads * 2;
+    result->num_xyz = m_controlMesh.size();
+
+    for (int i = 0; i < m_controlMesh.size(); i++ )
+    {
+        result->m_vertices.push_back(
+                    vec3(m_controlMesh[i][0],
+                         m_controlMesh[i][1],
+                         m_controlMesh[i][2]));
+    }
+
+    for (int j = 0; j < m_meshHeight; j++ )
+    {
+        for (int i = 0; i < m_meshWidth; i++)
+        {
+            result->texs.push_back(
+                        vec2((float)i / m_meshWidth,
+                             (float)j / m_meshHeight));
+        }
+    }
+
+    for (int j = 0; j < m_meshHeight - 1; j++ )
+    {
+        for (int i = 0; i < m_meshWidth - 1; i++)
+        {
+            GLuint a,b,c,d;
+
+            a = j * m_meshWidth + i;
+            b = j * m_meshWidth + i + 1;
+            c = (j + 1) * m_meshWidth + i + 1;
+            d = (j + 1) * m_meshWidth + i;
+
+            tri t1, t2;
+
+            t1.index_xyz[0] = a;
+            t1.index_xyz[1] = c;
+            t1.index_xyz[2] = b;
+
+            t2.index_xyz[0] = c;
+            t2.index_xyz[1] = d;
+            t2.index_xyz[2] = b;
+
+            t1.index_uv[0] = a;
+            t1.index_uv[1] = c;
+            t1.index_uv[2] = b;
+
+            t2.index_uv[0] = c;
+            t2.index_uv[1] = d;
+            t2.index_uv[2] = b;
+
+            result->tris.push_back(t1);
+            result->tris.push_back(t2);
+
+            std::cout << j << "," << i << " <" << t1.index_uv[0] << "," << t1.index_uv[1]<< "," << t1.index_uv[2]<< ">";
+        }
+        std::cout << std::endl;
+    }
+    return result;
+}
+
 void Terrain::createControlMesh(QImage * heightMap, float heightToAreaScale)
 {
     m_meshWidth = heightMap->width();

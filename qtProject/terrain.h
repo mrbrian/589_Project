@@ -7,6 +7,8 @@
 #include "QVector3D"
 #include <vector>
 #include <iostream>
+#include "objModel.h"
+
 class Terrain : public Renderable
 {
 public:
@@ -18,6 +20,7 @@ public:
     }
     virtual ~Terrain(){}
     virtual void draw(){}
+    ObjModel *getObjModel();
 
 private://members
 

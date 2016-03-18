@@ -63,7 +63,7 @@ public slots:
     void deselectModel();
     void cycleModel();
     void selectModel(int idx);
-    void createTerrain(QImage* image);
+    Terrain *createTerrain(QImage* image);
 
 protected:
 

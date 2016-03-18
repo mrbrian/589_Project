@@ -301,7 +301,18 @@ void Window::load(QAction * action)
         i->load(filename);
 
 
-        renderer->createTerrain(i);
+        Terrain *terrain = renderer->createTerrain(i);
+
+        ObjModel *obj = terrain->getObjModel();
+        Model *m_model = new Model(obj, NULL);   // NULL = no parent
+
+        if (m_model != NULL)
+        {
+            if (action == mLoadModelAction)     // new root model
+                renderer->setModel(obj);
+            else
+                renderer->setSubmodel(obj);     // new child model
+        }
     }
 
     if (action == mLoadModelAction)

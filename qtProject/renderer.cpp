@@ -96,8 +96,8 @@ void Renderer::paintGL()
     glUniform1i(m_SelectCodeUniform, -1);
 
     // Not implemented: set up lighting (if necessary)
-/*
-    drawCheckerboard();
+
+//    drawCheckerboard();
 
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
     {
@@ -109,7 +109,8 @@ void Renderer::paintGL()
             drawNormals(m_model);
         }
     }
-*/
+
+    /*
     if (m_terrain != NULL)
     {
         long nBufferSize = m_terrain->getSizeNorms() * sizeof(float),
@@ -135,7 +136,7 @@ void Renderer::paintGL()
         glVertexAttribPointer(this->m_norAttr, 3, GL_FLOAT, 0, GL_FALSE, (const GLvoid*)vBufferSize);
         glVertexAttribPointer(this->m_colAttr, 3, GL_FLOAT, 0, GL_FALSE, (const GLvoid*)(vBufferSize + nBufferSize));
         glDrawArrays(GL_QUADS, 0, m_terrain->getSizeVerts());
-    }
+    }*/
 
     // deactivate the program
     m_program->release();
@@ -846,14 +847,14 @@ QString Renderer::getSelectedModel()
     return ("Model: " + QString::number(sel_modelIdx + 1));
 }
 
-void Renderer::createTerrain(QImage * image)
+Terrain *Renderer::createTerrain(QImage * image)
 {
         std::cout << "got here" << std::endl;
         GLuint terrainVAO;
         QOpenGLFunctions_4_2_Core::glGenVertexArrays(1, &terrainVAO);
         m_terrain = new Terrain(image, .1);
         populateTerrainVAO();
-
+        return m_terrain;
 }
 
 void Renderer::populateTerrainVAO()
