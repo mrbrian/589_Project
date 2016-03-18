@@ -38,25 +38,32 @@ ObjModel *Terrain::getObjModel()
             tri t1, t2;
 
             t1.index_xyz[0] = a;
-            t1.index_xyz[1] = c;
+            t1.index_xyz[1] = d;
             t1.index_xyz[2] = b;
 
-            t2.index_xyz[0] = c;
-            t2.index_xyz[1] = d;
+            t2.index_xyz[0] = d;
+            t2.index_xyz[1] = c;
             t2.index_xyz[2] = b;
 
             t1.index_uv[0] = a;
-            t1.index_uv[1] = c;
+            t1.index_uv[1] = d;
             t1.index_uv[2] = b;
 
-            t2.index_uv[0] = c;
-            t2.index_uv[1] = d;
+            t2.index_uv[0] = d;
+            t2.index_uv[1] = c;
             t2.index_uv[2] = b;
 
             result->tris.push_back(t1);
             result->tris.push_back(t2);
 
-            std::cout << j << "," << i << " <" << t1.index_uv[0] << "," << t1.index_uv[1]<< "," << t1.index_uv[2]<< ">";
+            QVector3D dA = m_controlMesh[a] - m_controlMesh[b];
+            float dist = abs(dA.length());
+            if (abs(dA.length()) > 0.5)
+                std::cout << "b-a"<< std::endl;
+
+
+        //    std::cout << j << "," << i << " <" << dist << ">";
+            //std::cout << j << "," << i << " <" << t1.index_uv[0] << "," << t1.index_uv[1]<< "," << t1.index_uv[2]<< ">";
         }
         std::cout << std::endl;
     }
@@ -67,14 +74,15 @@ void Terrain::createControlMesh(QImage * heightMap, float heightToAreaScale)
 {
     m_meshWidth = heightMap->width();
     m_meshHeight = heightMap->height();
-    heightToAreaScale = m_meshWidth;
+
     for (int j = 0; j < m_meshHeight; j++ )
     {
         for (int i = 0; i < m_meshWidth; i++)
         {
             QColor pixel = QColor(heightMap->pixel(i,j));
-            float height = (float)pixel.red() / 255;// * heightToAreaScale;
+            float height = (float)pixel.red() / 255.0f / heightToAreaScale;// * heightToAreaScale;
 
+            //m_controlMesh.push_back(QVector3D((float)i, height,(float)j));
             m_controlMesh.push_back(QVector3D((float)i / (float)m_meshWidth, height,(float)j / (float)m_meshHeight));
             //std::cout << "<" << m_controlMesh.back()[0] << "," << m_controlMesh.back()[1]<< "," << m_controlMesh.back()[2]<< ">";
         }
@@ -120,9 +128,9 @@ void Terrain::populateVAO()
              */
             QVector3D a,b,c,d;
             a = m_controlMesh[j * m_meshWidth + i];
-            b = m_controlMesh[j * m_meshWidth + i + 1];
+            d = m_controlMesh[j * m_meshWidth + i + 1];
             c = m_controlMesh[(j + 1) * m_meshWidth + i + 1];
-            d = m_controlMesh[(j + 1) * m_meshWidth + i];
+            b = m_controlMesh[(j + 1) * m_meshWidth + i];
 
             QVector3D faceNormal = QVector3D::normal(b-a, d-a);
 

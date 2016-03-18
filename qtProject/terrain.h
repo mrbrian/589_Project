@@ -12,7 +12,7 @@
 class Terrain : public Renderable
 {
 public:
-    Terrain(QImage * heightMap, float heightToAreaScale = 1) : Renderable()
+    Terrain(QImage * heightMap, float heightToAreaScale = 10) : Renderable()
     {
         createControlMesh(heightMap, heightToAreaScale);
         populateVAO();

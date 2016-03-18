@@ -352,7 +352,7 @@ float * Model::calcVertexNormals(ObjModel *source, long *size)
             result[resultIdx + 2] = v[2];
         }
     }
-    delete[] objNormals;    // free up memory
+  //  delete[] objNormals;    // free up memory
 
     return result;
 }
