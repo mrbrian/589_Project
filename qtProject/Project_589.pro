@@ -14,11 +14,14 @@ HEADERS += renderer.h window.h \
     camera.h \
     revsurface.h \
     bspline.h \
-    tests.h
+    tests.h \
+    renderable.h \
+    terrain.h
 SOURCES += main.cpp renderer.cpp window.cpp \
     trackball.cpp \ 
     model.cpp \
     camera.cpp \
     revsurface.cpp \
     bspline.cpp \
-    test.cpp
+    test.cpp \
+    terrain.cpp

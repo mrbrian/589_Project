@@ -50,14 +50,17 @@ private:
     // Menu items and actions
     QMenu * mFileMenu;
     QAction * mQuitAction;
-    QAction * mLoadModelAction;
-    QAction * mLoadTextureAction;
+
     QAction * mResetModelsAction;
     QAction * mResetViewAction;
     QAction * mResetAllAction;
     QAction * mClearAction;
 
     QActionGroup * mLoadGroup;
+    QAction * mLoadHeightMapAction;
+    QAction * mLoadModelAction;
+    QAction * mLoadTextureAction;
+
     QActionGroup * mDrawGroup;
     QMenu * mDrawMenu;
     QAction * mWireAction;

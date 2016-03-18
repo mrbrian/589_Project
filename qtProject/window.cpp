@@ -16,6 +16,7 @@ Window::Window(QWidget *parent) :
     // Create the menus
     // Setup the file menu
     mFileMenu = menuBar()->addMenu(tr("&File"));
+    mFileMenu->addAction(mLoadHeightMapAction);
     mFileMenu->addAction(mLoadModelAction);
     mFileMenu->addAction(mLoadTextureAction);
     mFileMenu->addAction(mResetModelsAction);
@@ -75,6 +76,11 @@ void Window::createActions()
     // file loading menu group
     mLoadGroup = new QActionGroup(this);
     connect(mLoadGroup, SIGNAL(triggered(QAction *)), this, SLOT(load(QAction *)));
+
+    // open height map
+    mLoadHeightMapAction = new QAction(tr("&Open Height Map"), this);
+    mLoadHeightMapAction->setStatusTip(tr("Loads a heightMap"));
+    mLoadGroup->addAction(mLoadHeightMapAction);
 
     // open model
     mLoadModelAction = new QAction(tr("&Open Model"), this);
@@ -283,6 +289,21 @@ void Window::selectModel(QAction * action)
 
 void Window::load(QAction * action)
 {
+    if(action == mLoadHeightMapAction)
+    {
+        //LoadModel
+        QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
+
+        if (filename == "")
+            return;
+
+        QImage *i = new QImage();
+        i->load(filename);
+
+
+        renderer->createTerrain(i);
+    }
+
     if (action == mLoadModelAction)
     {
         /*
