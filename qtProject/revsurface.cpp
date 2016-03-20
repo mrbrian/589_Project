@@ -53,8 +53,62 @@ vector<QVector3D*> *RevSurface::evalQuads(float u_step, float v_step)
             quad[3] = new QVector3D((*u_pt2)[0]  * cos(v), (*u_pt2)[1], (*u_pt2)[0] * sin(v));
 
             for (int i = 0; i < 4; i++)
-            {
                 result->push_back(quad[i]);
+        }
+    }
+
+    return (result);
+}
+
+vector<QVector3D*> *RevSurface::evalTriangles(float u_step, float v_step)
+{
+    vector<QVector3D*> *result = new vector<QVector3D*>;
+
+    float V_INCREMENT = v_step * M_PI * 2;
+    int num_u = ceil(1.0 / u_step);
+    int num_v = ceil(1.0 / v_step);
+
+    for (int i_u = 0; i_u < num_u; i_u++)
+    {
+        for (int i_v = 0; i_v < num_v; i_v++)
+        {
+            float u = u_step * i_u;
+            float v = v_step * i_v * M_PI * 2;
+
+            QVector3D **tri_1 = new QVector3D*[3];
+            QVector3D **tri_2 = new QVector3D*[3];
+
+            QVector2D *u_pt1 = curve->evalPoint(u);
+            QVector2D *u_pt2 = curve->evalPoint(u + u_step);
+
+            tri_1[0] = new QVector3D((*u_pt1)[0]  * cos(v), (*u_pt1)[1], (*u_pt1)[0] * sin(v));
+
+            tri_1[1] = new QVector3D
+                    ((*u_pt1)[0]  * cos(v + V_INCREMENT),
+                    (*u_pt1)[1],
+                    (*u_pt1)[0] * sin(v + V_INCREMENT));
+
+            tri_1[2] = new QVector3D
+                    ((*u_pt2)[0] * cos(v + V_INCREMENT),
+                    (*u_pt2)[1],
+                    (*u_pt2)[0] * sin(v+V_INCREMENT));
+
+            tri_2[0] = new QVector3D
+                    ((*u_pt2)[0] * cos(v + V_INCREMENT),
+                    (*u_pt2)[1],
+                            (*u_pt2)[0] * sin(v+V_INCREMENT));
+
+            tri_2[1] = new QVector3D((*u_pt2)[0]  * cos(v), (*u_pt2)[1], (*u_pt2)[0] * sin(v));
+
+            tri_2[2] = new QVector3D((*u_pt1)[0]  * cos(v), (*u_pt1)[1], (*u_pt1)[0] * sin(v));
+
+            for (int i = 0; i < 3; i++)
+            {
+                result->push_back(tri_1[i]);
+            }
+            for (int i = 0; i < 3; i++)
+            {
+                result->push_back(tri_2[i]);
             }
         }
     }

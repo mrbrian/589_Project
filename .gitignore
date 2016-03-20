@@ -4,3 +4,5 @@ moc_*.*
 build*/
 *.o
 *.
+glm/
+glew-1.13.0/
