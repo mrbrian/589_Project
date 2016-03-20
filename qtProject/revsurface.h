@@ -5,6 +5,8 @@
 #include <QVector3D>
 #include "bspline.h"
 #include <cmath>
+#include "objModel.h"
+
 class RevSurface
 {
 public:
@@ -13,6 +15,7 @@ public:
     QVector3D *eval(float u, float v);
     vector<QVector3D*> *evalQuads(float u_step, float v_step);    
     vector<QVector3D*> *evalTriangles(float u_step, float v_step);
+    ObjModel *getObjModel();
 };
 
 #endif // REVSURFACE_H

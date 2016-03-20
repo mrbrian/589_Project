@@ -399,10 +399,11 @@ float * Model::calcFaceNormals(long *size)
     }
     return n_;
 }
-
 /*
-Model::Model(vector<QVector3D*> *verts)
+Model *Model::fromQuadList(vector<QVector3D*> *verts)
 {
+    Model *result;
+
     sizeVerts           = -1;
     sizeColours         = -1;
     sizeUvs             = -1;
@@ -413,7 +414,7 @@ Model::Model(vector<QVector3D*> *verts)
 
     int numTris = verts->size() / 4;
 
-    // readVerts
+    // so readVerts of quads
     // gen UV
     for (int i = 0; i < numQuads; i++)
     {

@@ -16,6 +16,7 @@ Window::Window(QWidget *parent) :
     // Create the menus
     // Setup the file menu
     mFileMenu = menuBar()->addMenu(tr("&File"));
+    mFileMenu->addAction(mLoadHeightMapAction);
     mFileMenu->addAction(mLoadModelAction);
     mFileMenu->addAction(mLoadTextureAction);
     mFileMenu->addAction(mResetModelsAction);
@@ -75,6 +76,11 @@ void Window::createActions()
     // file loading menu group
     mLoadGroup = new QActionGroup(this);
     connect(mLoadGroup, SIGNAL(triggered(QAction *)), this, SLOT(load(QAction *)));
+
+    // open height map
+    mLoadHeightMapAction = new QAction(tr("&Open Height Map"), this);
+    mLoadHeightMapAction->setStatusTip(tr("Loads a heightMap"));
+    mLoadGroup->addAction(mLoadHeightMapAction);
 
     // open model
     mLoadModelAction = new QAction(tr("&Open Model"), this);
@@ -285,46 +291,30 @@ void Window::load(QAction * action)
 {
     if(action == mLoadHeightMapAction)
     {
+        //LoadModel
+        QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
+
+        filename = "../datafiles/example.jpg";
+
+        if (filename == "")
+            return;
+
+        QImage *i = new QImage();
+        i->load(filename);
+
+
+        Terrain *terrain = renderer->createTerrain(i);
+
+        ObjModel *obj = terrain->getObjModel();
+        Model *m_model = new Model(obj, NULL);   // NULL = no parent
+
+        if (m_model != NULL)
         {
-            QString filename = "../datafiles/example.jpg";
-
-            QImage *i = new QImage();
-            i->load(filename);
-
-            Terrain *terrain = renderer->createTerrain(i);
-
-            ObjModel *obj = terrain->getObjModel();
-            Model *m_model = new Model(obj, NULL);   // NULL = no parent
-
-            renderer->setModel(obj);
+            if (action == mLoadModelAction)     // new root model
+                renderer->setModel(obj);
+            else
+                renderer->setSubmodel(obj);     // new child model
         }
-        return;/*
-        {
-            //LoadModel
-            QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
-
-            filename = "../datafiles/example.jpg";
-
-            if (filename == "")
-                return;
-
-            QImage *i = new QImage();
-            i->load(filename);
-
-
-            Terrain *terrain = renderer->createTerrain(i);
-
-            ObjModel *obj = terrain->getObjModel();
-            Model *m_model = new Model(obj, NULL);   // NULL = no parent
-
-            if (m_model != NULL)
-            {
-                if (action == mLoadModelAction)     // new root model
-                    renderer->setModel(obj);
-                else
-                    renderer->setSubmodel(obj);     // new child model
-            }
-        }*/
     }
 
     if (action == mLoadModelAction)
