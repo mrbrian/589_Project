@@ -35,11 +35,6 @@ ObjModel *Terrain::getObjModel()
             c = (j + 1) * m_meshWidth + i + 1;
             d = (j + 1) * m_meshWidth + i;
 
-
-
-
-
-
             tri t1, t2;
 
             t1.index_xyz[0] = a;
@@ -60,38 +55,7 @@ ObjModel *Terrain::getObjModel()
 
             result->tris.push_back(t1);
             result->tris.push_back(t2);
-            \
-            int idx = j * m_meshWidth + i;
-
-//        for (int z = 0 ; z < 3; z++)
-//        {
-//            QVector3D v = m_controlMesh[t1.index_xyz[z]];
-//            std::cout << idx << ": " << v[0] << ","<< v[1] << ","<<v[2] << std::endl;
-//        }
-//
-//        for (int z = 0 ; z < 2; z++)
-//        {
-//            QVector3D v = m_controlMesh[t1.index_uv[z]];
-//            std::cout << idx << ": " << v[0] << ","<< v[1] << std::endl;
-//        }
-//
-//        for (int z = 0 ; z < 3; z++)
-//        {
-//            QVector3D v = m_controlMesh[t2.index_xyz[z]];
-//            std::cout << idx << ": " << v[0] <<  ","<<v[1] << ","<<v[2] << std::endl;
-//        }
-//
-//        for (int z = 0 ; z < 2; z++)
-//        {
-//            QVector3D v = m_controlMesh[t2.index_uv[z]];
-//            std::cout << idx << ": " << v[0] <<  ","<<v[1] << std::endl;
-//        }
-
-
-        //    std::cout << j << "," << i << " <" << dist << ">";
-            //std::cout << j << "," << i << " <" << t1.index_uv[0] << "," << t1.index_uv[1]<< "," << t1.index_uv[2]<< ">";
         }
-        //std::cout << std::endl;
     }
     return result;
 }
@@ -106,13 +70,11 @@ void Terrain::createControlMesh(QImage * heightMap, float heightToAreaScale)
         for (int i = 0; i < m_meshWidth; i++)
         {
             QColor pixel = QColor(heightMap->pixel(i,j));
-            float height = (float)pixel.red() / 255.0f / heightToAreaScale;// * heightToAreaScale;
+            float height = (float)pixel.red() / 255.0f * heightToAreaScale;// * heightToAreaScale;
 
-            //m_controlMesh.push_back(QVector3D((float)i, height,(float)j));
-            m_controlMesh.push_back(QVector3D((float)i / (float)m_meshWidth, height,(float)j / (float)m_meshHeight));
-            //std::cout << "<" << m_controlMesh.back()[0] << "," << m_controlMesh.back()[1]<< "," << m_controlMesh.back()[2]<< ">";
+            m_controlMesh.push_back(QVector3D((float)i, height, (float)j));
+            //m_controlMesh.push_back(QVector3D((float)i / (float)m_meshWidth, height,(float)j / (float)m_meshHeight));
         }
-        //std::cout << std::endl;
     }
 
 

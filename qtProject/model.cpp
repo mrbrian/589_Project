@@ -132,7 +132,6 @@ float * Model::readVerts(ObjModel *source, long int *size)
                 int idx = i * 9 + vertNum * 3 + j;
 
                 v_[idx] = val;
-               // std::cout << idx << ": " << val << std::endl;
             }
         }
     }
