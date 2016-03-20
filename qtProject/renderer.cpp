@@ -97,8 +97,8 @@ void Renderer::paintGL()
 
     // Not implemented: set up lighting (if necessary)
 
-//    drawCheckerboard();
-/*
+    drawCheckerboard();
+
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
     {
         Model *m_model = (*it);
@@ -108,9 +108,9 @@ void Renderer::paintGL()
         {
             drawNormals(m_model);
         }
-    }*/
+    }
 
-
+/*
     if (m_terrain != NULL)
     {
         long nBufferSize = m_terrain->getSizeNorms() * sizeof(float),
@@ -137,7 +137,7 @@ void Renderer::paintGL()
         glVertexAttribPointer(this->m_colAttr, 3, GL_FLOAT, 0, GL_FALSE, (const GLvoid*)(vBufferSize + nBufferSize));
         glDrawArrays(GL_QUADS, 0, m_terrain->getSizeVerts());
     }
-
+*/
     // deactivate the program
     m_program->release();
 }

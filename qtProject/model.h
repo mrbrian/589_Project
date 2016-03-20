@@ -4,6 +4,7 @@
 #include <QVector3D>
 #include <QMatrix4x4>
 #include "objModel.h"
+#include <iostream>
 
 class Model
 {

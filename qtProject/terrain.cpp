@@ -35,6 +35,11 @@ ObjModel *Terrain::getObjModel()
             c = (j + 1) * m_meshWidth + i + 1;
             d = (j + 1) * m_meshWidth + i;
 
+
+
+
+
+
             tri t1, t2;
 
             t1.index_xyz[0] = a;
@@ -55,17 +60,38 @@ ObjModel *Terrain::getObjModel()
 
             result->tris.push_back(t1);
             result->tris.push_back(t2);
+            \
+            int idx = j * m_meshWidth + i;
 
-            QVector3D dA = m_controlMesh[a] - m_controlMesh[b];
-            float dist = abs(dA.length());
-            if (abs(dA.length()) > 0.5)
-                std::cout << "b-a"<< std::endl;
+//        for (int z = 0 ; z < 3; z++)
+//        {
+//            QVector3D v = m_controlMesh[t1.index_xyz[z]];
+//            std::cout << idx << ": " << v[0] << ","<< v[1] << ","<<v[2] << std::endl;
+//        }
+//
+//        for (int z = 0 ; z < 2; z++)
+//        {
+//            QVector3D v = m_controlMesh[t1.index_uv[z]];
+//            std::cout << idx << ": " << v[0] << ","<< v[1] << std::endl;
+//        }
+//
+//        for (int z = 0 ; z < 3; z++)
+//        {
+//            QVector3D v = m_controlMesh[t2.index_xyz[z]];
+//            std::cout << idx << ": " << v[0] <<  ","<<v[1] << ","<<v[2] << std::endl;
+//        }
+//
+//        for (int z = 0 ; z < 2; z++)
+//        {
+//            QVector3D v = m_controlMesh[t2.index_uv[z]];
+//            std::cout << idx << ": " << v[0] <<  ","<<v[1] << std::endl;
+//        }
 
 
         //    std::cout << j << "," << i << " <" << dist << ">";
             //std::cout << j << "," << i << " <" << t1.index_uv[0] << "," << t1.index_uv[1]<< "," << t1.index_uv[2]<< ">";
         }
-        std::cout << std::endl;
+        //std::cout << std::endl;
     }
     return result;
 }

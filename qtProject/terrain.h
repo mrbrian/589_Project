@@ -1,6 +1,8 @@
 #ifndef TERRAIN_H
 #define TERRAIN_H
 #pragma once
+
+#include <QDebug>
 #include "renderable.h"
 #include "QImage"
 #include "QColor"
