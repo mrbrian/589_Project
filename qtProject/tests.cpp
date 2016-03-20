@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "revsurface.h"
+#include <QDebug>
 
 using namespace std;
 
@@ -19,13 +20,13 @@ void RevSurface_1()
 
     RevSurface rs = RevSurface(&c);
 
-    QVector3D expected = QVector3D(-1, 1.5, 0);
+    QVector3D expected = QVector3D(-1, 1, 0);
     QVector3D *actual = rs.eval(0.5, 0.5);
 
     if (expected != *actual)
-        cout << "RevSurface_1 fail\n";
+        qDebug() << "RevSurface_1 fail\n";
     else
-        cout << "RevSurface_1 pass\n";
+        qDebug() << "RevSurface_1 pass\n";
 }
 
 // tesselation test
@@ -63,12 +64,13 @@ void RevSurface_Quad1()
     }
 
     if (!pass)
-        cout << "RevSurface_Quad1 fail\n";
+        qDebug() << "RevSurface_Quad1 fail\n";
     else
-        cout << "RevSurface_Quad1 pass\n";
+        qDebug() << "RevSurface_Quad1 pass\n";
 }
 
 Tests::Tests()
 {
     RevSurface_1();
+    RevSurface_Quad1();
 }

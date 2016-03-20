@@ -2,7 +2,7 @@
 
 BSpline :: BSpline(int k, vector<QVector2D*> *pts){
     ctrlPts = pts;
-    knots = BSpline::standardKnotSeq(pts->size(), k);
+    knots = BSpline::standardKnotSeq(pts->size() - 1, k);
     this->k = k;
 }
 
@@ -93,10 +93,34 @@ QVector2D *BSpline::evalPoint(float u)
         throw std::invalid_argument( "not enough control points" );
 
     int d = 0;
-    while (u < 1 && u >= knots[d + 1] && d < m + k)
-        d++;
+
+    if (u < 1)
+    {
+        while (u >= knots[d + 1] && d < m + k)
+            d++;
+    }
+    else if (u == 1)
+    {
+        while (u > knots[d+1] && d < m + k)
+            d++;
+    }
 
     return (effSum(d, u, 0, 0));	// evaluate the final curve point and store it
+}
+
+int BSpline::getOrder()
+{
+    return k;
+}
+
+float *BSpline::getKnots()
+{
+    return knots;
+}
+
+vector<QVector2D*> *BSpline::getControlPts()
+{
+    return ctrlPts;
 }
 
 void BSpline::getLinePoints(vector<QVector2D*> *list, vector<float> *u_list, float step_u)
