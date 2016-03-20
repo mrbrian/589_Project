@@ -3,6 +3,7 @@
 #include <QOpenGLBuffer>
 #include <cmath>
 #include "trackball.h"
+#include <QFileDialog>
 
 #define CHECKERBOARD_SIZE   50
 #define FPS                 60.0
@@ -72,6 +73,7 @@ void Renderer::initializeGL()
     m_SelectCodeUniform = m_program->uniformLocation("selectCode");
     m_programID = m_program->programId();
 
+    m_terrain = NULL;
     createWhiteTexture();
     setupGround();
 }
@@ -108,6 +110,34 @@ void Renderer::paintGL()
         }
     }
 
+/*
+    if (m_terrain != NULL)
+    {
+        long nBufferSize = m_terrain->getSizeNorms() * sizeof(float),
+                vBufferSize = m_terrain->getSizeVerts() * sizeof(float),
+                cBufferSize = m_terrain->getSizeColors() * sizeof(float);
+
+        QMatrix4x4 model_matrix = m_terrain->getModelMatrix();
+        glUniformMatrix4fv(m_MMatrixUniform, 1, false, model_matrix.data());
+        glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
+        glUniform3fv(m_OverrideColourUniform, 1, &def_override[0]);
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, m_whiteTexture);
+        glUniform1i(m_TextureUniform, 0);
+
+
+        glBindBuffer(GL_ARRAY_BUFFER, m_terrain->getVBO());
+
+        glEnableVertexAttribArray(this->m_posAttr);
+        glEnableVertexAttribArray(this->m_norAttr);
+        glEnableVertexAttribArray(this->m_colAttr);
+
+        glVertexAttribPointer(this->m_posAttr, 3, GL_FLOAT, 0, GL_FALSE, (const GLvoid*)0);
+        glVertexAttribPointer(this->m_norAttr, 3, GL_FLOAT, 0, GL_FALSE, (const GLvoid*)vBufferSize);
+        glVertexAttribPointer(this->m_colAttr, 3, GL_FLOAT, 0, GL_FALSE, (const GLvoid*)(vBufferSize + nBufferSize));
+        glDrawArrays(GL_QUADS, 0, m_terrain->getSizeVerts());
+    }
+*/
     // deactivate the program
     m_program->release();
 }
@@ -815,4 +845,38 @@ QString Renderer::getSelectedModel()
         return "Model: None";
 
     return ("Model: " + QString::number(sel_modelIdx + 1));
+}
+
+Terrain *Renderer::createTerrain(QImage * image)
+{
+        std::cout << "got here" << std::endl;
+        GLuint terrainVAO;
+        QOpenGLFunctions_4_2_Core::glGenVertexArrays(1, &terrainVAO);
+        m_terrain = new Terrain(image, 10);
+        populateTerrainVAO();
+        return m_terrain;
+}
+
+void Renderer::populateTerrainVAO()
+{
+
+    long nBufferSize = m_terrain->getSizeNorms() * sizeof(float),
+            vBufferSize = m_terrain->getSizeVerts() * sizeof(float),
+            cBufferSize = m_terrain->getSizeColors() * sizeof(float);
+
+    GLuint terrainVBO;
+    glGenBuffers(1, &terrainVBO);
+    m_terrain->setVBO(terrainVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, terrainVBO);
+
+    glBufferData(GL_ARRAY_BUFFER,
+                 nBufferSize + vBufferSize + cBufferSize,
+                 NULL, GL_STATIC_DRAW);
+
+    glBufferSubData(GL_ARRAY_BUFFER, 0, vBufferSize, m_terrain->getVerts());
+    glBufferSubData(GL_ARRAY_BUFFER, vBufferSize, nBufferSize, m_terrain->getNormals());
+    glBufferSubData(GL_ARRAY_BUFFER, vBufferSize + nBufferSize, cBufferSize, m_terrain->getColors());
+
+
+
 }

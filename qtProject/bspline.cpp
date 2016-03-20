@@ -59,6 +59,8 @@ QVector2D *BSpline::effSum(int d, float u, vector<QVector2D*> *geoPts, vector<QV
 
 	for (int i = 0; i <= k - 1; i++)
 	{
+        if (d - i < 0)
+            throw std::invalid_argument( "tried to access invalid array index" );
 		c[i] = *(*ctrlPts)[d - i];		//nonzero coefficients
 		if (convexPts)
 			convexPts->push_back((*ctrlPts)[d - i]);	// add as a contributing control point
@@ -91,19 +93,34 @@ QVector2D *BSpline::evalPoint(float u)
         throw std::invalid_argument( "not enough control points" );
 
     int d = 0;
+
     if (u < 1)
     {
         while (u >= knots[d + 1] && d < m + k)
-               d++;
+            d++;
     }
     else if (u == 1)
     {
-//        throw std::invalid_argument("Need to fix spline evaluation at 1.0");
-        while (knots[d] < u && u > knots[d + 1])
+        while (u > knots[d+1] && d < m + k)
             d++;
     }
 
     return (effSum(d, u, 0, 0));	// evaluate the final curve point and store it
+}
+
+int BSpline::getOrder()
+{
+    return k;
+}
+
+float *BSpline::getKnots()
+{
+    return knots;
+}
+
+vector<QVector2D*> *BSpline::getControlPts()
+{
+    return ctrlPts;
 }
 
 void BSpline::getLinePoints(vector<QVector2D*> *list, vector<float> *u_list, float step_u)

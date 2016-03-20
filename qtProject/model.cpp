@@ -99,10 +99,10 @@ float * Model::readUVs(ObjModel *source, long *size)
     {
         for (int vertNum = 0; vertNum < 3; vertNum++)
         {
-            float vIdx = source->tris[i].index_uv[vertNum];
+            int vIdx = source->tris[i].index_uv[vertNum];
             for (int j = 0; j < 2; j++)
             {
-                float val = source->texs[vIdx - 1][j];
+                float val = source->texs[vIdx][j];
                 int idx = i * 6 + vertNum * 2 + j;
 
                 uv_[idx] = val;
@@ -128,7 +128,7 @@ float * Model::readVerts(ObjModel *source, long int *size)
             float vIdx = source->tris[i].index_xyz[vertNum];
             for (int j = 0; j < 3; j++)
             {
-                float val = source->m_vertices[vIdx - 1][j];
+                float val = source->m_vertices[vIdx][j];
                 int idx = i * 9 + vertNum * 3 + j;
 
                 v_[idx] = val;
@@ -352,7 +352,7 @@ float * Model::calcVertexNormals(ObjModel *source, long *size)
             result[resultIdx + 2] = v[2];
         }
     }
-    delete[] objNormals;    // free up memory
+  //  delete[] objNormals;    // free up memory
 
     return result;
 }
@@ -399,6 +399,27 @@ float * Model::calcFaceNormals(long *size)
     }
     return n_;
 }
+
+/*
+Model::Model(vector<QVector3D*> *verts)
+{
+    sizeVerts           = -1;
+    sizeColours         = -1;
+    sizeUvs             = -1;
+    sizeVertNormals     = -1;
+    sizeFaceNormals     = -1;
+    sizeVertNormalLines = -1;
+    sizeFaceNormalLines = -1;
+
+    int numTris = verts->size() / 4;
+
+    // readVerts
+    // gen UV
+    for (int i = 0; i < numQuads; i++)
+    {
+
+    }
+}*/
 
 Model::Model(ObjModel *m, Model *par)
 {

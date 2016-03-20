@@ -8,6 +8,7 @@
 #ifndef RENDERER_H
 #define RENDERER_H
 
+
 #include <QWidget>
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_4_2_Core>
@@ -18,6 +19,7 @@
 #include <QTimer>
 #include "model.h"
 #include "camera.h"
+#include "terrain.h"
 
 using namespace std;
 
@@ -61,6 +63,7 @@ public slots:
     void deselectModel();
     void cycleModel();
     void selectModel(int idx);
+    Terrain *createTerrain(QImage* image);
 
 protected:
 
@@ -90,6 +93,7 @@ protected:
 
 private slots:
     void update();
+
 private:
 
     // member variables for shader manipulation
@@ -121,7 +125,7 @@ private:
 
     QTimer *renderTimer;
     QMatrix4x4 m_view;
-
+    Terrain * m_terrain;
     Camera camera;
    //QVector3D cam_up;
    //QVector3D cam_pos;
@@ -152,6 +156,7 @@ private:
     void drawModel(Model * m_model);
     void drawNormals(Model * m_model);
     void doTrackball();
+    void populateTerrainVAO();
 };
 
 #endif // RENDERER_H

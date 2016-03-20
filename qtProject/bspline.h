@@ -24,10 +24,14 @@ public:
 	static float *standardKnotSeq(int m, int k);								// generates the standard knot sequence for given m and k
 	static double bSplineBasis(int i, int m, int k, double u, float *knots);	// evaluate a specified bspline basis func 
 
-protected:
+    int getOrder();                         // getter
+    float *getKnots();                      // getter
+    vector<QVector2D*> *getControlPts();    // getter
+
+private:
 	int k;						// curve order
 	float *knots;				// knot array
-    vector<QVector2D*> *ctrlPts;	// a pointer to the control point list in program
+    vector<QVector2D*> *ctrlPts;	// a pointer to the control point list in program    
 };
 
 #endif
