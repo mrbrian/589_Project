@@ -303,7 +303,7 @@ void Window::load(QAction * action)
             BSpline *bs = new BSpline(3, pts);
             RevSurface *rs = new RevSurface(bs);
 
-            ObjModel *obj = rs->getObjModel(0.1, 0.1);
+            ObjModel *obj = rs->getObjModel(0.01, 0.01);
 
             Model *m_model = new Model(obj, NULL);
 

@@ -99,8 +99,9 @@ QVector2D *BSpline::evalPoint(float u)
         while (u >= knots[d + 1] && d < m + k)
             d++;
     }
-    else if (u == 1)
+    else if (u >= 1)
     {
+        u = 1;      // clamp to end of curve
         while (u > knots[d+1] && d < m + k)
             d++;
     }
