@@ -329,7 +329,7 @@ void Renderer::drawModel(Model *m_model)
 
     glUniformMatrix4fv(m_MMatrixUniform, 1, false, model_matrix.data());
 
-    if (m_model == selectedModel)
+    /*if (m_model == selectedModel)
     {
         float mix = pow((sin(elapsedTime * 5) + 1.0) / 2, 2);     // make the selected model blink
         float light[3] = {mix * def_light[0] + (1 - mix) * select_light[0],
@@ -338,7 +338,7 @@ void Renderer::drawModel(Model *m_model)
                          };
         glUniform3fv(m_AmbientUniform, 1, &light[0]);
     }
-    else
+    else*/
         glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
 
     glUniform3fv(m_OverrideColourUniform, 1, &def_override[0]);
