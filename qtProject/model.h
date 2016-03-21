@@ -5,6 +5,7 @@
 #include <QMatrix4x4>
 #include "objModel.h"
 #include <iostream>
+#include "ray.h"
 
 class Model
 {
@@ -19,6 +20,9 @@ public:
     void setLocalTransform(QMatrix4x4 m);
     float getNormalizeScale();
     float getWorldScale();
+
+    double findIntersection(Ray r);
+
 
     const float *verts;                 // vertex float array
     const float *colours;               // colours float array
@@ -58,6 +62,8 @@ private:
     float *readVerts(ObjModel *source, long *size);             //
     float *generateFaceNormalLines(long *size);
     float *generateVertexNormalLines(long *size);
+
+    QVector3D gNormal;
 };
 
 #endif // MISC

@@ -292,9 +292,9 @@ void Window::load(QAction * action)
     if(action == mLoadHeightMapAction)
     {
         //LoadModel
-        QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
+//Disable        QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
 
-        filename = "../datafiles/example.jpg";
+        QString filename = "../datafiles/example.jpg";
 
         if (filename == "")
             return;

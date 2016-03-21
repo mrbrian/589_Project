@@ -120,7 +120,7 @@ void Terrain::populateVAO()
             c = m_controlMesh[(j + 1) * m_meshWidth + i + 1];
             b = m_controlMesh[(j + 1) * m_meshWidth + i];
 
-            QVector3D faceNormal = QVector3D::normal(b-a, d-a);
+            faceNormal = QVector3D::normal(b-a, d-a);
 
             //fill vertice array
             m_verts[offset + 0 ] = a.x();
@@ -165,7 +165,3 @@ void Terrain::populateVAO()
     }
 
 }
-
-
-
-

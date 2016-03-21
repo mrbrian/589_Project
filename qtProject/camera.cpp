@@ -5,6 +5,7 @@ Camera::Camera(){
     _rotation = QVector3D(0,0,0);
     _target = QVector3D(0,0,0);
     _up = QVector3D(0,1,0);
+
 }
 
 Camera::Camera(QVector3D pos, QVector3D rot, QVector3D targ, QVector3D u){

@@ -17,7 +17,8 @@ HEADERS += renderer.h window.h \
     renderable.h \
     terrain.h \
     objModel.h \
-    tests.h
+    tests.h \
+    ray.h
 SOURCES += main.cpp renderer.cpp window.cpp \
     trackball.cpp \ 
     model.cpp \
@@ -26,4 +27,5 @@ SOURCES += main.cpp renderer.cpp window.cpp \
     bspline.cpp \
     terrain.cpp \
     objModel.cpp \
-    tests.cpp
+    tests.cpp \
+    ray.cpp

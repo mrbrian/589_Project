@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include "objModel.h"
+#include "ray.h"
 
 class Terrain : public Renderable
 {
@@ -29,6 +30,8 @@ private://members
     QImage * m_uvImage;
     int m_meshWidth;
     int m_meshHeight;
+
+    QVector3D faceNormal;
 
 
    std::vector<QVector3D> m_controlMesh;

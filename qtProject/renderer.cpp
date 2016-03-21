@@ -16,6 +16,8 @@ float grn_override[3] = {0, 1, 0};
 
 // ambient lighting defaults
 float def_light[3] = {0.1, 0.1, 0.1};
+float red_light[3] = {0.9, 0.1, 0.1};
+
 float select_light[3] = {0.3, 0.3, 0.3};    // selected model has extra ambient light applied
 
 // constructor
@@ -83,6 +85,7 @@ void Renderer::paintGL()
 {
     // Clear the screen buffers
 
+
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     glEnable(GL_DEPTH_TEST);
@@ -98,6 +101,10 @@ void Renderer::paintGL()
     // Not implemented: set up lighting (if necessary)
 
     drawCheckerboard();
+
+
+    //findIntersection
+
 
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
     {
@@ -324,22 +331,31 @@ void Renderer::drawNormals(Model *m_model)
 // draw the given model
 void Renderer::drawModel(Model *m_model)
 {
+    QTextStream cout(stdout);
+
     int glDrawMode = GL_TRIANGLES;
     QMatrix4x4 model_matrix = m_model->getWorldTransform();
 
     glUniformMatrix4fv(m_MMatrixUniform, 1, false, model_matrix.data());
 
-    if (m_model == selectedModel)
+    Ray cam_ray (camera.getPosition(), camera.getRotation());
+
+    if(m_model == selectedModel)
     {
-        float mix = pow((sin(elapsedTime * 5) + 1.0) / 2, 2);     // make the selected model blink
-        float light[3] = {mix * def_light[0] + (1 - mix) * select_light[0],
-                          mix * def_light[1] + (1 - mix) * select_light[1],
-                          mix * def_light[2] + (1 - mix) * select_light[2]
-                         };
-        glUniform3fv(m_AmbientUniform, 1, &light[0]);
+
+        if(mode == 1)
+        {
+            cout << "will shoot ray" << endl;
+
+            double a =  m_model->findIntersection(cam_ray);
+
+            if(a != 0)
+                glUniform3fv(m_AmbientUniform, 1, &red_light[0]);
+            else
+                glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
+        }
     }
-    else
-        glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
+
 
     glUniform3fv(m_OverrideColourUniform, 1, &def_override[0]);
 
@@ -452,7 +468,7 @@ void Renderer::resizeGL(int w, int h)
 void Renderer::mousePressEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
-    cout << "Stub: Button " << event->button() << " pressed.\n";
+//    cout << "Stub: Button " << event->button() << " pressed.\n";
     mouseButtons = event->buttons();
 
     curr_x = event->x();
@@ -460,13 +476,26 @@ void Renderer::mousePressEvent(QMouseEvent * event)
 
     prev_x = curr_x;
     prev_y = curr_y;
+
+    if(altDown)
+    {
+        mode = 1;
+        cout << "mode 1 pressed" << endl;
+
+    }
+    else
+    {
+        mode = 0;
+        cout << "mode 0 pressed" << endl;
+
+    }
 }
 
 // override mouse release event
 void Renderer::mouseReleaseEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
-    cout << "Stub: Button " << event->button() << " pressed.\n";
+//    cout << "Stub: Button " << event->button() << " pressed.\n";
     mouseButtons = event->buttons();
 }
 
@@ -480,6 +509,9 @@ void Renderer::setKeyPressed(int val)
         break;
         case Qt::Key_Control:
             ctrlDown = true;
+        break;
+        case Qt::Key_Alt:
+            altDown = true;
         break;
     }
 }
@@ -495,6 +527,9 @@ void Renderer::setKeyReleased(int val)
         case Qt::Key_Control:
             ctrlDown = false;
         break;
+        case Qt::Key_Alt:
+            altDown = false;
+        break;
     }
 }
 
@@ -502,7 +537,7 @@ void Renderer::setKeyReleased(int val)
 void Renderer::mouseMoveEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
-    cout << "Stub: Motion at " << event->x() << ", " << event->y() << ".\n";
+//    cout << "Stub: Motion at " << event->x() << ", " << event->y() << ".\n";
 
     prev_x = curr_x;
     prev_y = curr_y;
@@ -738,7 +773,13 @@ void Renderer::handleInteraction()
         updateCamera();
     }
 
-    if (!shiftDown && !ctrlDown)                // translate / rotate the model
+
+    if (altDown)    //reserved for drawing
+    {
+
+    }
+
+    if (!shiftDown && !ctrlDown && !altDown)    // translate / rotate the model
     {
         if (mouseButtons & Qt::LeftButton)      // LB modifies along x-axis & y-axis
         {
@@ -758,6 +799,7 @@ void Renderer::handleInteraction()
             doTrackball();
         }
     }
+
 }
 
 // reset model(s) transforms

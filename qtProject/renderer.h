@@ -21,6 +21,8 @@
 #include "camera.h"
 #include "terrain.h"
 
+#include "ray.h"
+
 using namespace std;
 
 class Renderer : public QOpenGLWidget, protected QOpenGLFunctions_4_2_Core
@@ -118,6 +120,8 @@ private:
     vector<Model*> m_models;
     Model *m_submodel;
     Model *selectedModel;
+    Model *selectedModelRay;
+
     int sel_modelIdx;
 
     float curr_x, curr_y;   // mouse positions
@@ -142,10 +146,15 @@ private:
     int mouseButtons;
     bool ctrlDown;
     bool shiftDown;
+    bool altDown;
+
+    int mode = 0;
+
     float elapsedTime;
 
     // helper function for loading shaders
     GLuint loadShader(GLenum type, const char *source);
+
 
     void handleInteraction();
     void createWhiteTexture();

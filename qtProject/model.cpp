@@ -395,8 +395,10 @@ float * Model::calcFaceNormals(long *size)
             n_[idx] = normal[0];                // save normals for each vert of the triangle
             n_[idx + 1] = normal[1];
             n_[idx + 2] = normal[2];
+            gNormal = normal;
         }
     }
+
     return n_;
 }
 /*
@@ -462,3 +464,24 @@ Model::Model(ObjModel *m, Model *par)
     lines_vert_normals  = generateVertexNormalLines(&sizeVertNormalLines);
 }
 
+double Model::findIntersection(Ray ray)
+{
+
+        QVector3D ray_direction = ray.getRayDirection();
+        QVector3D normal = gNormal;
+        //Check whether the plane is parrell to the ray
+        double a = ray_direction.dotProduct(ray_direction, normal);
+
+        //parrell
+        if (a == 0)
+        {
+            return -1;
+        }
+        else
+        {
+            //Normal dot (Ray Origin + (normal * distance))
+            ray.getRayOrigin() += normal;
+            float b = normal.dotProduct(normal, ray.getRayOrigin());
+            return -1*b/a;
+        }
+}
