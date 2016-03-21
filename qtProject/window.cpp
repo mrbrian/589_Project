@@ -291,29 +291,49 @@ void Window::load(QAction * action)
 {
     if(action == mLoadHeightMapAction)
     {
-        //LoadModel
-        QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
-
-        filename = "../datafiles/example.jpg";
-
-        if (filename == "")
-            return;
-
-        QImage *i = new QImage();
-        i->load(filename);
-
-
-        Terrain *terrain = renderer->createTerrain(i);
-
-        ObjModel *obj = terrain->getObjModel();
-        Model *m_model = new Model(obj, NULL);   // NULL = no parent
-
-        if (m_model != NULL)
         {
-            if (action == mLoadModelAction)     // new root model
-                renderer->setModel(obj);
-            else
-                renderer->setSubmodel(obj);     // new child model
+            vector<QVector2D*> *pts = new vector<QVector2D*>();
+
+            pts->push_back(new QVector2D(1, 0));
+            pts->push_back(new QVector2D(1, 2.5));
+            pts->push_back(new QVector2D(2.5, 2.5));
+            pts->push_back(new QVector2D(3, 5));
+            pts->push_back(new QVector2D(0, 7));
+
+            BSpline *bs = new BSpline(2, pts);
+            RevSurface *rs = new RevSurface(bs);
+
+            ObjModel *obj = rs->getObjModel(0.25, 0.25);
+
+            Model *m_model = new Model(obj, NULL);
+
+            renderer->setModel(obj);
+
+            return;
+        }
+
+        {
+            //LoadModel
+            QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
+
+            if (filename == "")
+                return;
+
+            QImage *i = new QImage();
+            i->load(filename);
+
+            Terrain *terrain = renderer->createTerrain(i);
+
+            ObjModel *obj = terrain->getObjModel();
+            Model *m_model = new Model(obj, NULL);   // NULL = no parent
+
+            if (m_model != NULL)
+            {
+                if (action == mLoadModelAction)     // new root model
+                    renderer->setModel(obj);
+                else
+                    renderer->setSubmodel(obj);     // new child model
+            }
         }
     }
 

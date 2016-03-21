@@ -19,6 +19,7 @@
 #include <QFileDialog>
 #include <QLabel>
 #include "objModel.h"
+#include "revsurface.h"
 
 class Renderer;
 
