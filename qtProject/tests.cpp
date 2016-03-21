@@ -160,6 +160,7 @@ void RevSurface_Quads2()
         qDebug() << "RevSurface_Quad2 pass";
 }
 
+
 void RevSurface_ObjTest1()
 {
     bool pass = true;
@@ -167,26 +168,135 @@ void RevSurface_ObjTest1()
     vector<QVector2D*> *pts = new vector<QVector2D*>();
 
     pts->push_back(new QVector2D(1, 0));
-    pts->push_back(new QVector2D(1, 2.5));
-    pts->push_back(new QVector2D(2.5, 2.5));
-    pts->push_back(new QVector2D(3, 5));
-    pts->push_back(new QVector2D(0, 7));
+    pts->push_back(new QVector2D(1, 1));
+
+    vector<QVector3D*> *expected = new vector<QVector3D*>();
+
+    //qDebug() << "expected";
+    for (int i =0 ; i < 4; i++)
+    {
+        QMatrix4x4 r;
+        r.rotate(-360 / 4 * i, 0, 1, 0);
+
+        QVector3D a = r * QVector3D(1, 0, 0);
+        QVector3D b = r * QVector3D(0, 0, 1);
+        QVector3D c = r * QVector3D(0, 1, 1);
+        QVector3D d = r * QVector3D(1, 1, 0);
+
+        expected->push_back(new QVector3D(a));
+        expected->push_back(new QVector3D(d));
+        expected->push_back(new QVector3D(b));
+
+        expected->push_back(new QVector3D(d));
+        expected->push_back(new QVector3D(c));
+        expected->push_back(new QVector3D(b));
+/*
+        qDebug() << a;
+        qDebug() << d;
+        qDebug() << b;
+
+        qDebug() << d;
+        qDebug() << c;
+        qDebug() << b;*/
+    }
+    //qDebug() << "revsurface";
 
     BSpline *bs = new BSpline(2, pts);
     RevSurface *rs = new RevSurface(bs);
 
-    ObjModel *obj = rs->getObjModel(0.25, 0.25);
+    //qDebug() << "OBJmodel";
+    ObjModel *obj = rs->getObjModel(1, 0.25);
 
+   // qDebug() << "model";
     Model *m_model = new Model(obj, NULL);
 
-    for (int i = 0 ; i < 32 * 3; i += 3)
-        qDebug() << i /3 << ": " << m_model->verts[i]<< ", " << m_model->verts[i+1]<< ", " << m_model->verts[i+2];
+    for (int i = 0 ; i < 2 * 4; i++)
+    {
+        QVector3D e = *((*expected)[i]);
+        QVector3D a = QVector3D(m_model->verts[i*3], m_model->verts[(i*3)+1], m_model->verts[(i*3)+2]);
 
-    if (m_model->verts[22 * 3] != 2.5)
-        pass = true;
+        for (int j = 0 ; j < 3; j++)
+        {
+            if (e[j] != a[j])
+                pass = false;
+        }
+    }
 
     if (!pass)
+    {
         qDebug() << "RevSurface_ObjTest1 fail";
+        throw std::invalid_argument( "RevSurface_ObjTest1 fail" );
+    }
+    else
+        qDebug() << "RevSurface_ObjTest1 pass";
+}
+
+void RevSurface_ObjTest2()
+{
+    bool pass = true;
+
+    vector<QVector2D*> *pts = new vector<QVector2D*>();
+
+    pts->push_back(new QVector2D(1, 0));
+    pts->push_back(new QVector2D(1, 1));
+
+    vector<QVector3D*> *expected = new vector<QVector3D*>();
+
+    //qDebug() << "expected";
+    for (int i =0 ; i < 4; i++)
+    {
+        QMatrix4x4 r;
+        r.rotate(-360 / 4 * i, 0, 1, 0);
+
+        QVector3D a = r * QVector3D(1, 0, 0);
+        QVector3D b = r * QVector3D(0, 0, 1);
+        QVector3D c = r * QVector3D(0, 1, 1);
+        QVector3D d = r * QVector3D(1, 1, 0);
+
+        expected->push_back(new QVector3D(a));
+        expected->push_back(new QVector3D(d));
+        expected->push_back(new QVector3D(b));
+
+        expected->push_back(new QVector3D(d));
+        expected->push_back(new QVector3D(c));
+        expected->push_back(new QVector3D(b));
+/*
+        qDebug() << a;
+        qDebug() << d;
+        qDebug() << b;
+
+        qDebug() << d;
+        qDebug() << c;
+        qDebug() << b;*/
+    }
+    //qDebug() << "revsurface";
+
+    BSpline *bs = new BSpline(2, pts);
+    RevSurface *rs = new RevSurface(bs);
+
+    //qDebug() << "OBJmodel";
+    ObjModel *obj = rs->getObjModel(0.05, 0.05);
+
+   // qDebug() << "model";
+    Model *m_model = new Model(obj, NULL);
+
+    for (int i = 0 ; i < 2 * 4; i++)
+    {
+        QVector3D e = *((*expected)[i]);
+        QVector3D a = QVector3D(m_model->verts[i*3], m_model->verts[(i*3)+1], m_model->verts[(i*3)+2]);
+
+        for (int j = 0 ; j < 3; j++)
+        {
+            if (e[j] != a[j])
+                pass = false;
+        }
+    }
+
+    if (!pass)
+    {
+        qDebug() << "RevSurface_ObjTest1 fail";        
+        throw std::invalid_argument( "RevSurface_ObjTest1 fail" );
+    }
     else
         qDebug() << "RevSurface_ObjTest1 pass";
 }

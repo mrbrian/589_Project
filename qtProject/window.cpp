@@ -300,10 +300,10 @@ void Window::load(QAction * action)
             pts->push_back(new QVector2D(3, 5));
             pts->push_back(new QVector2D(0, 7));
 
-            BSpline *bs = new BSpline(2, pts);
+            BSpline *bs = new BSpline(3, pts);
             RevSurface *rs = new RevSurface(bs);
 
-            ObjModel *obj = rs->getObjModel(0.25, 0.25);
+            ObjModel *obj = rs->getObjModel(0.1, 0.1);
 
             Model *m_model = new Model(obj, NULL);
 

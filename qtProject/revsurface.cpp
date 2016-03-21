@@ -150,11 +150,11 @@ ObjModel *RevSurface::getObjModel(float u_step, float v_step)
 {
     ObjModel *result = new ObjModel();
 
-    int num_u = ceil(1.0 / u_step) + 1;
+    int num_u = ceil(1.0 / u_step);
     int num_v = ceil(1.0 / v_step);
 
-    result->num_tris = (num_u - 1) * (num_v - 1) * 2;
-    result->num_xyz = num_u * num_v;
+    result->num_tris = num_u * num_v * 2;
+    result->num_xyz = (num_u + 1) * num_v;
 
     vector<QVector3D*> &m_controlMesh = *getControlMesh(u_step, v_step);
 
@@ -162,6 +162,7 @@ ObjModel *RevSurface::getObjModel(float u_step, float v_step)
     {
         QVector3D &p = *m_controlMesh[i];
 
+        //qDebug() << i << ": "<< p;
         result->m_vertices.push_back(vec3(p[0], p[1], p[2]));
     }
 
@@ -210,19 +211,19 @@ ObjModel *RevSurface::getObjModel(float u_step, float v_step)
 
             result->tris.push_back(t1);
             result->tris.push_back(t2);
-/*
-            qDebug() << "Num verts: " << m_controlMesh.size();
+
+            //qDebug() << "Num verts: " << m_controlMesh.size();
             for (int z = 0; z < 3; z++)
             {
-                qDebug() << t1.index_xyz[z];
                 QVector3D &v = *m_controlMesh[t1.index_xyz[z]];
-                qDebug() << i_v + (i_u * num_v) << ": " << v[0] << ", " << v[1] << ", " << v[2] ;
+                //qDebug() << t1.index_xyz[z];
+                //qDebug() << i_v + (i_u * num_v) << ": " << v[0] << ", " << v[1] << ", " << v[2] ;
             }
             for (int z = 0; z < 3; z++)
             {
                 QVector3D &v = *m_controlMesh[t2.index_xyz[z]];
-                qDebug() << i_v + (i_u * num_v) << ": " << v[0] << ", " << v[1] << ", " << v[2] ;
-            }*/
+                //qDebug() << i_v + (i_u * num_v) << ": " << v[0] << ", " << v[1] << ", " << v[2] ;
+            }
         }
     }
     return result;
