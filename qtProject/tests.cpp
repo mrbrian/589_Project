@@ -4,6 +4,7 @@
 #include <iostream>
 #include "revsurface.h"
 #include <QDebug>
+#include "model.h"
 
 using namespace std;
 
@@ -84,7 +85,6 @@ void RevSurface_Quads1()
     expected.push_back(new QVector3D(1, 2, 0));
     expected.push_back(new QVector3D(0, 2, -1));
 
-
     vector<QVector3D*> *actual = rs.evalQuads(ustep, vstep);
 
     bool pass = true;
@@ -160,9 +160,42 @@ void RevSurface_Quads2()
         qDebug() << "RevSurface_Quad2 pass";
 }
 
+void RevSurface_ObjTest1()
+{
+    bool pass = true;
+
+    vector<QVector2D*> *pts = new vector<QVector2D*>();
+
+    pts->push_back(new QVector2D(1, 0));
+    pts->push_back(new QVector2D(1, 2.5));
+    pts->push_back(new QVector2D(2.5, 2.5));
+    pts->push_back(new QVector2D(3, 5));
+    pts->push_back(new QVector2D(0, 7));
+
+    BSpline *bs = new BSpline(2, pts);
+    RevSurface *rs = new RevSurface(bs);
+
+    ObjModel *obj = rs->getObjModel(0.25, 0.25);
+
+    Model *m_model = new Model(obj, NULL);
+
+    for (int i = 0 ; i < 32 * 3; i += 3)
+        qDebug() << i /3 << ": " << m_model->verts[i]<< ", " << m_model->verts[i+1]<< ", " << m_model->verts[i+2];
+
+    if (m_model->verts[22 * 3] != 2.5)
+        pass = true;
+
+    if (!pass)
+        qDebug() << "RevSurface_ObjTest1 fail";
+    else
+        qDebug() << "RevSurface_ObjTest1 pass";
+}
+
 Tests::Tests()
 {
+    RevSurface_ObjTest1();
+    /*
     RevSurface_1();
     RevSurface_Quads1();
-    RevSurface_Quads2();
+    RevSurface_Quads2();*/
 }
