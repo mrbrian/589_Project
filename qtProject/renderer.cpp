@@ -453,7 +453,6 @@ void Renderer::mousePressEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
     mouseButtons = event->buttons();
-
     curr_x = event->x();
     curr_y = event->y();
 
@@ -706,16 +705,41 @@ void Renderer::handleInteraction()
 
     if (altDown)
     {
-        delta[0] = -dx * 50;
-        delta[1] = dy * 50;
-
-        if (mouseButtons & Qt::MiddleButton)
+        if (mouseButtons == (Qt::LeftButton + Qt::RightButton))
         {
+            delta[0] = dx;
 
+            QVector3D camPos = camera.getPosition();
+            QVector3D forward = camera.getForward();
+
+            camPos += forward * delta[0];
+            camera.setPosition(camPos);
+            updateCamera();
         }
-
-        if (mouseButtons & Qt::LeftButton)
+        else if (mouseButtons & Qt::RightButton)
         {
+            delta[0] = dx;
+            delta[1] = dy;
+
+            QVector3D targ = camera.getTarget();
+            QVector3D camPos = camera.getPosition();
+
+            QVector3D right = camera.getRight();
+            QVector3D up = camera.getUp();
+
+            right *= delta[0];
+            up *= delta[1];
+
+            targ += right + up;
+            camPos += right + up;
+
+            camera.setTarget(targ);
+            camera.setPosition(camPos);
+        }
+        else if (mouseButtons & Qt::LeftButton)
+        {
+            delta[0] = -dx * 25;
+            delta[1] = dy * 25;
 
             QVector3D targ = camera.getTarget();
             QVector3D camPos = camera.getPosition();
@@ -724,25 +748,15 @@ void Renderer::handleInteraction()
             t.translate(targ);
 
             QMatrix4x4 invT;
-            t.translate(targ);
-            t = t.inverted();
+            invT.translate(-targ);
 
             QMatrix4x4 rot;
 
             rot.rotate(delta[0], 0, 1, 0) ;
-
-            QVector3D v_facing = targ - camPos;  // fix this: get right axis of camera..
-            v_facing[1] = 0;
-            QMatrix4x4 deg90;
-            deg90.rotate(90, 0, 1, 0);
-
-            v_facing = deg90 * v_facing;
-
-            rot.rotate(delta[1], v_facing) ;
+            rot.rotate(delta[1], camera.getRight()) ;
 
             QMatrix4x4 transform = t * rot * invT;
 
-            qDebug() << camPos;
             camPos = transform * camPos;
             camera.setPosition(camPos);
         }

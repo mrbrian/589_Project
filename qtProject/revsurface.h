@@ -14,7 +14,6 @@ public:
     BSpline *curve;
     QVector3D *eval(float u, float v);
     vector<QVector3D*> *evalQuads(float u_step, float v_step);    
-    vector<QVector3D*> *evalTriangles(float u_step, float v_step);
     ObjModel *getObjModel(float u_step, float v_step);
 
 private:
