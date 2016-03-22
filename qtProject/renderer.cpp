@@ -452,7 +452,6 @@ void Renderer::resizeGL(int w, int h)
 void Renderer::mousePressEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
-    cout << "Stub: Button " << event->button() << " pressed.\n";
     mouseButtons = event->buttons();
 
     curr_x = event->x();
@@ -466,7 +465,6 @@ void Renderer::mousePressEvent(QMouseEvent * event)
 void Renderer::mouseReleaseEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
-    cout << "Stub: Button " << event->button() << " pressed.\n";
     mouseButtons = event->buttons();
 }
 
@@ -475,9 +473,12 @@ void Renderer::setKeyPressed(int val)
 {
     switch (val)
     {
-        case Qt::Key_Shift:
-            shiftDown = true;
-        break;
+    case Qt::Key_Alt:
+        altDown = true;
+    break;
+    case Qt::Key_Shift:
+        shiftDown = true;
+    break;
         case Qt::Key_Control:
             ctrlDown = true;
         break;
@@ -489,6 +490,9 @@ void Renderer::setKeyReleased(int val)
 {
     switch (val)
     {
+        case Qt::Key_Alt:
+            altDown = false;
+        break;
         case Qt::Key_Shift:
             shiftDown = false;
         break;
@@ -502,7 +506,6 @@ void Renderer::setKeyReleased(int val)
 void Renderer::mouseMoveEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
-    cout << "Stub: Motion at " << event->x() << ", " << event->y() << ".\n";
 
     prev_x = curr_x;
     prev_y = curr_y;
@@ -700,6 +703,52 @@ void Renderer::handleInteraction()
     float dy = (float)(curr_y - prev_y) / 100;
 
     QMatrix4x4 modelTrans;
+
+    if (altDown)
+    {
+        delta[0] = -dx * 50;
+        delta[1] = dy * 50;
+
+        if (mouseButtons & Qt::MiddleButton)
+        {
+
+        }
+
+        if (mouseButtons & Qt::LeftButton)
+        {
+
+            QVector3D targ = camera.getTarget();
+            QVector3D camPos = camera.getPosition();
+
+            QMatrix4x4 t;
+            t.translate(targ);
+
+            QMatrix4x4 invT;
+            t.translate(targ);
+            t = t.inverted();
+
+            QMatrix4x4 rot;
+
+            rot.rotate(delta[0], 0, 1, 0) ;
+
+            QVector3D v_facing = targ - camPos;  // fix this: get right axis of camera..
+            v_facing[1] = 0;
+            QMatrix4x4 deg90;
+            deg90.rotate(90, 0, 1, 0);
+
+            v_facing = deg90 * v_facing;
+
+            rot.rotate(delta[1], v_facing) ;
+
+            QMatrix4x4 transform = t * rot * invT;
+
+            qDebug() << camPos;
+            camPos = transform * camPos;
+            camera.setPosition(camPos);
+        }
+        updateCamera();
+        return;
+    }
 
     if (shiftDown)                // modify camera position
     {

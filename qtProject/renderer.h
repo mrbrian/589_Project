@@ -140,6 +140,7 @@ private:
 
     // mouse buttons that are currently pressed
     int mouseButtons;
+    bool altDown;
     bool ctrlDown;
     bool shiftDown;
     float elapsedTime;
