@@ -645,7 +645,7 @@ void Renderer::setModelTexture(QImage *image)
 void Renderer::updateCamera()
 {
     m_view = QMatrix4x4();
-    m_view.lookAt(camera.getPosition(), camera.getTarget(), camera.getUp());
+    m_view.lookAt(camera.getPosition(), camera.getTarget(), QVector3D(0,1,0));//camera.getUp());
 }
 
 // triggers paint update
@@ -705,7 +705,7 @@ void Renderer::handleInteraction()
 
     if (altDown)
     {
-        if (mouseButtons == (Qt::LeftButton + Qt::RightButton))
+        if (mouseButtons & Qt::RightButton)
         {
             delta[0] = dx;
 
@@ -714,12 +714,11 @@ void Renderer::handleInteraction()
 
             camPos += forward * delta[0];
             camera.setPosition(camPos);
-            updateCamera();
         }
-        else if (mouseButtons & Qt::RightButton)
+        else if (mouseButtons & Qt::MiddleButton)
         {
             delta[0] = dx;
-            delta[1] = dy;
+            delta[1] = -dy;
 
             QVector3D targ = camera.getTarget();
             QVector3D camPos = camera.getPosition();
@@ -734,7 +733,7 @@ void Renderer::handleInteraction()
             camPos += right + up;
 
             camera.setTarget(targ);
-            camera.setPosition(camPos);
+            camera.setPosition(camPos);            
         }
         else if (mouseButtons & Qt::LeftButton)
         {
@@ -752,8 +751,11 @@ void Renderer::handleInteraction()
 
             QMatrix4x4 rot;
 
-            rot.rotate(delta[0], 0, 1, 0) ;
-            rot.rotate(delta[1], camera.getRight()) ;
+            QVector3D up = QVector3D(0,1,0);
+            QVector3D right = camera.getRight();
+
+            rot.rotate(delta[0], up);
+            rot.rotate(delta[1], right);
 
             QMatrix4x4 transform = t * rot * invT;
 

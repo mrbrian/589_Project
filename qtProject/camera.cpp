@@ -58,15 +58,20 @@ float Camera::getFarClip(){
 
 void Camera::updateDirections()
 {
-    _forward = (_target - _position).normalized();
+    _forward = (_target - _position);
+    _forward.normalize();
 
     QMatrix4x4 rot_y;
     rot_y.rotate(90, 0.0, 1.0, 0.0);
     _right = rot_y * _forward;
+    _right.normalize();
 
-    //QMatrix4x4 rot_x;
-    //rot_x.rotate(90, 0.0, 0, 1.0);
-    //_up = rot_x * _forward;
+    QMatrix4x4 rot_x;
+    rot_x.rotate(90, _right);
+
+    //_up = QVector3D::crossProduct(_right, _forward);
+    _up = rot_x * _forward;
+    _up.normalize();
 }
 
 // setters
@@ -103,4 +108,3 @@ void Camera::setFarClip(float v){
 QMatrix4x4 *Camera::getTransform(){
     return &_transform;
 }
-
