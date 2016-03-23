@@ -62,14 +62,13 @@ void Camera::updateDirections()
     _forward.normalize();
 
     QMatrix4x4 rot_y;
-    rot_y.rotate(90, 0.0, 1.0, 0.0);
+    rot_y.rotate(90, 0.0, 1.0, 0.0);    
     _right = rot_y * _forward;
+    _right[1] = 0;
     _right.normalize();
 
     QMatrix4x4 rot_x;
-    rot_x.rotate(90, _right);
-
-    //_up = QVector3D::crossProduct(_right, _forward);
+    rot_x.rotate(-90, _right);
     _up = rot_x * _forward;
     _up.normalize();
 }

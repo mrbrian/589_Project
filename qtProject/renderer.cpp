@@ -713,12 +713,15 @@ void Renderer::handleInteraction()
             QVector3D forward = camera.getForward();
 
             camPos += forward * delta[0];
-            camera.setPosition(camPos);
+            QVector3D dir = forward - camPos;
+
+            if (dir[0] != 0 || dir[2] != 0) // not facing straight down
+                camera.setPosition(camPos);
         }
         else if (mouseButtons & Qt::MiddleButton)
         {
             delta[0] = dx;
-            delta[1] = -dy;
+            delta[1] = dy;
 
             QVector3D targ = camera.getTarget();
             QVector3D camPos = camera.getPosition();
