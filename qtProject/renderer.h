@@ -133,6 +133,9 @@ private:
     QMatrix4x4 m_view;
     Terrain * m_terrain;
     Camera camera;
+
+    QVector3D old_cam_position; //use for select mode
+
    //QVector3D cam_up;
    //QVector3D cam_pos;
    //QVector3D cam_target;

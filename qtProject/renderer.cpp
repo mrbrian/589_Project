@@ -16,7 +16,7 @@ float grn_override[3] = {0, 1, 0};
 
 // ambient lighting defaults
 float def_light[3] = {0.1, 0.1, 0.1};
-float red_light[3] = {0.9, 0.1, 0.1};
+float red_light[3] = {0.3, 0.1, 0.1};
 
 float select_light[3] = {0.3, 0.3, 0.3};    // selected model has extra ambient light applied
 
@@ -84,6 +84,7 @@ void Renderer::initializeGL()
 void Renderer::paintGL()
 {
     // Clear the screen buffers
+    QTextStream cout(stdout);
 
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -114,6 +115,22 @@ void Renderer::paintGL()
         if (displayNormals)
         {
             drawNormals(m_model);
+        }
+
+        glPointSize(10);
+        glColor3f (1.0f, 1.0f, 0.0f);
+        cout << "num control points: " << m_terrain->getControlMeshSize();
+        if(m_model == selectedModel && mode == 1)
+        {
+            glBegin(GL_POINTS);
+                //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
+
+                for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
+                {
+
+                    glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
+                }
+            glEnd();
         }
     }
 
@@ -146,6 +163,8 @@ void Renderer::paintGL()
     }
 */
     // deactivate the program
+
+
     m_program->release();
 }
 
@@ -343,19 +362,17 @@ void Renderer::drawModel(Model *m_model)
 
     if(m_model == selectedModel)
     {
-        cout << "cam x: " << camera.getPosition().x() << ", cam y: " << camera.getPosition().y()  << ", cam z: " << camera.getPosition().z() << endl;// "will shoot ray"
-
         if(mode == 1)
-        {
+        {           
+//            cout << "num control points: " << m_terrain->getControlMeshSize();
             double a =  m_model->findIntersection(cam_ray);
 
             if(a != 0)
-                glUniform3fv(m_AmbientUniform, 1, &red_light[0]);
+                glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
             else
                 glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
         }
     }
-
 
     glUniform3fv(m_OverrideColourUniform, 1, &def_override[0]);
 
@@ -737,7 +754,11 @@ void Renderer::handleInteraction()
     QMatrix4x4 modelTrans;
 
     if(mode == 1)
+    {
         return;
+    }
+
+
 
     if (shiftDown)                // modify camera position
     {
@@ -849,8 +870,7 @@ void Renderer::selectMesh()
         cout << "select mesh mode off" << endl;
         mode = 0;
 
-        QVector3D newPosition = QVector3D(0,0,0);
-        camera.setPosition(newPosition);
+        camera.setPosition(old_cam_position);
         updateCamera();
     }
     else if (mode == 0)
@@ -858,6 +878,7 @@ void Renderer::selectMesh()
         cout << "select mesh mode on" << endl;
         mode = 1;
 
+        old_cam_position = camera.getPosition();
         QVector3D newPosition = QVector3D(0.01,2.9,0);
         camera.setPosition(newPosition);
         updateCamera();

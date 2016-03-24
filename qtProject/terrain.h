@@ -23,6 +23,12 @@ public:
     }
     virtual ~Terrain(){}
     virtual void draw(){}
+
+
+    int getControlMeshSize();
+    std::vector<QVector3D> m_selectableControlMesh;
+
+
     ObjModel *getObjModel();
 
 private://members
@@ -35,6 +41,7 @@ private://members
 
 
    std::vector<QVector3D> m_controlMesh;
+
    //vbo
 
 private:
