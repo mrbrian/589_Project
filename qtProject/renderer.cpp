@@ -1038,9 +1038,10 @@ void Renderer::selectMesh()
 
         camera.setPosition(newPosition);
 
+        camera.setUp(QVector3D(0,1,0));
+
         updateCamera();
         resetModels();
-
 
     }
 
