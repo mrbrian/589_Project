@@ -77,6 +77,12 @@ void Terrain::createControlMesh(QImage * heightMap, float heightToAreaScale)
             if(i % 30== 0 && j % 100 == 0)
             {
                 m_selectableControlMesh.push_back(QVector3D((float)i, height, (float)j));
+
+                if(i % 100== 0 && j % 10 == 0)
+                    m_selectabledFlag.push_back(1);
+                else
+                    m_selectabledFlag.push_back(0);
+
             }
 
             //m_controlMesh.push_back(QVector3D((float)i / (float)m_meshWidth, height,(float)j / (float)m_meshHeight));

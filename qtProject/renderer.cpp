@@ -16,7 +16,7 @@ float grn_override[3] = {0, 1, 0};
 
 // ambient lighting defaults
 float def_light[3] = {0.1, 0.1, 0.1};
-float red_light[3] = {0.3, 0.1, 0.1};
+
 
 float select_light[3] = {0.3, 0.3, 0.3};    // selected model has extra ambient light applied
 
@@ -107,6 +107,7 @@ void Renderer::paintGL()
     //findIntersection
 
 
+
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
     {
         Model *m_model = (*it);
@@ -118,19 +119,31 @@ void Renderer::paintGL()
         }
 
         glPointSize(10);
-        glColor3f (1.0f, 1.0f, 0.0f);
-        cout << "num control points: " << m_terrain->getControlMeshSize();
-        if(m_model == selectedModel && mode == 1)
+
+//        glColor3f (0.0f, 0.0f, 1.0f);
+//        cout << "num control points: " << m_terrain->getControlMeshSize();
+//        cout << "num control points: " << m_terrain->m_selectabledFlag.size();
+        if(m_model == selectedModel)
         {
-            glBegin(GL_POINTS);
                 //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
 
                 for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
                 {
+                    if(m_terrain->m_selectabledFlag.at(i) == 1)
+                    {
+//                      cout << "selected: " << i <<endl;
+                        glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+                    }
+                    else
+                    {
+                        glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
 
+                    }
+
+                    glBegin(GL_POINTS);
                     glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
+                    glEnd();
                 }
-            glEnd();
         }
     }
 
@@ -367,10 +380,10 @@ void Renderer::drawModel(Model *m_model)
 //            cout << "num control points: " << m_terrain->getControlMeshSize();
             double a =  m_model->findIntersection(cam_ray);
 
-            if(a != 0)
-                glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
-            else
-                glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
+//            if(a != 0)
+//                glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
+//            else
+//                glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
         }
     }
 
@@ -882,6 +895,7 @@ void Renderer::selectMesh()
         QVector3D newPosition = QVector3D(0.01,2.9,0);
         camera.setPosition(newPosition);
         updateCamera();
+        resetModels();
 
 
     }
