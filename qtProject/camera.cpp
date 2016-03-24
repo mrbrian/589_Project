@@ -88,6 +88,14 @@ void Camera::setTarget(QVector3D t){
     updateDirections();
 }
 
+void Camera::setForward(QVector3D u){
+    _forward = u;
+}
+
+void Camera::setRight(QVector3D u){
+    _right = u;
+}
+
 void Camera::setUp(QVector3D u){
     _up = u;
 }

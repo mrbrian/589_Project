@@ -822,6 +822,11 @@ void Renderer::applyTransform(QMatrix4x4 *t)
 // user interacting with the scene via mouse
 void Renderer::handleInteraction()
 {
+    if(mode == 1)
+    {
+        return;
+    }
+
     QVector3D delta;
     float dx = (float)(curr_x - prev_x) / 100;
     float dy = (float)(curr_y - prev_y) / 100;
@@ -891,11 +896,6 @@ void Renderer::handleInteraction()
             camera.setPosition(camPos);
         }
         updateCamera();
-        return;
-    }
-
-    if(mode == 1)
-    {
         return;
     }
 
@@ -1034,10 +1034,13 @@ void Renderer::selectMesh()
         old_cam_position = camera.getPosition();
         old_cam_position = camera.getPosition();
 
-        QVector3D newPosition = QVector3D(0.001,2.8,0);
+        QVector3D newPosition = QVector3D(0.001, 2.8, 0);
 
         camera.setPosition(newPosition);
+        camera.setTarget(QVector3D(0,0,0));
 
+        camera.setForward(QVector3D(0,0,1));
+        camera.setRight(QVector3D(1,0,0));
         camera.setUp(QVector3D(0,1,0));
 
         updateCamera();

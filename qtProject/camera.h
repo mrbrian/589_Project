@@ -25,6 +25,8 @@ public:
     void setPosition(QVector3D p);
     void setRotation(QVector3D p);
     void setTarget(QVector3D p);
+    void setForward(QVector3D p);
+    void setRight(QVector3D p);
     void setUp(QVector3D p);
     void setFov(float v);
     void setNearClip(float v);
