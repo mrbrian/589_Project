@@ -78,6 +78,8 @@ private:
     QActionGroup * mSelectGroup;
     QAction * mDeselectAction;
     QAction * mCycleAction;
+    QAction * mSelectMesh;
+
     vector<QAction*> mSelectActions;
 
     QLabel *modeLabel;

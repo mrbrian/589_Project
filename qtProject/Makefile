@@ -533,6 +533,7 @@ compiler_moc_header_clean:
 	-$(DEL_FILE) moc_renderer.cpp moc_window.cpp
 moc_renderer.cpp: model.h \
 		objModel.h \
+		ray.h \
 		camera.h \
 		terrain.h \
 		renderable.h \
@@ -565,6 +566,7 @@ main.o: main.cpp window.h \
 renderer.o: renderer.cpp renderer.h \
 		model.h \
 		objModel.h \
+		ray.h \
 		camera.h \
 		terrain.h \
 		renderable.h \
@@ -575,6 +577,7 @@ window.o: window.cpp window.h \
 		objModel.h \
 		renderer.h \
 		model.h \
+		ray.h \
 		camera.h \
 		terrain.h \
 		renderable.h
@@ -584,7 +587,9 @@ trackball.o: trackball.cpp trackball.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o trackball.o trackball.cpp
 
 model.o: model.cpp model.h \
-		objModel.h
+		objModel.h \
+		ray.h \
+		camera.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o model.o model.cpp
 
 camera.o: camera.cpp camera.h
@@ -600,7 +605,9 @@ bspline.o: bspline.cpp bspline.h
 
 terrain.o: terrain.cpp terrain.h \
 		renderable.h \
-		objModel.h
+		objModel.h \
+		ray.h \
+		camera.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o terrain.o terrain.cpp
 
 objModel.o: objModel.cpp objModel.h

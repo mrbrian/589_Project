@@ -67,6 +67,8 @@ public slots:
     void selectModel(int idx);
     Terrain *createTerrain(QImage* image);
 
+    void selectMesh();
+
 protected:
 
     // override fundamental drawing functions

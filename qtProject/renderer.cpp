@@ -340,13 +340,13 @@ void Renderer::drawModel(Model *m_model)
 
     Ray cam_ray (camera.getPosition(), camera.getRotation());
 
+
     if(m_model == selectedModel)
     {
+        cout << "cam x: " << camera.getPosition().x() << ", cam y: " << camera.getPosition().y()  << ", cam z: " << camera.getPosition().z() << endl;// "will shoot ray"
 
         if(mode == 1)
         {
-            cout << "will shoot ray" << endl;
-
             double a =  m_model->findIntersection(cam_ray);
 
             if(a != 0)
@@ -477,15 +477,15 @@ void Renderer::mousePressEvent(QMouseEvent * event)
     prev_x = curr_x;
     prev_y = curr_y;
 
-    if(altDown)
+    if(mode == 1)
     {
-        mode = 1;
+//        mode = 1;
         cout << "mode 1 pressed" << endl;
 
     }
-    else
+    else if (mode == 0)
     {
-        mode = 0;
+//        mode = 0;
         cout << "mode 0 pressed" << endl;
 
     }
@@ -736,6 +736,9 @@ void Renderer::handleInteraction()
 
     QMatrix4x4 modelTrans;
 
+    if(mode == 1)
+        return;
+
     if (shiftDown)                // modify camera position
     {
         if (mouseButtons & Qt::LeftButton)
@@ -773,11 +776,6 @@ void Renderer::handleInteraction()
         updateCamera();
     }
 
-
-    if (altDown)    //reserved for drawing
-    {
-
-    }
 
     if (!shiftDown && !ctrlDown && !altDown)    // translate / rotate the model
     {
@@ -839,6 +837,35 @@ void Renderer::deselectModel()
 void Renderer::cycleModel()
 {
     selectModel(sel_modelIdx + 1);
+}
+
+void Renderer::selectMesh()
+{
+
+    QTextStream cout(stdout);
+
+    if(mode == 1)
+    {
+        cout << "select mesh mode off" << endl;
+        mode = 0;
+
+        QVector3D newPosition = QVector3D(0,0,0);
+        camera.setPosition(newPosition);
+        updateCamera();
+    }
+    else if (mode == 0)
+    {
+        cout << "select mesh mode on" << endl;
+        mode = 1;
+
+        QVector3D newPosition = QVector3D(0.01,2.9,0);
+        camera.setPosition(newPosition);
+        updateCamera();
+
+
+    }
+
+
 }
 
 // selects a model
