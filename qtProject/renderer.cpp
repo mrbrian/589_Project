@@ -373,6 +373,7 @@ void Renderer::drawModel(Model *m_model)
     Ray cam_ray (camera.getPosition(), camera.getRotation());
 
 
+
     if(m_model == selectedModel)
     {
         if(mode == 1)
@@ -499,6 +500,7 @@ void Renderer::mousePressEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
 //    cout << "Stub: Button " << event->button() << " pressed.\n";
+
     mouseButtons = event->buttons();
 
     curr_x = event->x();
@@ -507,10 +509,16 @@ void Renderer::mousePressEvent(QMouseEvent * event)
     prev_x = curr_x;
     prev_y = curr_y;
 
+    float nor_mouse_x = event->x();
+    float nor_mouse_y = event->y();
+
     if(mode == 1)
     {
 //        mode = 1;
-        cout << "mode 1 pressed" << endl;
+//        cout << "mode 1 pressed" << endl;
+
+
+        normalizeMouseToSelect(nor_mouse_x, nor_mouse_y);
 
     }
     else if (mode == 0)
@@ -519,6 +527,12 @@ void Renderer::mousePressEvent(QMouseEvent * event)
         cout << "mode 0 pressed" << endl;
 
     }
+
+    cout << "Stub: Motion at " << nor_mouse_x << ", " << nor_mouse_y << ".\n";
+    cout << "first point: " << m_terrain->m_selectableControlMesh.at(0)[0] << ", " <<  m_terrain->m_selectableControlMesh.at(0)[2]
+         << endl << "mid point: " << m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()/2)[0] << ", " <<  m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()/2)[2]
+         << endl << "last point: " << m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()-1)[0] << ", " <<  m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()-1)[2]
+         << endl << "*********************************\n";
 }
 
 // override mouse release event
@@ -569,6 +583,7 @@ void Renderer::mouseMoveEvent(QMouseEvent * event)
     QTextStream cout(stdout);
 //    cout << "Stub: Motion at " << event->x() << ", " << event->y() << ".\n";
 
+
     prev_x = curr_x;
     prev_y = curr_y;
 
@@ -576,6 +591,12 @@ void Renderer::mouseMoveEvent(QMouseEvent * event)
     curr_y = event->y();
 
     handleInteraction();       // adjust the models or camera
+}
+
+void Renderer::normalizeMouseToSelect(float & x , float & y)
+{
+    x = ((x - 10) / (593 - 10)) * 510;
+    y = ((y - 10) / (593 - 10)) * 510;
 }
 
 // load a model and make the selected model it's parent
@@ -892,7 +913,7 @@ void Renderer::selectMesh()
         mode = 1;
 
         old_cam_position = camera.getPosition();
-        QVector3D newPosition = QVector3D(0.01,2.9,0);
+        QVector3D newPosition = QVector3D(0.001,2.8,0);
         camera.setPosition(newPosition);
         updateCamera();
         resetModels();

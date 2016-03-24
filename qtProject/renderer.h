@@ -154,6 +154,7 @@ private:
     bool altDown;
 
     int mode = 0;
+    void normalizeMouseToSelect(float &, float &);
 
     float elapsedTime;
 
