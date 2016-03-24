@@ -1,5 +1,7 @@
 #include "terrain.h"
 
+int low_res_modifier = 30;
+
 ObjModel *Terrain::getObjModel()
 {
     ObjModel *result = new ObjModel();

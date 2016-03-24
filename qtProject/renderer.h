@@ -153,8 +153,17 @@ private:
     bool shiftDown;
     bool altDown;
 
-    int mode = 0;
+
     void normalizeMouseToSelect(float &, float &);
+    void connectPoints(int oldPoint, int newPoint);
+
+//    QVector3D old_select_point;
+//    QVector3D current_selected_point;
+    int old_select_point;
+    int current_selected_point;
+    int numSelectedPoints = 0;
+    vector<QVector3D> m_currentlySelected;
+
 
     float elapsedTime;
 

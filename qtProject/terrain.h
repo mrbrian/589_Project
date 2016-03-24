@@ -28,7 +28,6 @@ public:
     int getControlMeshSize();
     std::vector<QVector3D> m_selectableControlMesh;
     std::vector<int> m_selectabledFlag;
-    int low_res_modifier = 30;
 
 
 
