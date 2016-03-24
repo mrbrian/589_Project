@@ -28,44 +28,6 @@ typedef struct
     GLuint index_uv[3];     // indexes to triangles's coordinates
 } tri;
 
-// animation
-typedef struct
-{
-        int first_frame;    // first frame of the animation
-        int last_frame;     // number of frames
-        int fps;            // number of frames per second
-
-} anim_t;
-
-// animation list
-typedef enum {
-        STAND,
-        RUN,
-        ATTACK,
-        PAIN_A,
-        PAIN_B,
-        PAIN_C,
-        JUMP,
-        FLIP,
-        SALUTE,
-        FALLBACK,
-        WAVE,
-        POINT2,
-        CROUCH_STAND,
-        CROUCH_WALK,
-        CROUCH_ATTACK,
-        CROUCH_PAIN,
-        CROUCH_DEATH,
-        DEATH_FALLBACK,
-        DEATH_FALLFORWARD,
-        DEATH_FALLBACKSLOW,
-        BOOM,
-
-        MAX_ANIMATIONS
-
-} animType_t;
-
-
 
 class ObjModel {
 	public:
@@ -97,7 +59,7 @@ class ObjModel {
         vector<vec2> texs;  // texture coordinates
         vector<tri> tris;   // triangles
 
-        static anim_t animlist[21]; // static array, listing the animations in the provided models
+
 
 };
 

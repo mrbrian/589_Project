@@ -41,6 +41,8 @@ Window::Window(QWidget *parent) :
     mSelectMenu = menuBar()->addMenu(tr("&Select"));
     mSelectMenu->addAction(mDeselectAction);
     mSelectMenu->addAction(mCycleAction);
+    mSelectMenu->addAction(mSelectMesh);
+
 
     // Setup the application's widget collection
     QGridLayout * layout = new QGridLayout();
@@ -79,12 +81,13 @@ void Window::createActions()
 
     // open height map
     mLoadHeightMapAction = new QAction(tr("&Open Height Map"), this);
+    mLoadHeightMapAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     mLoadHeightMapAction->setStatusTip(tr("Loads a heightMap"));
     mLoadGroup->addAction(mLoadHeightMapAction);
 
     // open model
     mLoadModelAction = new QAction(tr("&Open Model"), this);
-    mLoadModelAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
+//    mLoadModelAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     mLoadModelAction->setStatusTip(tr("Loads a model"));
     mLoadGroup->addAction(mLoadModelAction);
 
@@ -161,6 +164,12 @@ void Window::createActions()
     mCycleAction->setStatusTip(tr("Select model"));
     connect(mCycleAction, SIGNAL(triggered()), renderer, SLOT(cycleModel()));
     connect(mCycleAction, SIGNAL(triggered()), this, SLOT(updateModelLabel()));     // also trigger label update
+
+
+    mSelectMesh = new QAction(tr("&Select Mesh"), this);
+    mSelectMesh->setShortcut(QKeySequence(Qt::Key_M));
+    mSelectMesh->setStatusTip(tr("Select Control Points on the Mesh"));
+    connect(mSelectMesh, SIGNAL(triggered()), renderer, SLOT(selectMesh()));
 
     // set draw menu items to exclusive
     mWireAction->setCheckable(true);
@@ -291,7 +300,7 @@ void Window::load(QAction * action)
 {
     if(action == mLoadHeightMapAction)
     {
-        {
+ /*       {
             vector<QVector2D*> *pts = new vector<QVector2D*>();
 
             pts->push_back(new QVector2D(1, 0));
@@ -299,6 +308,12 @@ void Window::load(QAction * action)
             pts->push_back(new QVector2D(2.5, 2.5));
             pts->push_back(new QVector2D(3, 5));
             pts->push_back(new QVector2D(0, 7));
+=======
+        //LoadModel
+//Disable        QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
+
+        QString filename = "../datafiles/example.jpg";
+//>>>>>>> Yasir
 
             BSpline *bs = new BSpline(3, pts);
             RevSurface *rs = new RevSurface(bs);
@@ -311,7 +326,7 @@ void Window::load(QAction * action)
 
             return;
         }
-
+*/
         {
             //LoadModel
             QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);

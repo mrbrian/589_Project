@@ -21,6 +21,8 @@
 #include "camera.h"
 #include "terrain.h"
 
+#include "ray.h"
+
 using namespace std;
 
 class Renderer : public QOpenGLWidget, protected QOpenGLFunctions_4_2_Core
@@ -64,6 +66,8 @@ public slots:
     void cycleModel();
     void selectModel(int idx);
     Terrain *createTerrain(QImage* image);
+
+    void selectMesh();
 
 protected:
 
@@ -118,6 +122,8 @@ private:
     vector<Model*> m_models;
     Model *m_submodel;
     Model *selectedModel;
+    Model *selectedModelRay;
+
     int sel_modelIdx;
 
     float curr_x, curr_y;   // mouse positions
@@ -127,6 +133,9 @@ private:
     QMatrix4x4 m_view;
     Terrain * m_terrain;
     Camera camera;
+
+    QVector3D old_cam_position; //use for select mode
+
    //QVector3D cam_up;
    //QVector3D cam_pos;
    //QVector3D cam_target;
@@ -142,11 +151,24 @@ private:
     int mouseButtons;
     bool altDown;
     bool ctrlDown;
-    bool shiftDown;
+    bool shiftDown;    
+
+    void normalizeMouseToSelect(float &, float &);
+    void connectPoints(int oldPoint, int newPoint);
+
+//    QVector3D old_select_point;
+//    QVector3D current_selected_point;
+    int old_select_point;
+    int current_selected_point;
+    int numSelectedPoints = 0;
+    vector<QVector3D> m_currentlySelected;
+
+
     float elapsedTime;
 
     // helper function for loading shaders
     GLuint loadShader(GLenum type, const char *source);
+
 
     void handleInteraction();
     void createWhiteTexture();

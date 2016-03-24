@@ -1,5 +1,7 @@
 #include "terrain.h"
 
+int low_res_modifier = 30;
+
 ObjModel *Terrain::getObjModel()
 {
     ObjModel *result = new ObjModel();
@@ -73,6 +75,14 @@ void Terrain::createControlMesh(QImage * heightMap, float heightToAreaScale)
             float height = (float)pixel.red() / 255.0f * heightToAreaScale;// * heightToAreaScale;
 
             m_controlMesh.push_back(QVector3D((float)i, height, (float)j));
+
+            if(i % low_res_modifier== 0 && j % low_res_modifier == 0)
+            {
+                m_selectableControlMesh.push_back(QVector3D((float)i, height, (float)j));
+                m_selectabledFlag.push_back(0);
+
+            }
+
             //m_controlMesh.push_back(QVector3D((float)i / (float)m_meshWidth, height,(float)j / (float)m_meshHeight));
         }
     }
@@ -120,7 +130,7 @@ void Terrain::populateVAO()
             c = m_controlMesh[(j + 1) * m_meshWidth + i + 1];
             b = m_controlMesh[(j + 1) * m_meshWidth + i];
 
-            QVector3D faceNormal = QVector3D::normal(b-a, d-a);
+            faceNormal = QVector3D::normal(b-a, d-a);
 
             //fill vertice array
             m_verts[offset + 0 ] = a.x();
@@ -166,6 +176,7 @@ void Terrain::populateVAO()
 
 }
 
-
-
-
+int Terrain::getControlMeshSize()
+{
+    return m_selectableControlMesh.size();
+}

@@ -10,6 +10,7 @@
 #include <vector>
 #include <iostream>
 #include "objModel.h"
+#include "ray.h"
 
 class Terrain : public Renderable
 {
@@ -22,6 +23,14 @@ public:
     }
     virtual ~Terrain(){}
     virtual void draw(){}
+
+
+    int getControlMeshSize();
+    std::vector<QVector3D> m_selectableControlMesh;
+    std::vector<int> m_selectabledFlag;
+
+
+
     ObjModel *getObjModel();
 
 private://members
@@ -30,8 +39,11 @@ private://members
     int m_meshWidth;
     int m_meshHeight;
 
+    QVector3D faceNormal;
+
 
    std::vector<QVector3D> m_controlMesh;
+
    //vbo
 
 private:
