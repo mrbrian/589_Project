@@ -386,10 +386,12 @@ void BSplineBlend_Test3()
     splines->push_back(b_2);
     splines->push_back(b_3);
 
+    // 0    0.5     0.5     0       0.125   .25
+    // 0.5  0       0.5     0.125   0       .25
     BSpline_Blended *bsb = new BSpline_Blended(3, splines);
 
-    QVector2D *expected = new QVector2D(0, 1);
-    QVector2D *actual = bsb->evalPoint(0.5, 0);
+    QVector2D *expected = new QVector2D(0.375, 0.375);
+    QVector2D *actual = bsb->evalPoint(0.5, 0.5);
 
     if (*expected != *actual)
         qDebug() << "BSplineBlend_Test3 fail";
