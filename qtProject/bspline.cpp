@@ -1,5 +1,9 @@
 #include "bspline.h"
 
+BSpline :: BSpline(){
+
+}
+
 BSpline :: BSpline(int k, vector<QVector2D*> *pts){
     ctrlPts = pts;
     knots = BSpline::standardKnotSeq(pts->size() - 1, k);
