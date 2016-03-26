@@ -1,10 +1,16 @@
 #include "revsurface.h"
+#include "terrain.h"
 
 #define ONE_REV_DEG 360
 
 RevSurface::RevSurface(BSpline *u)
 {
     curve = u;
+}
+
+RevSurface::RevSurface(TreeSimulation *treeSim)
+{
+    //make a tree!!
 }
 
 // v range = [0,1]

@@ -1023,6 +1023,15 @@ void Renderer::selectMesh()
             }
         }
 
+
+
+
+
+
+
+
+
+
         cout << "num selected: " << m_currentlySelected.size();
 
     }

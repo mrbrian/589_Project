@@ -1,5 +1,22 @@
 #include "terrain.h"
 
+
+void Terrain::addTreesToTerain(std::vector<QVector3D> controlPoints)
+{
+   std::vector<TreeSimulation *> toMake =simulateTreeGrowth(controlPoints);
+    //turn those into rev surfaces
+   for (int i = 0; i < toMake.size(); i++)
+   {
+        m_trees.push_back(new RevSurface(toMake[i]));
+   }
+}
+
+std::vector<TreeSimulation *> Terrain::simulateTreeGrowth(std::vector<QVector3D> controlPoints)
+{
+
+}
+
+
 int low_res_modifier = 30;
 
 ObjModel *Terrain::getObjModel()
