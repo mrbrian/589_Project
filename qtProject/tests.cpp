@@ -5,6 +5,7 @@
 #include "revsurface.h"
 #include <QDebug>
 #include "model.h"
+#include "bspline_blended.h"
 
 using namespace std;
 
@@ -301,10 +302,108 @@ void RevSurface_ObjTest2()
         qDebug() << "RevSurface_ObjTest1 pass";
 }
 
+void BSplineBlend_Test1()
+{
+    vector<BSpline*> *splines = new vector<BSpline*>();
+
+    vector<QVector2D*> *pts_1 = new vector<QVector2D*>();
+    pts_1->push_back(new QVector2D(0,0));
+    pts_1->push_back(new QVector2D(0,1));
+
+    vector<QVector2D*> *pts_2 = new vector<QVector2D*>();
+    pts_2->push_back(new QVector2D(0,0));
+    pts_2->push_back(new QVector2D(1,0));
+
+    BSpline *b_1 = new BSpline(2, pts_1);
+    BSpline *b_2 = new BSpline(2, pts_2);
+
+    splines->push_back(b_1);
+    splines->push_back(b_2);
+
+    BSpline_Blended *bsb = new BSpline_Blended(2, splines);
+
+    QVector2D *expected = new QVector2D(0.5, 0.5);
+    QVector2D *actual = bsb->evalPoint(0.5, 1);
+
+    if ((*expected)[0] != (*actual)[1] ||
+        (*expected)[1] != (*actual)[1])
+        qDebug() << "BSplineBlend_Test1 fail";
+    else
+        qDebug() << "BSplineBlend_Test1 pass";
+
+}
+
+void BSplineBlend_Test2()
+{
+    vector<BSpline*> *splines = new vector<BSpline*>();
+
+    vector<QVector2D*> *pts_1 = new vector<QVector2D*>();
+    pts_1->push_back(new QVector2D(0,1));
+    pts_1->push_back(new QVector2D(0,0));
+
+    vector<QVector2D*> *pts_2 = new vector<QVector2D*>();
+    pts_2->push_back(new QVector2D(0,0));
+    pts_2->push_back(new QVector2D(1,0));
+
+    BSpline *b_1 = new BSpline(2, pts_1);
+    BSpline *b_2 = new BSpline(2, pts_2);
+
+    splines->push_back(b_1);
+    splines->push_back(b_2);
+
+    BSpline_Blended *bsb = new BSpline_Blended(2, splines);
+
+    QVector2D *expected = new QVector2D(0, 0.5);
+    QVector2D *actual = bsb->evalPoint(0.5, 0);
+
+    if (*expected != *actual)
+        qDebug() << "BSplineBlend_Test2 fail";
+    else
+        qDebug() << "BSplineBlend_Test2 pass";
+}
+
+void BSplineBlend_Test3()
+{
+    vector<BSpline*> *splines = new vector<BSpline*>();
+
+    vector<QVector2D*> *pts_1 = new vector<QVector2D*>();
+    pts_1->push_back(new QVector2D(0,0));
+    pts_1->push_back(new QVector2D(0,1));
+
+    vector<QVector2D*> *pts_2 = new vector<QVector2D*>();
+    pts_2->push_back(new QVector2D(0,0));
+    pts_2->push_back(new QVector2D(1,0));
+
+    vector<QVector2D*> *pts_3 = new vector<QVector2D*>();
+    pts_3->push_back(new QVector2D(0,0));
+    pts_3->push_back(new QVector2D(1,1));
+
+    BSpline *b_1 = new BSpline(2, pts_1);
+    BSpline *b_2 = new BSpline(2, pts_2);
+    BSpline *b_3 = new BSpline(2, pts_3);
+
+    splines->push_back(b_1);
+    splines->push_back(b_2);
+    splines->push_back(b_3);
+
+    BSpline_Blended *bsb = new BSpline_Blended(3, splines);
+
+    QVector2D *expected = new QVector2D(0, 1);
+    QVector2D *actual = bsb->evalPoint(0.5, 0);
+
+    if (*expected != *actual)
+        qDebug() << "BSplineBlend_Test3 fail";
+    else
+        qDebug() << "BSplineBlend_Test3 pass";
+}
+
 Tests::Tests()
 {
-    RevSurface_ObjTest1();
+    BSplineBlend_Test1();
+    BSplineBlend_Test2();
+    BSplineBlend_Test3();
     /*
+    RevSurface_ObjTest1();
     RevSurface_1();
     RevSurface_Quads1();
     RevSurface_Quads2();*/
