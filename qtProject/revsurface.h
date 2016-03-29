@@ -7,10 +7,13 @@
 #include <cmath>
 #include "objModel.h"
 
+class TreeSimulation;
+
 class RevSurface
 {
 public:
     RevSurface(BSpline *u);
+    RevSurface(TreeSimulation * treeSim);
     BSpline *curve;
     QVector3D *eval(float u, float v);
     vector<QVector3D*> *evalQuads(float u_step, float v_step);    
