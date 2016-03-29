@@ -320,7 +320,7 @@ void BSplineBlend_Test1()
     splines->push_back(b_1);
     splines->push_back(b_2);
 
-    BSpline_Blended *bsb = new BSpline_Blended(2, splines);
+    BSpline_Blended *bsb = new BSpline_Blended(0.5, 2, splines);
 
     QVector2D *expected = new QVector2D(0.5, 0.5);
     QVector2D *actual = bsb->evalPoint(0.5, 1);
@@ -351,7 +351,7 @@ void BSplineBlend_Test2()
     splines->push_back(b_1);
     splines->push_back(b_2);
 
-    BSpline_Blended *bsb = new BSpline_Blended(2, splines);
+    BSpline_Blended *bsb = new BSpline_Blended(0.5, 2, splines);
 
     QVector2D *expected = new QVector2D(0, 0.5);
     QVector2D *actual = bsb->evalPoint(0.5, 0);
@@ -372,11 +372,11 @@ void BSplineBlend_Test3()
 
     vector<QVector2D*> *pts_2 = new vector<QVector2D*>();
     pts_2->push_back(new QVector2D(0,0));
-    pts_2->push_back(new QVector2D(1,0));
+    pts_2->push_back(new QVector2D(1,1));
 
     vector<QVector2D*> *pts_3 = new vector<QVector2D*>();
     pts_3->push_back(new QVector2D(0,0));
-    pts_3->push_back(new QVector2D(1,1));
+    pts_3->push_back(new QVector2D(1,0));
 
     BSpline *b_1 = new BSpline(2, pts_1);
     BSpline *b_2 = new BSpline(2, pts_2);
@@ -388,7 +388,7 @@ void BSplineBlend_Test3()
 
     // 0    0.5     0.5     0       0.125   .25
     // 0.5  0       0.5     0.125   0       .25
-    BSpline_Blended *bsb = new BSpline_Blended(3, splines);
+    BSpline_Blended *bsb = new BSpline_Blended(0.5, 3, splines);
 
     QVector2D *expected = new QVector2D(0.375, 0.375);
     QVector2D *actual = bsb->evalPoint(0.5, 0.5);
@@ -399,8 +399,26 @@ void BSplineBlend_Test3()
         qDebug() << "BSplineBlend_Test3 pass";
 }
 
+
+void RevSurf_1()
+{
+    RevSurface *r = RevSurface::makeRevSurface(0, 1, 1);
+
+    QVector3D expected = QVector3D(0.6, 0, 0);
+    QVector3D *actual = r->eval(0,0);
+
+    if ((expected)[0] != (*actual)[1] ||
+        (expected)[1] != (*actual)[1] ||
+        (expected)[2] != (*actual)[2])
+        qDebug() << "RevSurf_1 fail";
+    else
+        qDebug() << "RevSurf_1 pass";
+}
+
 Tests::Tests()
 {
+    RevSurf_1();
+    /*
     BSplineBlend_Test1();
     BSplineBlend_Test2();
     BSplineBlend_Test3();

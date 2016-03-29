@@ -299,34 +299,19 @@ void Window::selectModel(QAction * action)
 void Window::load(QAction * action)
 {
     if(action == mLoadHeightMapAction)
-    {
- /*       {
-            vector<QVector2D*> *pts = new vector<QVector2D*>();
+    {    
+        {
+            //QString filename = "../datafiles/example.jpg";
 
-            pts->push_back(new QVector2D(1, 0));
-            pts->push_back(new QVector2D(1, 2.5));
-            pts->push_back(new QVector2D(2.5, 2.5));
-            pts->push_back(new QVector2D(3, 5));
-            pts->push_back(new QVector2D(0, 7));
-=======
-        //LoadModel
-//Disable        QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
+            RevSurface *rs = RevSurface::makeRevSurface(0, 1, 1);
 
-        QString filename = "../datafiles/example.jpg";
-//>>>>>>> Yasir
-
-            BSpline *bs = new BSpline(3, pts);
-            RevSurface *rs = new RevSurface(bs);
-
-            ObjModel *obj = rs->getObjModel(0.01, 0.01);
-
-            Model *m_model = new Model(obj, NULL);
+            ObjModel *obj = rs->getObjModel(0.1, 0.1);
 
             renderer->setModel(obj);
 
             return;
         }
-*/
+
         {
             //LoadModel
             QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);

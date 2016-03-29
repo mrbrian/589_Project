@@ -18,6 +18,9 @@
 
 #define PRESET_MAX_RADIUS 0.05
 #define PRESET_MAX_AGE 100
+
+class RevSurface;
+
 class TreeSimulation
 {
 public:
@@ -46,6 +49,9 @@ public:
             m_toDie = true;
     }
 
+    float getRadius();
+    float getAge();
+    float getHeight();
 private:
 
     QVector2D m_origin;
@@ -97,7 +103,7 @@ private://members
 
     QVector3D faceNormal;
     std::vector<QVector3D> m_controlMesh;
-    std::vector<RevSurface *> m_trees;
+    std::vector<RevSurface*> m_trees;
    //vbo
 
 private:

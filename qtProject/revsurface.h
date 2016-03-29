@@ -4,8 +4,11 @@
 #include <QMatrix4x4>
 #include <QVector3D>
 #include "bspline.h"
-#include <cmath>
+//#include <cmath>
+#include "math.h"
 #include "objModel.h"
+#include "bspline_blended.h"
+#include "terrain.h"
 
 class TreeSimulation;
 
@@ -13,7 +16,7 @@ class RevSurface
 {
 public:
     RevSurface(BSpline *u);
-    RevSurface(TreeSimulation * treeSim);
+    static RevSurface* makeRevSurface(float age, float radius, float height);
     BSpline *curve;
     QVector3D *eval(float u, float v);
     vector<QVector3D*> *evalQuads(float u_step, float v_step);    

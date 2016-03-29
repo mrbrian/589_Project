@@ -1,6 +1,6 @@
 #include "bspline_blended.h"
 
-BSpline_Blended :: BSpline_Blended(int k, vector<BSpline*> *b)
+BSpline_Blended :: BSpline_Blended(float bf, int k, vector<BSpline*> *b)
     : BSpline()
 {
 /*
@@ -12,6 +12,12 @@ BSpline_Blended :: BSpline_Blended(int k, vector<BSpline*> *b)
     knots = standardKnotSeq(b->size() - 1, k);
     //ctrlPts
     splines = b;
+    m_blend_factor = bf;
+}
+
+QVector2D *BSpline_Blended::evalPoint(float u) {
+
+    return (evalPoint(m_blend_factor, u));	// evaluate the final curve point and store it
 }
 
 QVector2D *BSpline_Blended::evalPoint(float blend_factor, float u)
