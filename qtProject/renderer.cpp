@@ -125,7 +125,7 @@ void Renderer::paintGL()
 
 //        glColor3f (0.0f, 0.0f, 1.0f);
 //        cout << "num control points: " << m_terrain->getControlMeshSize();
-        if(m_model == selectedModel)
+        if(m_model == selectedModel && m_terrain)
         {
                 //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
 

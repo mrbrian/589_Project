@@ -305,7 +305,7 @@ void Window::load(QAction * action)
 
             RevSurface *rs = RevSurface::makeRevSurface(0, 1, 1);
 
-            ObjModel *obj = rs->getObjModel(0.1, 0.1);
+            ObjModel *obj = rs->getObjModel(0.01, 0.01);
 
             renderer->setModel(obj);
 
