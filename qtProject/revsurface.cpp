@@ -12,37 +12,30 @@ RevSurface *RevSurface::makeRevSurface(float age, float radius, float height)
 {
     //make a tree!!
     std::vector<QVector2D*> *pts_1 = new std::vector<QVector2D*>();
-    pts_1->push_back(new QVector2D(0.6, 0));
-    pts_1->push_back(new QVector2D(0.6, 1));
-    pts_1->push_back(new QVector2D(1.3, 1.7));
-    pts_1->push_back(new QVector2D(0.6, 2.3));
-    pts_1->push_back(new QVector2D(1.6, 3));
-    pts_1->push_back(new QVector2D(1.8, 3.5));
-    pts_1->push_back(new QVector2D(1.3, 4.2));
-    pts_1->push_back(new QVector2D(1, 5));
-    pts_1->push_back(new QVector2D(0.6, 5.3));
-    pts_1->push_back(new QVector2D(0.8, 5.5));
+    pts_1->push_back(new QVector2D(0.47, 0));
+    pts_1->push_back(new QVector2D(0.365, 1.2));
+    pts_1->push_back(new QVector2D(0.46, 1.5));
+    pts_1->push_back(new QVector2D(1.5, 2.2));
+    pts_1->push_back(new QVector2D(2.1, 3));
+    pts_1->push_back(new QVector2D(2.1, 4));
+    pts_1->push_back(new QVector2D(1.7, 5));
+    pts_1->push_back(new QVector2D(1, 6));
     pts_1->push_back(new QVector2D(0, 7));
 
     std::vector<QVector2D*> *pts_2 = new std::vector<QVector2D*>();
-    pts_2->push_back(new QVector2D(0.4, 0));
-    pts_2->push_back(new QVector2D(0.4, 0.8));
-    pts_2->push_back(new QVector2D(2.3, 1.3));
-    pts_2->push_back(new QVector2D(1.8, 1.5));
-    pts_2->push_back(new QVector2D(2.5, 2.4));
-    pts_2->push_back(new QVector2D(2.1, 2.5));
-    pts_2->push_back(new QVector2D(2.5, 3));
-    pts_2->push_back(new QVector2D(2.3, 3.5));
-    pts_2->push_back(new QVector2D(3.4, 4.4));
-    pts_2->push_back(new QVector2D(3.3, 4.2));
-    pts_2->push_back(new QVector2D(1.7, 5.5));
-    pts_2->push_back(new QVector2D(1.2, 5.3));
-    pts_2->push_back(new QVector2D(0.8, 6.3));
-    pts_2->push_back(new QVector2D(0.5, 6.2));
+    pts_2->push_back(new QVector2D(0.65, 0));
+    pts_2->push_back(new QVector2D(0.55, 0.3));
+    pts_2->push_back(new QVector2D(0.6, 0.6));
+    pts_2->push_back(new QVector2D(2, 1));
+    pts_2->push_back(new QVector2D(2.3, 2));
+    pts_2->push_back(new QVector2D(2.2, 3));
+    pts_2->push_back(new QVector2D(2.1, 4));
+    pts_2->push_back(new QVector2D(1.7, 5));
+    pts_2->push_back(new QVector2D(1, 6));
     pts_2->push_back(new QVector2D(0, 7));
 
-    BSpline *young = new BSpline(2, pts_1);
-    BSpline *old = new BSpline(2, pts_2);
+    BSpline *young = new BSpline(4, pts_1);
+    BSpline *old = new BSpline(4, pts_2);
 
     std::vector<BSpline*> *splines = new std::vector<BSpline*>();
     splines->push_back(young);

@@ -407,7 +407,7 @@ void RevSurf_1()
     QVector3D expected = QVector3D(0.6, 0, 0);
     QVector3D *actual = r->eval(0,0);
 
-    if (expected[0] != (*actual)[1] ||
+    if (expected[0] != (*actual)[0] ||
         expected[1] != (*actual)[1] ||
         expected[2] != (*actual)[2])
         qDebug() << "RevSurf_1 fail";

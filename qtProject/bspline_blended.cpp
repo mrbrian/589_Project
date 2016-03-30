@@ -57,7 +57,7 @@ QVector2D *BSpline_Blended::effSum(int d, float blend_factor, float u)
     {
         if (d - i < 0)
             throw std::invalid_argument( "tried to access invalid array index" );
-        BSpline *bs = (*splines)[i];
+        BSpline *bs = (*splines)[d - i];
         QVector2D *pt = bs->evalPoint(u);
         c[i] = pt;		//nonzero coefficients
     }
