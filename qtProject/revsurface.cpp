@@ -3,12 +3,13 @@
 
 #define ONE_REV_DEG 360
 
-RevSurface::RevSurface(BSpline *u)
+RevSurface::RevSurface(BSpline *u, QVector3D c)
 {
     curve = u;
+    color = c;
 }
 
-RevSurface *RevSurface::makeRevSurface(float age, float radius, float height)
+RevSurface *RevSurface::makeRevSurface(float age, float radius, float height, QVector3D c)
 {
     //make a tree!!
     std::vector<QVector2D*> *pts_1 = new std::vector<QVector2D*>();
@@ -42,7 +43,7 @@ RevSurface *RevSurface::makeRevSurface(float age, float radius, float height)
     splines->push_back(old);
     BSpline_Blended *curve = new BSpline_Blended(age, 2, splines);
 
-    RevSurface *result = new RevSurface(curve);
+    RevSurface *result = new RevSurface(curve, c);
     return result;
 }
 
@@ -214,5 +215,6 @@ ObjModel *RevSurface::getObjModel(float u_step, float v_step)
             */
         }
     }
+    result->color = vec3(color[0], color[1], color[2]);
     return result;
 }

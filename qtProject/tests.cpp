@@ -402,7 +402,7 @@ void BSplineBlend_Test3()
 
 void RevSurf_1()
 {
-    RevSurface *r = RevSurface::makeRevSurface(0, 1, 1);
+    RevSurface *r = RevSurface::makeRevSurface(0, 1, 1, QVector3D(0,1,0));
 
     QVector3D expected = QVector3D(0.6, 0, 0);
     QVector3D *actual = r->eval(0,0);

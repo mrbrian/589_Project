@@ -15,13 +15,13 @@ class TreeSimulation;
 class RevSurface
 {
 public:
-    RevSurface(BSpline *u);
-    static RevSurface* makeRevSurface(float age, float radius, float height);
+    RevSurface(BSpline *u, QVector3D c = QVector3D(1,1,1));
+    static RevSurface* makeRevSurface(float age, float radius, float height, QVector3D color);
     BSpline *curve;
     QVector3D *eval(float u, float v);
     vector<QVector3D*> *evalQuads(float u_step, float v_step);    
     ObjModel *getObjModel(float u_step, float v_step);
-
+    QVector3D color;
 private:
     vector<QVector3D*> *getControlMesh(float u_step, float v_step);
 };

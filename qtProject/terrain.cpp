@@ -21,8 +21,9 @@ void Terrain::addTreesToTerain(std::vector<QVector3D> controlPoints)
     //turn those into rev surfaces
    for (int i = 0; i < toMake.size(); i++)
    {
+       QVector3D treeClr = QVector3D(1,0,0);
        TreeSimulation *tree = toMake[i];
-        m_trees.push_back(RevSurface::makeRevSurface(tree->getAge(), tree->getRadius(), tree->getHeight()));
+        m_trees.push_back(RevSurface::makeRevSurface(tree->getAge(), tree->getRadius(), tree->getHeight(), treeClr));
    }
 }
 
