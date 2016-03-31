@@ -1014,16 +1014,29 @@ void Renderer::selectMesh()
 
         camera.setPosition(old_cam_position);
         updateCamera();
-        if (numSelectedPoints > 0)
+        if (numSelectedPoints > 2)
         {
             m_currentlySelected.clear();
             for (int i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
             {
                 if(m_terrain->m_selectabledFlag.at(i) == 1 )
                 {
-                    m_currentlySelected.push_back(m_terrain->m_selectableControlMesh.at(i));
+                    QVector3D point = QVector3D(m_terrain->m_selectableControlMesh.at(i).x() / (float)width(), 0 , m_terrain->m_selectableControlMesh.at(i).z() / (float) height());
+                    //std::cout << point.x() << "," << m_terrain->m_selectableControlMesh.at(i).y() << "," << point.z() << std::endl;
+                    m_currentlySelected.push_back(point);
+
+
                 }
             }
+        }
+        //std::cout << "Added trees to terrain\n";
+        vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
+
+        for (int i = 0; i < treeRevs->size(); i++)
+        {
+            ObjModel *obj = (*treeRevs)[i]->getObjModel(0.01, 0.01);
+
+            this->setModel(obj);
         }
 
 
@@ -1035,7 +1048,7 @@ void Renderer::selectMesh()
 
 
 
-        cout << "num selected: " << m_currentlySelected.size();
+        //cout << "num selected: " << m_currentlySelected.size();
 
     }
     else if (mode == 0)

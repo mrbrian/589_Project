@@ -1,30 +1,19 @@
 #include "terrain.h"
 
-float TreeSimulation::getRadius()
+vector<RevSurface*> *Terrain::addTreesToTerrain(std::vector<QVector3D> controlPoints)
 {
-    return m_radius;
-}
-
-float TreeSimulation::getAge()
-{
-    return m_age;
-}
-
-float TreeSimulation::getHeight()
-{
-    return m_height;
-}
-
-void Terrain::addTreesToTerain(std::vector<QVector3D> controlPoints)
-{
-   std::vector<TreeSimulation *> toMake = simulateTreeGrowth(controlPoints);
+    Simulation * sim = new Simulation();
+   std::vector<TreeSimulation *> toMake = sim->simulate(controlPoints);
+   std::cout << "Made " << toMake.size() << " new trees \n";
     //turn those into rev surfaces
    for (int i = 0; i < toMake.size(); i++)
    {
        QVector3D treeClr = QVector3D(1,0,0);
        TreeSimulation *tree = toMake[i];
-        m_trees.push_back(RevSurface::makeRevSurface(tree->getAge(), tree->getRadius(), tree->getHeight(), treeClr));
+       m_trees.push_back(RevSurface::makeRevSurface(tree->getTrunkRadius(), tree->getCrownRadius(), tree->getHeight(), treeClr));
    }
+   delete sim;
+   return &m_trees;
 }
 
 std::vector<TreeSimulation *> Terrain::simulateTreeGrowth(std::vector<QVector3D> controlPoints)
