@@ -9,8 +9,23 @@ RevSurface::RevSurface(BSpline *u, QVector3D c)
     color = c;
 }
 
-RevSurface *RevSurface::makeRevSurface(float age, float radius, float height, QVector3D c)
+RevSurface *RevSurface::makeRevSurface(TreeSimulation *tree, QImage *img)
 {
+    float trunkRad = tree->getTrunkRadius();
+    float radius = tree->getCrownRadius();
+    float height = tree->getHeight();
+    QVector3D treeClr = QVector3D(1,0,0);
+
+    QVector2D pos = tree->getOrigin();
+    QVector3D treePos = QVector3D(pos[0], 0, pos[1]);
+
+    return RevSurface::makeRevSurface(trunkRad, radius, height, treeClr, treePos);
+}
+
+RevSurface *RevSurface::makeRevSurface(float trunkRad, float radius, float height, QVector3D treeClr, QVector3D pos)
+{
+    float y = 0;
+
     //make a tree!!
     std::vector<QVector2D*> *pts_1 = new std::vector<QVector2D*>();
     pts_1->push_back(new QVector2D(0.47, 0));
@@ -41,9 +56,10 @@ RevSurface *RevSurface::makeRevSurface(float age, float radius, float height, QV
     std::vector<BSpline*> *splines = new std::vector<BSpline*>();
     splines->push_back(young);
     splines->push_back(old);
-    BSpline_Blended *curve = new BSpline_Blended(age, 2, splines);
+    BSpline_Blended *curve = new BSpline_Blended(trunkRad, 2, splines);
 
-    RevSurface *result = new RevSurface(curve, c);
+    RevSurface *result = new RevSurface(curve, treeClr);
+    result->position = QVector3D(pos.x(), 0, pos.y());
     return result;
 }
 

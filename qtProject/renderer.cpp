@@ -1034,19 +1034,19 @@ void Renderer::selectMesh()
 
         for (int i = 0; i < treeRevs->size(); i++)
         {
-            ObjModel *obj = (*treeRevs)[i]->getObjModel(0.01, 0.01);
+            RevSurface *tree = (*treeRevs)[i];
+            ObjModel *obj = tree->getObjModel(0.01, 0.01);
+
+            QVector3D testPos = QVector3D(i,0,0);
+            QMatrix4x4 trans;
+            trans.scale(1);
+            trans.translate(tree->position);//testPos);
 
             this->setModel(obj);
+            this->selectedModel->setLocalTransform(trans);
+
+            //selectedModel->setLocalTransform(trans * selectedModel->getLocalTransform());
         }
-
-
-
-
-
-
-
-
-
 
         //cout << "num selected: " << m_currentlySelected.size();
 

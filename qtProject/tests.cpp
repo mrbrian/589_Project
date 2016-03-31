@@ -402,7 +402,22 @@ void BSplineBlend_Test3()
 
 void RevSurf_1()
 {
-    RevSurface *r = RevSurface::makeRevSurface(0, 1, 1, QVector3D(0,1,0));
+    RevSurface *r = RevSurface::makeRevSurface(0, 1, 1, QVector3D(0,1,0), QVector3D(0,0,0));
+
+    QVector3D expected = QVector3D(0.6, 0, 0);
+    QVector3D *actual = r->eval(0,0);
+
+    if (expected[0] != (*actual)[0] ||
+        expected[1] != (*actual)[1] ||
+        expected[2] != (*actual)[2])
+        qDebug() << "RevSurf_1 fail";
+    else
+        qDebug() << "RevSurf_1 pass";
+}
+
+void RevSurf_2()
+{
+    RevSurface *r = RevSurface::makeRevSurface(0, 1, 1, QVector3D(0,1,0), QVector3D(1,1,1));
 
     QVector3D expected = QVector3D(0.6, 0, 0);
     QVector3D *actual = r->eval(0,0);
@@ -417,7 +432,7 @@ void RevSurf_1()
 
 Tests::Tests()
 {
-    RevSurf_1();
+    RevSurf_2();
     /*
     BSplineBlend_Test1();
     BSplineBlend_Test2();
