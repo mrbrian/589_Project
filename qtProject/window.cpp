@@ -5,7 +5,7 @@
 Window::Window(QWidget *parent) :
     QMainWindow(parent)
 {
-    setWindowTitle("CPSC453: Creature Loader");
+    setWindowTitle("CPSC589 Project: Populating Trees");
 
     // Create the main drawing object
     renderer = new Renderer();
@@ -300,7 +300,7 @@ void Window::load(QAction * action)
 {
     if(action == mLoadHeightMapAction)
     {    
-        {
+      /*  {
             //QString filename = "../datafiles/example.jpg";
 
             RevSurface *rs = RevSurface::makeRevSurface(0, 1, 1);
@@ -311,7 +311,7 @@ void Window::load(QAction * action)
 
             return;
         }
-
+*/
         {
             //LoadModel
             QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);

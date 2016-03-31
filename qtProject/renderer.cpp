@@ -121,31 +121,34 @@ void Renderer::paintGL()
             drawNormals(m_model);
         }
 
-        glPointSize(10);
-
-//        glColor3f (0.0f, 0.0f, 1.0f);
-//        cout << "num control points: " << m_terrain->getControlMeshSize();
-        if(m_model == selectedModel && m_terrain)
+        if (mode == 1)
         {
-                //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
+            glPointSize(10);
 
-                for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
-                {
-                    if(m_terrain->m_selectabledFlag.at(i) == 1)
+    //        glColor3f (0.0f, 0.0f, 1.0f);
+    //        cout << "num control points: " << m_terrain->getControlMeshSize();
+            if(m_model == selectedModel && m_terrain)
+            {
+                    //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
+
+                    for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
                     {
-//                      cout << "selected: " << i <<endl;
-                        glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
-                    }
-                    else
-                    {
-                        glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
+                        if(m_terrain->m_selectabledFlag.at(i) == 1)
+                        {
+    //                      cout << "selected: " << i <<endl;
+                            glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+                        }
+                        else
+                        {
+                            glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
 
-                    }
+                        }
 
-                    glBegin(GL_POINTS);
-                    glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
-                    glEnd();
-                }
+                        glBegin(GL_POINTS);
+                        glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
+                        glEnd();
+                    }
+            }
         }
     }
 
