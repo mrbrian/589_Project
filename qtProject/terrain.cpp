@@ -1,14 +1,18 @@
 #include "terrain.h"
 
 
-void Terrain::addTreesToTerain(std::vector<QVector3D> controlPoints)
+void Terrain::addTreesToTerrain(std::vector<QVector3D> controlPoints)
 {
-   std::vector<TreeSimulation *> toMake =simulateTreeGrowth(controlPoints);
+
+    Simulation * sim = new Simulation();
+   std::vector<TreeSimulation *> toMake = sim->simulate(controlPoints);
+   std::cout << "Made " << toMake.size() << " new trees \n";
     //turn those into rev surfaces
    for (int i = 0; i < toMake.size(); i++)
    {
-        m_trees.push_back(new RevSurface(toMake[i]));
+        //m_trees.push_back(new RevSurface(toMake[i]));
    }
+   delete sim;
 }
 
 std::vector<TreeSimulation *> Terrain::simulateTreeGrowth(std::vector<QVector3D> controlPoints)
