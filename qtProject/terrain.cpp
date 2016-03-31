@@ -1,4 +1,5 @@
 #include "terrain.h"
+#include "tests.h"
 
 vector<RevSurface*> *Terrain::addTreesToTerrain(std::vector<QVector3D> controlPoints)
 {
@@ -6,11 +7,13 @@ vector<RevSurface*> *Terrain::addTreesToTerrain(std::vector<QVector3D> controlPo
    std::vector<TreeSimulation *> toMake = sim->simulate(controlPoints);
    std::cout << "Made " << toMake.size() << " new trees \n";
     //turn those into rev surfaces
+   std::cout << "addtreesToTerrain\n" << endl;
    for (int i = 0; i < toMake.size(); i++)
    {
        QVector3D treeClr = QVector3D(1,0,0);
        TreeSimulation *tree = toMake[i];
-
+       QVector3D p = tree->getOrigin();
+       Tests::print(p);
        m_trees.push_back(RevSurface::makeRevSurface(tree, m_uvImage));
    }
    delete sim;

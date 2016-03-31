@@ -4,6 +4,7 @@
 #include <cmath>
 #include "trackball.h"
 #include <QFileDialog>
+#include "tests.h"
 
 #define CHECKERBOARD_SIZE   50
 #define FPS                 60.0
@@ -1014,6 +1015,8 @@ void Renderer::selectMesh()
 
         camera.setPosition(old_cam_position);
         updateCamera();
+        std::cout << "gathering control points\n" << endl;
+
         if (numSelectedPoints > 2)
         {
             m_currentlySelected.clear();
@@ -1023,12 +1026,14 @@ void Renderer::selectMesh()
                 {
                     QVector3D point = QVector3D(m_terrain->m_selectableControlMesh.at(i).x() / (float)width(), 0 , m_terrain->m_selectableControlMesh.at(i).z() / (float) height());
                     //std::cout << point.x() << "," << m_terrain->m_selectableControlMesh.at(i).y() << "," << point.z() << std::endl;
+                    Tests::print(point);
                     m_currentlySelected.push_back(point);
 
 
                 }
             }
         }
+
         //std::cout << "Added trees to terrain\n";
         vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
 
@@ -1037,10 +1042,13 @@ void Renderer::selectMesh()
             RevSurface *tree = (*treeRevs)[i];
             ObjModel *obj = tree->getObjModel(0.01, 0.01);
 
-            QVector3D testPos = QVector3D(i,0,0);
-            QMatrix4x4 trans;
-            trans.scale(1);
-            trans.translate(tree->position);//testPos);
+                // testing if trees transforms are working
+                QVector3D **testPos = new QVector3D*[4]{ new QVector3D(-1,0,-1), new QVector3D(1,0,-1), new QVector3D(-1,0,1), new QVector3D(1,0,1) };
+                QMatrix4x4 trans;
+                trans.scale(0.01);
+                trans.setColumn(3, QVector4D(*(testPos[i%4]), 1));
+                // trees appear at the 4 corners
+                //trans.setColumn(3, QVector4D(tree->position, 1));  put this back when tree position is correct
 
             this->setModel(obj);
             this->selectedModel->setLocalTransform(trans);
