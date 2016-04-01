@@ -37,10 +37,7 @@ public:
 
     }
 
-    ~TreeSimulation()
-    {
 
-    }
 
     void assignGrowthAttributes()
     {
@@ -208,7 +205,7 @@ private:
 
                 {
 
-                    mGrowingTrees.push_back(new TreeSimulation(mNewTrees[i], rand() % 2, mTerrainScale));
+                    mGrowingTrees.push_back(TreeSimulation(mNewTrees[i], rand() % 2, mTerrainScale));
 
                 } else {
                     //std::cout << ".. Failed\n";
@@ -234,10 +231,10 @@ private:
                     for (unsigned int j = 0; j < mGrowingTrees.size(); j++)
                     {
                         if (i != j){
-                            float distance = (mGrowingTrees[i]->getOrigin() - mGrowingTrees[j]->getOrigin()).length();
+                            double distance = (mGrowingTrees[i].getOrigin() - mGrowingTrees[j].getOrigin()).length();
                             //std::cout << distance << std::endl;
-                            std::cout<< "tree 1 radius : " << mGrowingTrees[i]->getCrownRadius() << " tree 2 radius :" << mGrowingTrees[j]->getCrownRadius() << std::endl;
-                            if ((mGrowingTrees[i]->getCrownRadius() + mGrowingTrees[j]->getCrownRadius()) > distance )
+                            std::cout<< "tree 1 radius : " << mGrowingTrees[i].getCrownRadius() << " tree 2 radius :" << mGrowingTrees[j].getCrownRadius() << std::endl;
+                            if ((mGrowingTrees[i].getCrownRadius() + mGrowingTrees[j].getCrownRadius()) > distance )
                             {
                                 mGrowingTrees[mGrowingTrees[i]->getCrownRadius() > mGrowingTrees[j]->getCrownRadius() ? j : i]->setToDie();
                             }
@@ -245,7 +242,8 @@ private:
 
                     }
                 }
-
+                bool cleaning = false;
+                while ()
                 for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
                 {
                     if (!mGrowingTrees[i]->isAlive()){
