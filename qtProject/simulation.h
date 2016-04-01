@@ -16,28 +16,22 @@ public:
         eBalsam,
     };
 
-    TreeSimulation(QVector2D origin, TreeType type, float sScale)
-    {
-        m_simScale = sScale;
+    TreeSimulation(QVector2D origin, int type, float scale)    {
+        m_simScale = scale;
         //std::cout << m_simScale<< endl;
         m_origin = origin;
-        m_type = type;
+
+        m_type = type == 0 ? eAspen : eBalsam;
         m_age = m_trunkDiameter = m_height = m_crownDiameter = 0;
         m_toDie = false;
         //std::cout<< m_origin.x() <<"," << m_origin.y() << endl;
 
         assignGrowthAttributes();
-
     }
 
-    TreeSimulation(QVector2D origin, int type, float scale)
+    ~TreeSimulation()
     {
-       TreeSimulation(origin, type == 0 ? eAspen : eBalsam, scale);
-
-
     }
-
-
 
     void assignGrowthAttributes()
     {
@@ -204,14 +198,19 @@ private:
                 if (mGrowthArray[index] == 2)
 
                 {
-
-                    mGrowingTrees.push_back(TreeSimulation(mNewTrees[i], rand() % 2, mTerrainScale));
+                    mGrowingTrees.push_back(new TreeSimulation(mNewTrees[i], rand() % 2, mTerrainScale));
 
                 } else {
                     //std::cout << ".. Failed\n";
                 }
             }
             mNewTrees.clear();
+
+            for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
+            {
+                std::cout << "growing trees: " << mGrowingTrees[i]->getOrigin().x() << "," << mGrowingTrees[i]->getOrigin().y() << endl;
+
+            }
     }
 
     void runSimulation(float numIterations)
@@ -219,46 +218,40 @@ private:
 
         //std::cout << "Running simulation...."<< std::endl;
         while (numIterations-- > 0)
-            {
-                throwSeeds(3000);
-                //std::cout << "culled seeds\n";
-                cullNewSeeds();
-                //std::cout << "growing trees\n";
-                float yearsPassed = 14;
-                for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
-                {
-                    mGrowingTrees[i]->grow(yearsPassed);
-                    for (unsigned int j = 0; j < mGrowingTrees.size(); j++)
-                    {
-                        if (i != j){
-                            double distance = (mGrowingTrees[i].getOrigin() - mGrowingTrees[j].getOrigin()).length();
-                            //std::cout << distance << std::endl;
-                            std::cout<< "tree 1 radius : " << mGrowingTrees[i].getCrownRadius() << " tree 2 radius :" << mGrowingTrees[j].getCrownRadius() << std::endl;
-                            if ((mGrowingTrees[i].getCrownRadius() + mGrowingTrees[j].getCrownRadius()) > distance )
-                            {
-                                mGrowingTrees[mGrowingTrees[i]->getCrownRadius() > mGrowingTrees[j]->getCrownRadius() ? j : i]->setToDie();
-                            }
-                        }
-
-                    }
-                }
-                bool cleaning = false;
-                while ()
-                for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
-                {
-                    if (!mGrowingTrees[i]->isAlive()){
-                        //std::cout << "deleted a tree\n";
-                        delete  mGrowingTrees[i];
-                        mGrowingTrees.erase(mGrowingTrees.begin() + i);
-                    }
-                }
-
-            }
-        for (int i = 0; i < mGrowingTrees.size(); i++)
         {
-            //std::cout << mGrowingTrees[i]->getOrigin().x() << "," <<  mGrowingTrees[i]->getOrigin().y() << endl;
-            //std::cout << "Finished running simulation...."<< std::endl;
+            throwSeeds(3000);
+            //std::cout << "culled seeds\n";
+            cullNewSeeds();
+            //std::cout << "growing trees\n";
+            float yearsPassed = 14;
+            for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
+            {
+                mGrowingTrees[i]->grow(yearsPassed);
+                for (unsigned int j = 0; j < mGrowingTrees.size(); j++)
+                {
+                    if (i != j){
+                        double distance = (mGrowingTrees[i]->getOrigin() - mGrowingTrees[j]->getOrigin()).length();
+                        //std::cout << distance << std::endl;
+                        //std::cout<< "tree 1 radius : " << mGrowingTrees[i]->getCrownRadius(mTerrainScale) << " tree 2 radius :" << mGrowingTrees[j]->getCrownRadius(mTerrainScale) << std::endl;
+                        if ((mGrowingTrees[i]->getCrownRadius() + mGrowingTrees[j]->getCrownRadius()) > distance )
+                        {
+                            mGrowingTrees[mGrowingTrees[i]->getCrownRadius() > mGrowingTrees[j]->getCrownRadius() ? j : i]->setToDie();
+                        }
+                    }
+
+                }
+            }
+            for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
+            {
+                if (!mGrowingTrees[i]->isAlive()){
+                    //std::cout << "deleted a tree\n";
+                    delete  mGrowingTrees[i];
+                    mGrowingTrees.erase(mGrowingTrees.begin() + i);
+                }
+            }
+
         }
+        //std::cout << "Finished running simulation...."<< std::endl;
     }
 
     void traceBoundingVolume(std::vector<QVector3D> points)

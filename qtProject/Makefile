@@ -59,7 +59,8 @@ SOURCES       = main.cpp \
 		terrain.cpp \
 		objModel.cpp \
 		tests.cpp \
-		ray.cpp moc_renderer.cpp \
+		ray.cpp \
+		bspline_blended.cpp moc_renderer.cpp \
 		moc_window.cpp
 OBJECTS       = main.o \
 		renderer.o \
@@ -73,6 +74,7 @@ OBJECTS       = main.o \
 		objModel.o \
 		tests.o \
 		ray.o \
+		bspline_blended.o \
 		moc_renderer.o \
 		moc_window.o
 DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
@@ -203,7 +205,9 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		terrain.h \
 		objModel.h \
 		tests.h \
-		ray.h main.cpp \
+		ray.h \
+		bspline_blended.h \
+		simulation.h main.cpp \
 		renderer.cpp \
 		window.cpp \
 		trackball.cpp \
@@ -214,7 +218,8 @@ DIST          = /usr/lib64/qt5/mkspecs/features/spec_pre.prf \
 		terrain.cpp \
 		objModel.cpp \
 		tests.cpp \
-		ray.cpp
+		ray.cpp \
+		bspline_blended.cpp
 QMAKE_TARGET  = Project_589
 DESTDIR       = #avoid trailing-slash linebreak
 TARGET        = Project_589
@@ -504,8 +509,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents renderer.h window.h trackball.h model.h camera.h revsurface.h bspline.h renderable.h terrain.h objModel.h tests.h ray.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp renderer.cpp window.cpp trackball.cpp model.cpp camera.cpp revsurface.cpp bspline.cpp terrain.cpp objModel.cpp tests.cpp ray.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents renderer.h window.h trackball.h model.h camera.h revsurface.h bspline.h renderable.h terrain.h objModel.h tests.h ray.h bspline_blended.h simulation.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp renderer.cpp window.cpp trackball.cpp model.cpp camera.cpp revsurface.cpp bspline.cpp terrain.cpp objModel.cpp tests.cpp ray.cpp bspline_blended.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -537,10 +542,15 @@ moc_renderer.cpp: model.h \
 		camera.h \
 		terrain.h \
 		renderable.h \
+		revsurface.h \
+		bspline.h \
+		simulation.h \
 		renderer.h
 	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/uga/ymohamma/Desktop/589_Project/qtProject -I/home/uga/ymohamma/Desktop/589_Project/qtProject -I'/home/uga/ymohamma/Desktop/589_Project/qtProject/..\glew-1.13.0\include' -I'/home/uga/ymohamma/Desktop/589_Project/qtProject/..\glm' -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtTest -I/usr/include/qt5/QtCore -I/usr/include/c++/5.3.1 -I/usr/include/c++/5.3.1/x86_64-redhat-linux -I/usr/include/c++/5.3.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.3.1/include -I/usr/local/include -I/usr/include renderer.h -o moc_renderer.cpp
 
 moc_window.cpp: objModel.h \
+		revsurface.h \
+		bspline.h \
 		window.h
 	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/uga/ymohamma/Desktop/589_Project/qtProject -I/home/uga/ymohamma/Desktop/589_Project/qtProject -I'/home/uga/ymohamma/Desktop/589_Project/qtProject/..\glew-1.13.0\include' -I'/home/uga/ymohamma/Desktop/589_Project/qtProject/..\glm' -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtTest -I/usr/include/qt5/QtCore -I/usr/include/c++/5.3.1 -I/usr/include/c++/5.3.1/x86_64-redhat-linux -I/usr/include/c++/5.3.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.3.1/include -I/usr/local/include -I/usr/include window.h -o moc_window.cpp
 
@@ -560,6 +570,8 @@ compiler_clean: compiler_moc_header_clean
 
 main.o: main.cpp window.h \
 		objModel.h \
+		revsurface.h \
+		bspline.h \
 		tests.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
@@ -570,17 +582,23 @@ renderer.o: renderer.cpp renderer.h \
 		camera.h \
 		terrain.h \
 		renderable.h \
+		revsurface.h \
+		bspline.h \
+		simulation.h \
 		trackball.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o renderer.o renderer.cpp
 
 window.o: window.cpp window.h \
 		objModel.h \
+		revsurface.h \
+		bspline.h \
 		renderer.h \
 		model.h \
 		ray.h \
 		camera.h \
 		terrain.h \
-		renderable.h
+		renderable.h \
+		simulation.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o window.o window.cpp
 
 trackball.o: trackball.cpp trackball.h
@@ -597,7 +615,12 @@ camera.o: camera.cpp camera.h
 
 revsurface.o: revsurface.cpp revsurface.h \
 		bspline.h \
-		objModel.h
+		objModel.h \
+		terrain.h \
+		renderable.h \
+		ray.h \
+		camera.h \
+		simulation.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o revsurface.o revsurface.cpp
 
 bspline.o: bspline.cpp bspline.h
@@ -607,7 +630,10 @@ terrain.o: terrain.cpp terrain.h \
 		renderable.h \
 		objModel.h \
 		ray.h \
-		camera.h
+		camera.h \
+		revsurface.h \
+		bspline.h \
+		simulation.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o terrain.o terrain.cpp
 
 objModel.o: objModel.cpp objModel.h
@@ -616,12 +642,20 @@ objModel.o: objModel.cpp objModel.h
 tests.o: tests.cpp tests.h \
 		bspline.h \
 		revsurface.h \
-		objModel.h
+		objModel.h \
+		model.h \
+		ray.h \
+		camera.h \
+		bspline_blended.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tests.o tests.cpp
 
 ray.o: ray.cpp ray.h \
 		camera.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o ray.o ray.cpp
+
+bspline_blended.o: bspline_blended.cpp bspline_blended.h \
+		bspline.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o bspline_blended.o bspline_blended.cpp
 
 moc_renderer.o: moc_renderer.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_renderer.o moc_renderer.cpp
