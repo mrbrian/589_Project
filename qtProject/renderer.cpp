@@ -1042,13 +1042,11 @@ void Renderer::selectMesh()
             RevSurface *tree = (*treeRevs)[i];
             ObjModel *obj = tree->getObjModel(0.01, 0.01);
 
-                // testing if trees transforms are working
-                QVector3D **testPos = new QVector3D*[4]{ new QVector3D(-1,0,-1), new QVector3D(1,0,-1), new QVector3D(-1,0,1), new QVector3D(1,0,1) };
-                QMatrix4x4 trans;
-                trans.scale(0.01);
-                //trans.setColumn(3, QVector4D(*(testPos[i%4]), 1));
-                // trees appear at the 4 corners
-                trans.setColumn(3, QVector4D(tree->position, 1)); // put this back when tree position is correct
+            QMatrix4x4 trans;
+            trans.scale(0.01);
+            trans.setColumn(3, QVector4D(tree->position, 1));
+
+            //std::cout << tree->position.x() << "," << tree->position.y() << "," << tree->position.z() << std::endl;
 
             this->setModel(obj);
             this->selectedModel->setLocalTransform(trans);

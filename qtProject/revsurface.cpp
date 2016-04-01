@@ -59,7 +59,7 @@ RevSurface *RevSurface::makeRevSurface(float trunkRad, float radius, float heigh
     BSpline_Blended *curve = new BSpline_Blended(trunkRad, 2, splines);
 
     RevSurface *result = new RevSurface(curve, treeClr);
-    result->position = QVector3D(pos.x(), 0, pos.y());
+    result->position = QVector3D(pos.x(), pos.y(), pos.z());
     return result;
 }
 
