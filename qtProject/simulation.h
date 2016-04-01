@@ -19,10 +19,12 @@ public:
     TreeSimulation(QVector2D origin, TreeType type, float sScale)
     {
         m_simScale = sScale;
+        //std::cout << m_simScale<< endl;
         m_origin = origin;
         m_type = type;
         m_age = m_trunkDiameter = m_height = m_crownDiameter = 0;
         m_toDie = false;
+        //std::cout<< m_origin.x() <<"," << m_origin.y() << endl;
 
         assignGrowthAttributes();
 
@@ -31,6 +33,7 @@ public:
     TreeSimulation(QVector2D origin, int type, float scale)
     {
        TreeSimulation(origin, type == 0 ? eAspen : eBalsam, scale);
+
 
     }
 
@@ -78,6 +81,10 @@ public:
                 break;
             }
 
+            m_maxCrownDiameter /=2.0f;
+            m_maxTrunkDiameter /=2.0f;
+
+
         }
     }
 
@@ -94,11 +101,19 @@ public:
 
     void setToDie() { m_toDie = true; }
     bool isAlive() {return !m_toDie;}
-    float getCrownRadius(float scale) {return m_crownDiameter / 2 / scale ; }
-    float getCrownRadius() {return getCrownRadius(m_simScale); }
+    float getCrownRadius()
+    {
+        if (m_simScale == 0)
+        {
+            std::cout << "error\n";
+            return 0;
+        } else
+             return m_crownDiameter/ m_simScale;
+    }
+
     QVector2D getOrigin() {return m_origin;}
     float getHeight() { return m_height / m_simScale; }
-    float getTrunkRadius() { return m_maxTrunkDiameter / 2 / m_simScale; }
+    float getTrunkRadius() { return m_maxTrunkDiameter /m_simScale; }
 
 private:
 
@@ -173,8 +188,11 @@ private:
     {
         for (uint i = 0; i < numSeeds; i++)
         {
+            float x = (float)(rand() % (mArrayDimensions-1)) / mArrayDimensions;
+            float y = (float)(rand() % (mArrayDimensions-1)) / mArrayDimensions;
+            //std::cout << x <<"," << y << endl;
             mNewTrees.push_back(
-               QVector2D((float)(rand() % (mArrayDimensions-1)) / mArrayDimensions, (float)(rand() % (mArrayDimensions- 1)) / mArrayDimensions));
+               QVector2D(x,y));
 
 
         }
@@ -218,10 +236,10 @@ private:
                         if (i != j){
                             float distance = (mGrowingTrees[i]->getOrigin() - mGrowingTrees[j]->getOrigin()).length();
                             //std::cout << distance << std::endl;
-                            //std::cout<< "tree 1 radius : " << m_growingTrees[i]->getCrownRadius(SCALE) << " tree 2 radius :" << m_growingTrees[j]->getCrownRadius(SCALE) << std::endl;
-                            if ((mGrowingTrees[i]->getCrownRadius(mTerrainScale) + mGrowingTrees[j]->getCrownRadius(mTerrainScale)) > distance )
+                            std::cout<< "tree 1 radius : " << mGrowingTrees[i]->getCrownRadius() << " tree 2 radius :" << mGrowingTrees[j]->getCrownRadius() << std::endl;
+                            if ((mGrowingTrees[i]->getCrownRadius() + mGrowingTrees[j]->getCrownRadius()) > distance )
                             {
-                                mGrowingTrees[mGrowingTrees[i]->getCrownRadius(mTerrainScale) > mGrowingTrees[j]->getCrownRadius(mTerrainScale) ? j : i]->setToDie();
+                                mGrowingTrees[mGrowingTrees[i]->getCrownRadius() > mGrowingTrees[j]->getCrownRadius() ? j : i]->setToDie();
                             }
                         }
 
@@ -238,7 +256,11 @@ private:
                 }
 
             }
+        for (int i = 0; i < mGrowingTrees.size(); i++)
+        {
+            //std::cout << mGrowingTrees[i]->getOrigin().x() << "," <<  mGrowingTrees[i]->getOrigin().y() << endl;
             //std::cout << "Finished running simulation...."<< std::endl;
+        }
     }
 
     void traceBoundingVolume(std::vector<QVector3D> points)

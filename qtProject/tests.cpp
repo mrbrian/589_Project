@@ -435,9 +435,15 @@ void RevSurf_2()
         qDebug() << "RevSurf_1 pass";
 }
 
+void TreeTest1()
+{
+
+}
+
 Tests::Tests()
 {
-    RevSurf_2();
+    TreeTest1();
+    //RevSurf_2();
     /*
     BSplineBlend_Test1();
     BSplineBlend_Test2();

@@ -12,8 +12,9 @@ vector<RevSurface*> *Terrain::addTreesToTerrain(std::vector<QVector3D> controlPo
    {
        QVector3D treeClr = QVector3D(1,0,0);
        TreeSimulation *tree = toMake[i];
-       QVector3D p = tree->getOrigin();
-       Tests::print(p);
+       QVector2D p = tree->getOrigin();
+       std::cout << p[0] << ", " << p[1] << endl;
+       //Tests::print(p);
        m_trees.push_back(RevSurface::makeRevSurface(tree, m_uvImage));
    }
    delete sim;
