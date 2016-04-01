@@ -16,20 +16,15 @@ public:
         eBalsam,
     };
 
-    TreeSimulation(QVector2D origin, TreeType type)
+    TreeSimulation(QVector2D origin, int type)
     {
         m_origin = origin;
-        m_type = type;
+
+        m_type = type == 0 ? eAspen : eBalsam;
         m_age = m_trunkDiameter = m_height = m_crownDiameter = 0;
         m_toDie = false;
 
         assignGrowthAttributes();
-
-    }
-
-    TreeSimulation(QVector2D origin, int type)
-    {
-       TreeSimulation(origin, type == 0 ? eAspen : eBalsam);
 
     }
 
@@ -185,13 +180,26 @@ private:
 
                 {
 
-                    mGrowingTrees.push_back(new TreeSimulation(mNewTrees[i], rand() % 2));
+                    QVector2D temp = QVector2D(mNewTrees[i].x(), mNewTrees[i].y());
+                    std::cout << "Temp " << temp[0] << "," << temp[1] << endl;
+
+                    TreeSimulation * Treesim = new TreeSimulation(temp, rand() % 2);
+                    mGrowingTrees.push_back(Treesim);
+                    std::cout << "new trees: " << mNewTrees[i].x() << "," << mNewTrees[i].y() << endl;
+
+
 
                 } else {
                     //std::cout << ".. Failed\n";
                 }
             }
             mNewTrees.clear();
+
+            for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
+            {
+                std::cout << "growing trees: " << mGrowingTrees[i]->getOrigin().x() << "," << mGrowingTrees[i]->getOrigin().y() << endl;
+
+            }
     }
 
     void runSimulation(float numIterations)
@@ -213,7 +221,7 @@ private:
                         if (i != j){
                             float distance = (mGrowingTrees[i]->getOrigin() - mGrowingTrees[j]->getOrigin()).length();
                             //std::cout << distance << std::endl;
-                            //std::cout<< "tree 1 radius : " << m_growingTrees[i]->getCrownRadius(SCALE) << " tree 2 radius :" << m_growingTrees[j]->getCrownRadius(SCALE) << std::endl;
+                            //std::cout<< "tree 1 radius : " << mGrowingTrees[i]->getCrownRadius(mTerrainScale) << " tree 2 radius :" << mGrowingTrees[j]->getCrownRadius(mTerrainScale) << std::endl;
                             if ((mGrowingTrees[i]->getCrownRadius(mTerrainScale) + mGrowingTrees[j]->getCrownRadius(mTerrainScale)) > distance )
                             {
                                 mGrowingTrees[mGrowingTrees[i]->getCrownRadius(mTerrainScale) > mGrowingTrees[j]->getCrownRadius(mTerrainScale) ? j : i]->setToDie();
@@ -233,6 +241,8 @@ private:
                 }
 
             }
+
+
             //std::cout << "Finished running simulation...."<< std::endl;
     }
 
