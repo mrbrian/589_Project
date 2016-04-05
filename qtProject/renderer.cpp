@@ -651,6 +651,18 @@ void Renderer::setSubmodel(ObjModel *obj_m)
     m_submodel->texture = m_whiteTexture;
 }
 
+// load a model and make the selected model it's parent
+Model *Renderer::setSubmodel_hack(ObjModel *obj_m)
+{
+    m_submodel = new Model(obj_m, selectedModel);
+    //selectedModel = m_submodel;
+    m_models.push_back(m_submodel);
+    makeVbo(m_submodel);
+
+    m_submodel->texture = m_whiteTexture;
+    return m_submodel;
+}
+
 // create a Model using a given ObjModel
 void Renderer::setModel(ObjModel *obj_m)
 {
@@ -1023,10 +1035,9 @@ void Renderer::selectMesh()
             for (int i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
             {
                 if(m_terrain->m_selectabledFlag.at(i) == 1 )
-                {
+                {                    
                     QVector3D point = QVector3D(m_terrain->m_selectableControlMesh.at(i).x() / (float)width(), 0 , m_terrain->m_selectableControlMesh.at(i).z() / (float) height());
                     //std::cout << point.x() << "," << m_terrain->m_selectableControlMesh.at(i).y() << "," << point.z() << std::endl;
-                    Tests::print(point);
                     m_currentlySelected.push_back(point);
 
 
@@ -1043,13 +1054,19 @@ void Renderer::selectMesh()
             ObjModel *obj = tree->getObjModel(0.01, 0.01);
 
             QMatrix4x4 trans;
-            trans.scale(0.01);
-            trans.setColumn(3, QVector4D(tree->position, 1));
+            //trans.scale(0.002);
+            QVector3D treePos = tree->position;
+            treePos[0] *= m_terrain->get_meshWidth();
+            treePos[2] *= m_terrain->get_meshHeight();
+            trans.setColumn(3, QVector4D(treePos, 1));
 
-            //std::cout << tree->position.x() << "," << tree->position.y() << "," << tree->position.z() << std::endl;
+            std::cout << treePos.x() << "," << treePos.y() << "," << treePos.z() << std::endl;
 
-            this->setModel(obj);
-            this->selectedModel->setLocalTransform(trans);
+            //this->setModel(obj);
+            //this->selectedModel->setLocalTransform(trans);
+
+            Model *treeModel = this->setSubmodel_hack(obj);
+            treeModel->setLocalTransform(trans);
 
             //selectedModel->setLocalTransform(trans * selectedModel->getLocalTransform());
         }
@@ -1135,7 +1152,7 @@ Terrain *Renderer::createTerrain(QImage * image)
         std::cout << "got here" << std::endl;
         GLuint terrainVAO;
         QOpenGLFunctions_4_2_Core::glGenVertexArrays(1, &terrainVAO);
-        m_terrain = new Terrain(image, 10);
+        m_terrain = new Terrain(image, 25);
         populateTerrainVAO();
         return m_terrain;
 }

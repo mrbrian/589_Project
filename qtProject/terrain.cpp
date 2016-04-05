@@ -13,12 +13,22 @@ vector<RevSurface*> *Terrain::addTreesToTerrain(std::vector<QVector3D> controlPo
        QVector3D treeClr = QVector3D(1,0,0);
        TreeSimulation *tree = toMake[i];
        QVector2D p = tree->getOrigin();
-       std::cout << p[0] << ", " << p[1] << endl;
-       //Tests::print(p);
-       m_trees.push_back(RevSurface::makeRevSurface(tree, m_uvImage));
+       //std::cout << p[0] << ", " << p[1] << endl;
+       float y = get_y_height(p[0], p[1]);
+       m_trees.push_back(RevSurface::makeRevSurface(tree, y, m_uvImage));
    }
    delete sim;
    return &m_trees;
+}
+
+int Terrain::get_meshWidth()
+{
+    return m_meshWidth;
+}
+
+int Terrain::get_meshHeight()
+{
+    return m_meshHeight;
 }
 
 std::vector<TreeSimulation *> Terrain::simulateTreeGrowth(std::vector<QVector3D> controlPoints)
@@ -26,6 +36,16 @@ std::vector<TreeSimulation *> Terrain::simulateTreeGrowth(std::vector<QVector3D>
 
 }
 
+float Terrain::get_y_height(float x, float z)
+{
+    int idx = z * m_meshHeight * m_meshWidth + x * m_meshWidth;
+    return m_controlMesh[idx][1];
+}
+
+QImage *Terrain::getImage()
+{
+    return m_uvImage;
+}
 
 int low_res_modifier = 30;
 

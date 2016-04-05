@@ -6,7 +6,6 @@ class Tests
 {
 public:
     Tests();
-    static void print(QVector3D v);
 };
 
 #endif // TEST_H

@@ -20,7 +20,7 @@ class RevSurface;
 class Terrain : public Renderable
 {
 public:
-    Terrain(QImage * heightMap, float heightToAreaScale = 10) : Renderable()
+    Terrain(QImage * heightMap, float heightToAreaScale = 1) : Renderable()
     {
         m_uvImage = heightMap;
         createControlMesh(heightMap, heightToAreaScale);
@@ -44,7 +44,10 @@ public:
 
 
     ObjModel *getObjModel();
-
+    QImage *getImage();
+    int get_meshWidth();
+    int get_meshHeight();
+    float get_y_height(float x, float z);
 private://members
 
     QImage * m_uvImage;

@@ -9,7 +9,7 @@ RevSurface::RevSurface(BSpline *u, QVector3D c)
     color = c;
 }
 
-RevSurface *RevSurface::makeRevSurface(TreeSimulation *tree, QImage *img)
+RevSurface *RevSurface::makeRevSurface(TreeSimulation *tree, float y, QImage *img)
 {
     float trunkRad = tree->getTrunkRadius();
     float radius = tree->getCrownRadius();
@@ -17,7 +17,7 @@ RevSurface *RevSurface::makeRevSurface(TreeSimulation *tree, QImage *img)
     QVector3D treeClr = QVector3D(1,0,0);
 
     QVector2D pos = tree->getOrigin();
-    QVector3D treePos = QVector3D(pos[0], 0, pos[1]);
+    QVector3D treePos = QVector3D(pos[0], y, pos[1]);
 
     return RevSurface::makeRevSurface(trunkRad, radius, height, treeClr, treePos);
 }

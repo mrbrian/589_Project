@@ -9,11 +9,6 @@
 
 using namespace std;
 
-void Tests::print(QVector3D v)
-{
-    cout << v[0] << ", " << v[1] << ", "<< v[2] << "\n" << endl;
-}
-
 void RevSurface_1()
 {
     // spin it about the y axis  origin at 0,0,0
@@ -435,14 +430,8 @@ void RevSurf_2()
         qDebug() << "RevSurf_1 pass";
 }
 
-void TreeTest1()
-{
-
-}
-
 Tests::Tests()
 {
-    TreeTest1();
     //RevSurf_2();
     /*
     BSplineBlend_Test1();
