@@ -1080,7 +1080,6 @@ void Renderer::selectMesh()
         mode = 1;
 
         old_cam_position = camera.getPosition();
-        old_cam_position = camera.getPosition();
 
         QVector3D newPosition = QVector3D(0.001, 2.8, 0);
 
