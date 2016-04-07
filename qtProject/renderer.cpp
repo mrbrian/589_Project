@@ -381,7 +381,7 @@ void Renderer::drawModel(Model *m_model)
     if(m_model == selectedModel)
     {
         if(mode == 1)
-        {           
+        {
 //            cout << "num control points: " << m_terrain->getControlMeshSize();
             double a =  m_model->findIntersection(cam_ray);
 
@@ -563,7 +563,7 @@ void Renderer::mousePressEvent(QMouseEvent * event)
     else if (mode == 0)
     {
 //        mode = 0;
-        cout << "mode 0 pressed" << endl;
+        //cout << "mode 0 pressed" << endl;
 
     }
 
@@ -1054,13 +1054,14 @@ void Renderer::selectMesh()
             ObjModel *obj = tree->getObjModel(0.01, 0.01);
 
             QMatrix4x4 trans;
-            //trans.scale(0.002);
+
             QVector3D treePos = tree->position;
             treePos[0] *= m_terrain->get_meshWidth();
             treePos[2] *= m_terrain->get_meshHeight();
+            treePos[1] = m_terrain->get_y_height(treePos[0], treePos[2]);
             trans.setColumn(3, QVector4D(treePos, 1));
 
-            std::cout << treePos.x() << "," << treePos.y() << "," << treePos.z() << std::endl;
+            //std::cout << treePos.x() << "," << treePos.y() << "," << treePos.z() << std::endl;
 
             //this->setModel(obj);
             //this->selectedModel->setLocalTransform(trans);

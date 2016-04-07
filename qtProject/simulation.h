@@ -206,11 +206,11 @@ private:
             }
             mNewTrees.clear();
 
-            for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
+/*            for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
             {
                 std::cout << "growing trees: " << mGrowingTrees[i]->getOrigin().x() << "," << mGrowingTrees[i]->getOrigin().y() << endl;
 
-            }
+            }*/
     }
 
     void runSimulation(float numIterations)

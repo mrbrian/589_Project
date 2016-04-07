@@ -48,14 +48,16 @@ public:
     int get_meshWidth();
     int get_meshHeight();
     float get_y_height(float x, float z);
-private://members
+    static float get_y_height(float x, float z, int width, int height, vector<QVector3D> pts);
 
+private://members
+    std::vector<QVector3D> m_controlMesh;
+    ObjModel *m_cachedObjModel;
     QImage * m_uvImage;
     int m_meshWidth;
     int m_meshHeight;
 
     QVector3D faceNormal;
-    std::vector<QVector3D> m_controlMesh;
     std::vector<RevSurface*> m_trees;
    //vbo
 
