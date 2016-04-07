@@ -38,7 +38,7 @@ RevSurface *RevSurface::makeRevSurface(float trunkRad, float radius, float heigh
     pts_1->push_back(new QVector2D(1, 6));
     pts_1->push_back(new QVector2D(0, 7));
 
-    float youngScale = 0.5;
+    float youngScale = (1.0 / 2.1) * 0.25;
 
     for (int i = 0; i < pts_1->size(); i++)
     {
@@ -46,7 +46,7 @@ RevSurface *RevSurface::makeRevSurface(float trunkRad, float radius, float heigh
         pt *= youngScale;
     }
 
-    float oldScale = 2.25;
+    float oldScale = 1.0 / 2.3;
     std::vector<QVector2D*> *pts_2 = new std::vector<QVector2D*>();
     pts_2->push_back(new QVector2D(0.65, 0));
     pts_2->push_back(new QVector2D(0.55, 0.3));
