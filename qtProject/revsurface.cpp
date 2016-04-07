@@ -3,10 +3,22 @@
 
 #define ONE_REV_DEG 360
 
-RevSurface::RevSurface(BSpline *u, QVector3D c)
+RevSurface *RevSurface::makeCylinder(float r, float h, QVector3D color)
+{
+    std::vector<QVector2D*> *pts_1 = new std::vector<QVector2D*>();
+    pts_1->push_back(new QVector2D(r, 0));
+    pts_1->push_back(new QVector2D(r, h));
+
+    BSpline *bs = new BSpline(2, pts_1);
+
+    RevSurface *result = new RevSurface(bs, color);
+    return result;
+}
+
+RevSurface::RevSurface(BSpline *u, QVector3D clr)
 {
     curve = u;
-    color = c;
+    color = clr;
 }
 
 RevSurface *RevSurface::makeRevSurface(TreeSimulation *tree, float y, QImage *img)
