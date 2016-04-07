@@ -128,6 +128,7 @@ void Renderer::paintGL()
 
                 for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
                 {
+                    glClear(GL_DEPTH_BUFFER_BIT);
 
                     glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
 
