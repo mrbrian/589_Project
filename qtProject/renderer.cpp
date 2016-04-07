@@ -1048,6 +1048,8 @@ void Renderer::selectMesh()
         //std::cout << "Added trees to terrain\n";
         vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
 
+        if (treeRevs == 0)
+            return;
         for (int i = 0; i < treeRevs->size(); i++)
         {
             RevSurface *tree = (*treeRevs)[i];
@@ -1055,6 +1057,7 @@ void Renderer::selectMesh()
 
             QMatrix4x4 trans;
 
+            //trans.scale(tree);
             QVector3D treePos = tree->position;
             treePos[0] *= m_terrain->get_meshWidth();
             treePos[2] *= m_terrain->get_meshHeight();
@@ -1063,13 +1066,8 @@ void Renderer::selectMesh()
 
             //std::cout << treePos.x() << "," << treePos.y() << "," << treePos.z() << std::endl;
 
-            //this->setModel(obj);
-            //this->selectedModel->setLocalTransform(trans);
-
             Model *treeModel = this->setSubmodel_hack(obj);
             treeModel->setLocalTransform(trans);
-
-            //selectedModel->setLocalTransform(trans * selectedModel->getLocalTransform());
         }
 
         //cout << "num selected: " << m_currentlySelected.size();

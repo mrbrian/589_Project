@@ -38,6 +38,15 @@ RevSurface *RevSurface::makeRevSurface(float trunkRad, float radius, float heigh
     pts_1->push_back(new QVector2D(1, 6));
     pts_1->push_back(new QVector2D(0, 7));
 
+    float youngScale = 0.5;
+
+    for (int i = 0; i < pts_1->size(); i++)
+    {
+        QVector2D &pt = *(*pts_1)[i];
+        pt *= youngScale;
+    }
+
+    float oldScale = 2.25;
     std::vector<QVector2D*> *pts_2 = new std::vector<QVector2D*>();
     pts_2->push_back(new QVector2D(0.65, 0));
     pts_2->push_back(new QVector2D(0.55, 0.3));
@@ -50,13 +59,21 @@ RevSurface *RevSurface::makeRevSurface(float trunkRad, float radius, float heigh
     pts_2->push_back(new QVector2D(1, 6));
     pts_2->push_back(new QVector2D(0, 7));
 
+    for (int i = 0; i < pts_2->size(); i++)
+    {
+        QVector2D &pt = *(*pts_2)[i];
+        pt *= oldScale;
+    }
+
     BSpline *young = new BSpline(4, pts_1);
     BSpline *old = new BSpline(4, pts_2);
 
     std::vector<BSpline*> *splines = new std::vector<BSpline*>();
     splines->push_back(young);
     splines->push_back(old);
-    BSpline_Blended *curve = new BSpline_Blended(trunkRad, 2, splines);
+
+    float adjust_trunkRad = trunkRad / 0.01;
+    BSpline_Blended *curve = new BSpline_Blended(adjust_trunkRad, 2, splines);
 
     RevSurface *result = new RevSurface(curve, treeClr);
     result->position = QVector3D(pos.x(), pos.y(), pos.z());
