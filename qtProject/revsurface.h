@@ -16,6 +16,7 @@ class RevSurface
 {
 public:
     RevSurface(BSpline *u, QVector3D c = QVector3D(1,1,1));
+    static RevSurface *makeCylinder(float r, float h, QVector3D clr);
     static RevSurface *makeRevSurface(float trunkRad, float radius, float height, QVector3D treeClr, QVector3D pos);
     static RevSurface *makeRevSurface(TreeSimulation *tree, float y, QImage *img);
     BSpline *curve;

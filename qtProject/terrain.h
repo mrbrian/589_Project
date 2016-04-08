@@ -39,10 +39,8 @@ public:
 
     int getControlMeshSize();
     std::vector<QVector3D> m_selectableControlMesh;
-//    std::vector<int> m_selectabledFlag;
+    std::vector<int> m_selectabledFlag;
 
-
-//    std::vector<QVector3D> m_currentlySelectedPoints;
 
 
     ObjModel *getObjModel();
