@@ -121,79 +121,82 @@ void Renderer::paintGL()
             drawNormals(m_model);
         }
 
-        glPointSize(10);
-        if(m_model == selectedModel)
+        if (mode == 1)
         {
-                //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
-
-                for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
-                {
-                    glClear(GL_DEPTH_BUFFER_BIT);
-
-                    glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
-
-                    glBegin(GL_POINTS);
-                    glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
-                    glEnd();
-                }
-        }
-//        glColor3f (0.0f, 0.0f, 1.0f);
-//        cout << "num control points: " << m_terrain->getControlMeshSize();
-        if(m_model == selectedModel)
-        {
-
-            //render selected points
-            if(m_currentlySelected.size() > 0)
-            for(uint i = 0; i < m_currentlySelected.size(); i += 1)
+            glPointSize(10);
+            if(m_model == selectedModel)
             {
-                glClear(GL_DEPTH_BUFFER_BIT);
+                    //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
 
-                glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
-                glBegin(GL_POINTS);
-                glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
-                glEnd();
+                    for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
+                    {
+                        glClear(GL_DEPTH_BUFFER_BIT);
 
+                        glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
 
+                        glBegin(GL_POINTS);
+                        glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
+                        glEnd();
+                    }
             }
-
-            //render lines
-            if(m_currentlySelected.size() > 2)
+    //        glColor3f (0.0f, 0.0f, 1.0f);
+    //        cout << "num control points: " << m_terrain->getControlMeshSize();
+            if(m_model == selectedModel)
             {
-//                std::cout << "lines!" << endl;
-                glClear(GL_DEPTH_BUFFER_BIT);
 
-
-                glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
-
-
-
+                //render selected points
+                if(m_currentlySelected.size() > 0)
                 for(uint i = 0; i < m_currentlySelected.size(); i += 1)
                 {
-
                     glClear(GL_DEPTH_BUFFER_BIT);
+
                     glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
-                    glLineWidth( 1 );
-                    glBegin( GL_LINE_STRIP );
-
-                    if(i == m_currentlySelected.size()-1)
-                    {
-                        glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
-                        glVertex3f(m_currentlySelected.at(0)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(0)[2]);
-
-
-                    }
-                    else
-                    {
-                        glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
-                        if(i != (m_currentlySelected.size() -1))
-                            glVertex3f(m_currentlySelected.at(i+1)[0], m_currentlySelected.at(i+1)[1],m_currentlySelected.at(i+1)[2]);
-                    }
-
-
-
+                    glBegin(GL_POINTS);
+                    glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
                     glEnd();
 
 
+                }
+
+                //render lines
+                if(m_currentlySelected.size() > 2)
+                {
+    //                std::cout << "lines!" << endl;
+                    glClear(GL_DEPTH_BUFFER_BIT);
+
+
+                    glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+
+
+
+                    for(uint i = 0; i < m_currentlySelected.size(); i += 1)
+                    {
+
+                        glClear(GL_DEPTH_BUFFER_BIT);
+                        glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+                        glLineWidth( 1 );
+                        glBegin( GL_LINE_STRIP );
+
+                        if(i == m_currentlySelected.size()-1)
+                        {
+                            glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
+                            glVertex3f(m_currentlySelected.at(0)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(0)[2]);
+
+
+                        }
+                        else
+                        {
+                            glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
+                            if(i != (m_currentlySelected.size() -1))
+                                glVertex3f(m_currentlySelected.at(i+1)[0], m_currentlySelected.at(i+1)[1],m_currentlySelected.at(i+1)[2]);
+                        }
+
+
+
+                        glEnd();
+
+
+                    }
                 }
             }
             glEnd();
@@ -583,7 +586,7 @@ void Renderer::mousePressEvent(QMouseEvent * event)
             {
 //                cout << "abs x: " << abs(m_terrain->m_selectableControlMesh.at(i)[0] - nor_mouse_x) << endl;
 //                cout << "abs y: " << abs(m_terrain->m_selectableControlMesh.at(i)[2] - nor_mouse_y) << endl;
-            }
+
 
                 if (m_currentlySelected.size() == 0)
                 {
@@ -615,7 +618,7 @@ void Renderer::mousePressEvent(QMouseEvent * event)
 
 //                cout << "old control : " << old_select_point << endl;
 //                cout << "curr control : " << current_selected_point << endl;
-
+            }
         }
 
     }
@@ -1094,6 +1097,37 @@ void Renderer::selectMesh()
         camera.setPosition(old_cam_position);
         updateCamera();
 
+        for (int i = 0; i < m_currentlySelected.size(); i++)
+        {
+            m_currentlySelected[i][0] /= (float)width();
+            m_currentlySelected[i][1] = 0;
+            m_currentlySelected[i][2] /= (float)height();
+        }
+		//std::cout << "Added trees to terrain\n";
+        vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
+
+        if (treeRevs == 0)
+            return;
+        for (int i = 0; i < treeRevs->size(); i++)
+        {
+            RevSurface *tree = (*treeRevs)[i];
+            ObjModel *obj = tree->getObjModel(0.01, 0.01);
+
+            QMatrix4x4 trans;
+
+            //trans.scale(tree);
+            QVector3D treePos = tree->position;
+            treePos[0] *= m_terrain->get_meshWidth();
+            treePos[2] *= m_terrain->get_meshHeight();
+            treePos[1] = m_terrain->get_y_height(treePos[0], treePos[2]);
+            trans.setColumn(3, QVector4D(treePos, 1));
+
+            //std::cout << treePos.x() << "," << treePos.y() << "," << treePos.z() << std::endl;
+
+            Model *treeModel = this->setSubmodel_hack(obj);
+            treeModel->setLocalTransform(trans);
+        }
+        m_currentlySelected.clear();
 
         cout << "num selected: " << m_currentlySelected.size();
 
@@ -1104,21 +1138,22 @@ void Renderer::selectMesh()
         mode = 1;
 
         old_cam_position = camera.getPosition();
-        old_cam_position = camera.getPosition();
 
         QVector3D newPosition = QVector3D(0.001,2.8,0);
 
         camera.setPosition(newPosition);
 
+		camera.setTarget(QVector3D(0,0,0));
+
+		camera.setForward(QVector3D(0,0,1));
+		camera.setRight(QVector3D(1,0,0));
+		camera.setUp(QVector3D(0,1,0));
+
         m_currentlySelected.clear();
 
         updateCamera();
         resetModels();
-
-
     }
-
-
 }
 
 // selects a model
