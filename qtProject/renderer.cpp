@@ -76,7 +76,6 @@ void Renderer::initializeGL()
     m_TextureUniform = m_program->uniformLocation("texObject");
     m_OverrideColourUniform = m_program->uniformLocation("overrideColour");
     m_AmbientUniform = m_program->uniformLocation("ambient");
-    m_SelectCodeUniform = m_program->uniformLocation("selectCode");
     m_programID = m_program->programId();
 
     m_terrain = NULL;
@@ -101,7 +100,6 @@ void Renderer::paintGL()
     glUseProgram(m_programID);
 
     glUniformMatrix4fv(m_VMatrixUniform, 1, false, m_view.data());
-    glUniform1i(m_SelectCodeUniform, -1);
 
     // Not implemented: set up lighting (if necessary)
 
@@ -109,105 +107,6 @@ void Renderer::paintGL()
 
 
     //findIntersection
-
-    glPointSize(5);
-    glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
-    glBegin(GL_POINTS);
-    glVertex3f(0, 0, 0)                 ;
-    glVertex3f(0, 1, 0)                 ;
-    glVertex3f(4, 1, 0)                 ;
-    glVertex3f(6, 1, 0)                 ;
-    glVertex3f(5.41421, 1, -1.41421)    ;
-    glVertex3f(5.41421, 1, 1.41421)     ;
-    glVertex3f(2.82843, 1, -2.82843)    ;
-    glVertex3f(4.82843, 1, -2.82843)    ;
-    glVertex3f(2.82843, 1, -4.82843)    ;
-    glVertex3f(4.82843, 1, -2.82843)    ;
-    glVertex3f(2.82843, 1, 2.82843)     ;
-    glVertex3f(4.82843, 1, 2.82843)     ;
-    glVertex3f(4.82843, 1, 2.82843)     ;
-    glVertex3f(2.82843, 1, 4.82843)     ;
-    glVertex3f(0, 2, 0)                 ;
-    glVertex3f(4, 2, 0)                 ;
-    glVertex3f(6, 2, 0)                 ;
-    glVertex3f(2.58579, 2, -1.41421)    ;
-    glVertex3f(5.41421, 2, -1.41421)    ;
-    glVertex3f(-2.82843, 2, -2.82843)   ;
-    glVertex3f(-0.828427, 2, -2.82843)  ;
-    glVertex3f(-4.82843, 2, -2.82843)   ;
-    glVertex3f(-2.82843, 2, -4.82843)   ;
-    glVertex3f(2.82843, 2, -2.82843)    ;
-    glVertex3f(4.82843, 2, -2.82843)    ;
-    glVertex3f(2.82843, 2, -4.82843)    ;
-    glVertex3f(4.82843, 2, -2.82843)    ;
-    glVertex3f(0, 3, 0)                 ;
-    glVertex3f(4, 3, 0)                 ;
-    glVertex3f(6, 3, 0)                 ;
-    glVertex3f(5.41421, 3, 1.41421)     ;
-    glVertex3f(2.58579, 3, 1.41421)     ;
-    glVertex3f(2.82843, 3, 2.82843)     ;
-    glVertex3f(4.82843, 3, 2.82843)     ;
-    glVertex3f(4.82843, 3, 2.82843)     ;
-    glVertex3f(2.82843, 3, 4.82843)     ;
-    glVertex3f(-2.82843, 3, 2.82843)    ;
-    glVertex3f(-0.828427, 3, 2.82843)   ;
-    glVertex3f(-2.82843, 3, 4.82843)    ;
-    glVertex3f(-4.82843, 3, 2.82843)    ;
-    glVertex3f(0, 4, 0)                 ;
-    glVertex3f(4, 4, 0)                 ;
-    glVertex3f(6, 4, 0)                 ;
-    glVertex3f(2.58579, 4, 1.41421)     ;
-    glVertex3f(2.58579, 4, -1.41421)   ;
-    glVertex3f(-2.82843, 4, 2.82843)   ;
-    glVertex3f(-0.828427, 4, 2.82843)  ;
-    glVertex3f(-2.82843, 4, 4.82843)   ;
-    glVertex3f(-4.82843, 4, 2.82843)   ;
-    glVertex3f(-2.82843, 4, -2.82843)  ;
-    glVertex3f(-0.828427, 4, -2.82843) ;
-    glVertex3f(-4.82843, 4, -2.82843)  ;
-    glVertex3f(-2.82843, 4, -4.82843)  ;
-    glVertex3f(0, 1, 0)                ;
-    glVertex3f(0, 2, 0)                ;
-    glVertex3f(3, 2, 0)                ;
-    glVertex3f(2.12132, 2, -2.12132)   ;
-    glVertex3f(2.12132, 2, 2.12132)    ;
-    glVertex3f(0, 4, 0)                ;
-    glVertex3f(3, 4, 0)                ;
-    glVertex3f(-2.12132, 4, -2.12132)  ;
-    glVertex3f(2.12132, 4, -2.12132)   ;
-    glVertex3f(0, 6, 0)                ;
-    glVertex3f(3, 6, 0)                ;
-    glVertex3f(2.12132, 6, 2.12132)    ;
-    glVertex3f(-2.12132, 6, 2.12132)   ;
-    glVertex3f(0, 8, 0)                ;
-    glVertex3f(3, 8, 0)                ;
-    glVertex3f(-2.12132, 8, 2.12132)   ;
-    glVertex3f(-2.12132, 8, -2.12132)  ;
-    glVertex3f(0, 2, 0)                ;
-    glVertex3f(0, 3, 0)                ;
-    glVertex3f(2, 3, 0)                ;
-    glVertex3f(1.41421, 3, -1.41421)   ;
-    glVertex3f(1.41421, 3, 1.41421)    ;
-    glVertex3f(0, 6, 0)                ;
-    glVertex3f(2, 6, 0)                ;
-    glVertex3f(-1.41421, 6, -1.41421)  ;
-    glVertex3f(1.41421, 6, -1.41421)   ;
-    glVertex3f(0, 9, 0)                ;
-    glVertex3f(2, 9, 0)                ;
-    glVertex3f(1.41421, 9, 1.41421)    ;
-    glVertex3f(-1.41421, 9, 1.41421)   ;
-    glVertex3f(0, 12, 0)               ;
-    glVertex3f(2, 12, 0)               ;
-    glVertex3f(-1.41421, 12, 1.41421)  ;
-    glVertex3f(-1.41421, 12, -1.41421) ;
-    glVertex3f(0, 3, 0)                ;
-    glVertex3f(0, 4, 0)                ;
-    glVertex3f(0, 8, 0)                ;
-    glVertex3f(0, 12, 0)               ;
-    glVertex3f(0, 16, 0)               ;
-    glVertex3f(0, 4, 0)                ;
-
-    glEnd();
 
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
     {
@@ -219,9 +118,9 @@ void Renderer::paintGL()
             drawNormals(m_model);
         }
 
-        if (mode == 1)
+        if (true)//mode == 1)
         {
-            glPointSize(10);
+            glPointSize(5);
 
     //        glColor3f (0.0f, 0.0f, 1.0f);
     //        cout << "num control points: " << m_terrain->getControlMeshSize();
@@ -243,8 +142,109 @@ void Renderer::paintGL()
                         }
 
                         glBegin(GL_POINTS);
-                        glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
+//                        for (int i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
+  //                          cout << "cp: " << m_terrain->m_selectableControlMesh.at(i)[0] << ","<< m_terrain->m_selectableControlMesh.at(i)[1] << ","<< m_terrain->m_selectableControlMesh.at(i)[2] << endl;
+                            //qDebug() << m_terrain->m_selectableControlMesh.at(i);
+                        cout << "cp: " << m_terrain->m_selectableControlMesh.at(0)[0] << ","<< m_terrain->m_selectableControlMesh.at(0)[1] << ","<< m_terrain->m_selectableControlMesh.at(0)[2] << endl;
+
+
+                        glVertex3f(0.0, 0.0, 0.0)                 ;
+                        glVertex3f(0, 1, 0)                 ;
+                        glVertex3f(4, 1, 0)                 ;
+                        glVertex3f(6, 1, 0)                 ;
+                        glVertex3f(5.41421, 1, -1.41421)    ;
+                        glVertex3f(5.41421, 1, 1.41421)     ;
+                        glVertex3f(2.82843, 1, -2.82843)    ;
+                        glVertex3f(4.82843, 1, -2.82843)    ;
+                        glVertex3f(2.82843, 1, -4.82843)    ;
+                        glVertex3f(4.82843, 1, -2.82843)    ;
+                        glVertex3f(2.82843, 1, 2.82843)     ;
+                        glVertex3f(4.82843, 1, 2.82843)     ;
+                        glVertex3f(4.82843, 1, 2.82843)     ;
+                        glVertex3f(2.82843, 1, 4.82843)     ;
+                        glVertex3f(0, 2, 0)                 ;
+                        glVertex3f(4, 2, 0)                 ;
+                        glVertex3f(6, 2, 0)                 ;
+                        glVertex3f(2.58579, 2, -1.41421)    ;
+                        glVertex3f(5.41421, 2, -1.41421)    ;
+                        glVertex3f(-2.82843, 2, -2.82843)   ;
+                        glVertex3f(-0.828427, 2, -2.82843)  ;
+                        glVertex3f(-4.82843, 2, -2.82843)   ;
+                        glVertex3f(-2.82843, 2, -4.82843)   ;
+                        glVertex3f(2.82843, 2, -2.82843)    ;
+                        glVertex3f(4.82843, 2, -2.82843)    ;
+                        glVertex3f(2.82843, 2, -4.82843)    ;
+                        glVertex3f(4.82843, 2, -2.82843)    ;
+                        glVertex3f(0, 3, 0)                 ;
+                        glVertex3f(4, 3, 0)                 ;
+                        glVertex3f(6, 3, 0)                 ;
+                        glVertex3f(5.41421, 3, 1.41421)     ;
+                        glVertex3f(2.58579, 3, 1.41421)     ;
+                        glVertex3f(2.82843, 3, 2.82843)     ;
+                        glVertex3f(4.82843, 3, 2.82843)     ;
+                        glVertex3f(4.82843, 3, 2.82843)     ;
+                        glVertex3f(2.82843, 3, 4.82843)     ;
+                        glVertex3f(-2.82843, 3, 2.82843)    ;
+                        glVertex3f(-0.828427, 3, 2.82843)   ;
+                        glVertex3f(-2.82843, 3, 4.82843)    ;
+                        glVertex3f(-4.82843, 3, 2.82843)    ;
+                        glVertex3f(0, 4, 0)                 ;
+                        glVertex3f(4, 4, 0)                 ;
+                        glVertex3f(6, 4, 0)                 ;
+                        glVertex3f(2.58579, 4, 1.41421)     ;
+                        glVertex3f(2.58579, 4, -1.41421)   ;
+                        glVertex3f(-2.82843, 4, 2.82843)   ;
+                        glVertex3f(-0.828427, 4, 2.82843)  ;
+                        glVertex3f(-2.82843, 4, 4.82843)   ;
+                        glVertex3f(-4.82843, 4, 2.82843)   ;
+                        glVertex3f(-2.82843, 4, -2.82843)  ;
+                        glVertex3f(-0.828427, 4, -2.82843) ;
+                        glVertex3f(-4.82843, 4, -2.82843)  ;
+                        glVertex3f(-2.82843, 4, -4.82843)  ;
+                        glVertex3f(0, 1, 0)                ;
+                        glVertex3f(0, 2, 0)                ;
+                        glVertex3f(3, 2, 0)                ;
+                        glVertex3f(2.12132, 2, -2.12132)   ;
+                        glVertex3f(2.12132, 2, 2.12132)    ;
+                        glVertex3f(0, 4, 0)                ;
+                        glVertex3f(3, 4, 0)                ;
+                        glVertex3f(-2.12132, 4, -2.12132)  ;
+                        glVertex3f(2.12132, 4, -2.12132)   ;
+                        glVertex3f(0, 6, 0)                ;
+                        glVertex3f(3, 6, 0)                ;
+                        glVertex3f(2.12132, 6, 2.12132)    ;
+                        glVertex3f(-2.12132, 6, 2.12132)   ;
+                        glVertex3f(0, 8, 0)                ;
+                        glVertex3f(3, 8, 0)                ;
+                        glVertex3f(-2.12132, 8, 2.12132)   ;
+                        glVertex3f(-2.12132, 8, -2.12132)  ;
+                        glVertex3f(0, 2, 0)                ;
+                        glVertex3f(0, 3, 0)                ;
+                        glVertex3f(2, 3, 0)                ;
+                        glVertex3f(1.41421, 3, -1.41421)   ;
+                        glVertex3f(1.41421, 3, 1.41421)    ;
+                        glVertex3f(0, 6, 0)                ;
+                        glVertex3f(2, 6, 0)                ;
+                        glVertex3f(-1.41421, 6, -1.41421)  ;
+                        glVertex3f(1.41421, 6, -1.41421)   ;
+                        glVertex3f(0, 9, 0)                ;
+                        glVertex3f(2, 9, 0)                ;
+                        glVertex3f(1.41421, 9, 1.41421)    ;
+                        glVertex3f(-1.41421, 9, 1.41421)   ;
+                        glVertex3f(0, 12, 0)               ;
+                        glVertex3f(2, 12, 0)               ;
+                        glVertex3f(-1.41421, 12, 1.41421)  ;
+                        glVertex3f(-1.41421, 12, -1.41421) ;
+                        glVertex3f(0, 3, 0)                ;
+                        glVertex3f(0, 4, 0)                ;
+                        glVertex3f(0, 8, 0)                ;
+                        glVertex3f(0, 12, 0)               ;
+                        glVertex3f(0, 16, 0)               ;
+                        glVertex3f(0, 4, 0)                ;
+
+//                        glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
                         glEnd();
+                        break;
                     }
             }
         }

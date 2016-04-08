@@ -30,9 +30,9 @@ Trunk::Trunk(int level, float radius, QMatrix4x4 trans)
 
     for (int i = 0; i < 4; i++)
     {
-        b_trans.rotate(90 * i, 0, 1, 0);
         b_trans = b_trans * trans;
         branches.push_back(makeBranch(level - 1, b_trans));
+        b_trans.rotate(90, 0, 1, 0);
     }
 
     next = makeTrunk(level - 1, radius - 1, trans);
