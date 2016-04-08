@@ -6,6 +6,7 @@
 #include <QDebug>
 #include "model.h"
 #include "bspline_blended.h"
+#include "treemodel.h"
 
 using namespace std;
 
@@ -558,8 +559,24 @@ void getY5()
         qDebug() << "getY5 pass";
 }
 */
+
+void treeTest()
+{
+    TreeModel *tg = new TreeModel(QVector3D(0,0,0));
+
+    vector<QVector3D> *pts = new vector<QVector3D>();
+
+    //tg.getObjModel();
+   /* if (expected != actual)
+        qDebug() << "treeTest fail";
+    else*/
+        qDebug() << "treeTest pass";
+}
+
 Tests:: Tests()
 {
+    treeTest();
+
     /*getY5();
     getY4();
     getY();

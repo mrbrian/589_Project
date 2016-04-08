@@ -110,7 +110,104 @@ void Renderer::paintGL()
 
     //findIntersection
 
+    glPointSize(5);
+    glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+    glBegin(GL_POINTS);
+    glVertex3f(0, 0, 0)                 ;
+    glVertex3f(0, 1, 0)                 ;
+    glVertex3f(4, 1, 0)                 ;
+    glVertex3f(6, 1, 0)                 ;
+    glVertex3f(5.41421, 1, -1.41421)    ;
+    glVertex3f(5.41421, 1, 1.41421)     ;
+    glVertex3f(2.82843, 1, -2.82843)    ;
+    glVertex3f(4.82843, 1, -2.82843)    ;
+    glVertex3f(2.82843, 1, -4.82843)    ;
+    glVertex3f(4.82843, 1, -2.82843)    ;
+    glVertex3f(2.82843, 1, 2.82843)     ;
+    glVertex3f(4.82843, 1, 2.82843)     ;
+    glVertex3f(4.82843, 1, 2.82843)     ;
+    glVertex3f(2.82843, 1, 4.82843)     ;
+    glVertex3f(0, 2, 0)                 ;
+    glVertex3f(4, 2, 0)                 ;
+    glVertex3f(6, 2, 0)                 ;
+    glVertex3f(2.58579, 2, -1.41421)    ;
+    glVertex3f(5.41421, 2, -1.41421)    ;
+    glVertex3f(-2.82843, 2, -2.82843)   ;
+    glVertex3f(-0.828427, 2, -2.82843)  ;
+    glVertex3f(-4.82843, 2, -2.82843)   ;
+    glVertex3f(-2.82843, 2, -4.82843)   ;
+    glVertex3f(2.82843, 2, -2.82843)    ;
+    glVertex3f(4.82843, 2, -2.82843)    ;
+    glVertex3f(2.82843, 2, -4.82843)    ;
+    glVertex3f(4.82843, 2, -2.82843)    ;
+    glVertex3f(0, 3, 0)                 ;
+    glVertex3f(4, 3, 0)                 ;
+    glVertex3f(6, 3, 0)                 ;
+    glVertex3f(5.41421, 3, 1.41421)     ;
+    glVertex3f(2.58579, 3, 1.41421)     ;
+    glVertex3f(2.82843, 3, 2.82843)     ;
+    glVertex3f(4.82843, 3, 2.82843)     ;
+    glVertex3f(4.82843, 3, 2.82843)     ;
+    glVertex3f(2.82843, 3, 4.82843)     ;
+    glVertex3f(-2.82843, 3, 2.82843)    ;
+    glVertex3f(-0.828427, 3, 2.82843)   ;
+    glVertex3f(-2.82843, 3, 4.82843)    ;
+    glVertex3f(-4.82843, 3, 2.82843)    ;
+    glVertex3f(0, 4, 0)                 ;
+    glVertex3f(4, 4, 0)                 ;
+    glVertex3f(6, 4, 0)                 ;
+    glVertex3f(2.58579, 4, 1.41421)     ;
+    glVertex3f(2.58579, 4, -1.41421)   ;
+    glVertex3f(-2.82843, 4, 2.82843)   ;
+    glVertex3f(-0.828427, 4, 2.82843)  ;
+    glVertex3f(-2.82843, 4, 4.82843)   ;
+    glVertex3f(-4.82843, 4, 2.82843)   ;
+    glVertex3f(-2.82843, 4, -2.82843)  ;
+    glVertex3f(-0.828427, 4, -2.82843) ;
+    glVertex3f(-4.82843, 4, -2.82843)  ;
+    glVertex3f(-2.82843, 4, -4.82843)  ;
+    glVertex3f(0, 1, 0)                ;
+    glVertex3f(0, 2, 0)                ;
+    glVertex3f(3, 2, 0)                ;
+    glVertex3f(2.12132, 2, -2.12132)   ;
+    glVertex3f(2.12132, 2, 2.12132)    ;
+    glVertex3f(0, 4, 0)                ;
+    glVertex3f(3, 4, 0)                ;
+    glVertex3f(-2.12132, 4, -2.12132)  ;
+    glVertex3f(2.12132, 4, -2.12132)   ;
+    glVertex3f(0, 6, 0)                ;
+    glVertex3f(3, 6, 0)                ;
+    glVertex3f(2.12132, 6, 2.12132)    ;
+    glVertex3f(-2.12132, 6, 2.12132)   ;
+    glVertex3f(0, 8, 0)                ;
+    glVertex3f(3, 8, 0)                ;
+    glVertex3f(-2.12132, 8, 2.12132)   ;
+    glVertex3f(-2.12132, 8, -2.12132)  ;
+    glVertex3f(0, 2, 0)                ;
+    glVertex3f(0, 3, 0)                ;
+    glVertex3f(2, 3, 0)                ;
+    glVertex3f(1.41421, 3, -1.41421)   ;
+    glVertex3f(1.41421, 3, 1.41421)    ;
+    glVertex3f(0, 6, 0)                ;
+    glVertex3f(2, 6, 0)                ;
+    glVertex3f(-1.41421, 6, -1.41421)  ;
+    glVertex3f(1.41421, 6, -1.41421)   ;
+    glVertex3f(0, 9, 0)                ;
+    glVertex3f(2, 9, 0)                ;
+    glVertex3f(1.41421, 9, 1.41421)    ;
+    glVertex3f(-1.41421, 9, 1.41421)   ;
+    glVertex3f(0, 12, 0)               ;
+    glVertex3f(2, 12, 0)               ;
+    glVertex3f(-1.41421, 12, 1.41421)  ;
+    glVertex3f(-1.41421, 12, -1.41421) ;
+    glVertex3f(0, 3, 0)                ;
+    glVertex3f(0, 4, 0)                ;
+    glVertex3f(0, 8, 0)                ;
+    glVertex3f(0, 12, 0)               ;
+    glVertex3f(0, 16, 0)               ;
+    glVertex3f(0, 4, 0)                ;
 
+    glEnd();
 
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
     {
@@ -1044,12 +1141,12 @@ void Renderer::selectMesh()
                 }
             }
         }
+        else
+            return;
 
         //std::cout << "Added trees to terrain\n";
         vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
 
-        if (treeRevs == 0)
-            return;
         for (int i = 0; i < treeRevs->size(); i++)
         {
             RevSurface *tree = (*treeRevs)[i];
