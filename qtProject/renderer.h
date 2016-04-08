@@ -46,6 +46,7 @@ public:
     void makeVbo(Model *model);
     void setModel(ObjModel *model);
     void setSubmodel(ObjModel *model);
+    Model *setSubmodel_hack(ObjModel *obj_m);
     void setNormalMode(NormalMode mode);
 
     QString getDrawMode();

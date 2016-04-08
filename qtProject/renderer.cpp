@@ -4,6 +4,7 @@
 #include <cmath>
 #include "trackball.h"
 #include <QFileDialog>
+#include "tests.h"
 
 #define CHECKERBOARD_SIZE   50
 #define FPS                 60.0
@@ -121,31 +122,34 @@ void Renderer::paintGL()
             drawNormals(m_model);
         }
 
-        glPointSize(10);
-
-//        glColor3f (0.0f, 0.0f, 1.0f);
-//        cout << "num control points: " << m_terrain->getControlMeshSize();
-        if(m_model == selectedModel)
+        if (mode == 1)
         {
-                //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
+            glPointSize(10);
 
-                for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
-                {
-                    if(m_terrain->m_selectabledFlag.at(i) == 1)
+    //        glColor3f (0.0f, 0.0f, 1.0f);
+    //        cout << "num control points: " << m_terrain->getControlMeshSize();
+            if(m_model == selectedModel && m_terrain)
+            {
+                    //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
+
+                    for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
                     {
-//                      cout << "selected: " << i <<endl;
-                        glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
-                    }
-                    else
-                    {
-                        glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
+                        if(m_terrain->m_selectabledFlag.at(i) == 1)
+                        {
+    //                      cout << "selected: " << i <<endl;
+                            glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+                        }
+                        else
+                        {
+                            glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
 
-                    }
+                        }
 
-                    glBegin(GL_POINTS);
-                    glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
-                    glEnd();
-                }
+                        glBegin(GL_POINTS);
+                        glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
+                        glEnd();
+                    }
+            }
         }
     }
 
@@ -377,7 +381,7 @@ void Renderer::drawModel(Model *m_model)
     if(m_model == selectedModel)
     {
         if(mode == 1)
-        {           
+        {
 //            cout << "num control points: " << m_terrain->getControlMeshSize();
             double a =  m_model->findIntersection(cam_ray);
 
@@ -559,7 +563,7 @@ void Renderer::mousePressEvent(QMouseEvent * event)
     else if (mode == 0)
     {
 //        mode = 0;
-        cout << "mode 0 pressed" << endl;
+        //cout << "mode 0 pressed" << endl;
 
     }
 
@@ -645,6 +649,18 @@ void Renderer::setSubmodel(ObjModel *obj_m)
     makeVbo(m_submodel);
 
     m_submodel->texture = m_whiteTexture;
+}
+
+// load a model and make the selected model it's parent
+Model *Renderer::setSubmodel_hack(ObjModel *obj_m)
+{
+    m_submodel = new Model(obj_m, selectedModel);
+    //selectedModel = m_submodel;
+    m_models.push_back(m_submodel);
+    makeVbo(m_submodel);
+
+    m_submodel->texture = m_whiteTexture;
+    return m_submodel;
 }
 
 // create a Model using a given ObjModel
@@ -1011,19 +1027,50 @@ void Renderer::selectMesh()
 
         camera.setPosition(old_cam_position);
         updateCamera();
-        if (numSelectedPoints > 0)
+        std::cout << "gathering control points\n" << endl;
+
+        if (numSelectedPoints > 2)
         {
             m_currentlySelected.clear();
             for (int i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
             {
                 if(m_terrain->m_selectabledFlag.at(i) == 1 )
-                {
-                    m_currentlySelected.push_back(m_terrain->m_selectableControlMesh.at(i));
+                {                    
+                    QVector3D point = QVector3D(m_terrain->m_selectableControlMesh.at(i).x() / (float)width(), 0 , m_terrain->m_selectableControlMesh.at(i).z() / (float) height());
+                    //std::cout << point.x() << "," << m_terrain->m_selectableControlMesh.at(i).y() << "," << point.z() << std::endl;
+                    m_currentlySelected.push_back(point);
+
+
                 }
             }
         }
 
-        cout << "num selected: " << m_currentlySelected.size();
+        //std::cout << "Added trees to terrain\n";
+        vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
+
+        if (treeRevs == 0)
+            return;
+        for (int i = 0; i < treeRevs->size(); i++)
+        {
+            RevSurface *tree = (*treeRevs)[i];
+            ObjModel *obj = tree->getObjModel(0.01, 0.01);
+
+            QMatrix4x4 trans;
+
+            //trans.scale(tree);
+            QVector3D treePos = tree->position;
+            treePos[0] *= m_terrain->get_meshWidth();
+            treePos[2] *= m_terrain->get_meshHeight();
+            treePos[1] = m_terrain->get_y_height(treePos[0], treePos[2]);
+            trans.setColumn(3, QVector4D(treePos, 1));
+
+            //std::cout << treePos.x() << "," << treePos.y() << "," << treePos.z() << std::endl;
+
+            Model *treeModel = this->setSubmodel_hack(obj);
+            treeModel->setLocalTransform(trans);
+        }
+
+        //cout << "num selected: " << m_currentlySelected.size();
 
     }
     else if (mode == 0)
@@ -1031,7 +1078,6 @@ void Renderer::selectMesh()
         cout << "select mesh mode on" << endl;
         mode = 1;
 
-        old_cam_position = camera.getPosition();
         old_cam_position = camera.getPosition();
 
         QVector3D newPosition = QVector3D(0.001, 2.8, 0);
@@ -1104,7 +1150,7 @@ Terrain *Renderer::createTerrain(QImage * image)
         std::cout << "got here" << std::endl;
         GLuint terrainVAO;
         QOpenGLFunctions_4_2_Core::glGenVertexArrays(1, &terrainVAO);
-        m_terrain = new Terrain(image, 10);
+        m_terrain = new Terrain(image, 25);
         populateTerrainVAO();
         return m_terrain;
 }

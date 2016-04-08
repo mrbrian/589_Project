@@ -19,12 +19,13 @@ using namespace glm;
 
 // default constructor
 ObjModel::ObjModel () {
-
+    color = vec3(1,1,1);
 }
 
 // file-loading constructor
 ObjModel::ObjModel (const char *filename) {
     LoadModel(filename);
+    color = vec3(1,1,1);
 }
 
 // loads the model, populating the data
