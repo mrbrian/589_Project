@@ -9,11 +9,12 @@ using namespace std;
 class BSpline_Blended : public BSpline
 {
 public:
-    BSpline_Blended(int k, vector<BSpline*> *b);
+    BSpline_Blended(float bf, int k, vector<BSpline*> *b);
     QVector2D *evalPoint(float blend_factor, float u);
+    QVector2D *evalPoint(float u) override;
     void getLinePoints(vector<QVector2D*> *list, vector<float> *u_list, float step_u) override;
-
 private:
+    float m_blend_factor;
     vector<BSpline*> *splines;
     QVector2D *effSum(int d, float blend_factor, float u);
 

@@ -1,10 +1,95 @@
 #include "revsurface.h"
+#include "terrain.h"
 
 #define ONE_REV_DEG 360
 
-RevSurface::RevSurface(BSpline *u)
+RevSurface *RevSurface::makeCylinder(float r, float h, QVector3D color)
+{
+    std::vector<QVector2D*> *pts_1 = new std::vector<QVector2D*>();
+    pts_1->push_back(new QVector2D(r, 0));
+    pts_1->push_back(new QVector2D(r, h));
+
+    BSpline *bs = new BSpline(2, pts_1);
+
+    RevSurface *result = new RevSurface(bs, color);
+    return result;
+}
+
+RevSurface::RevSurface(BSpline *u, QVector3D clr)
 {
     curve = u;
+    color = clr;
+}
+
+RevSurface *RevSurface::makeRevSurface(TreeSimulation *tree, float y, QImage *img)
+{
+    float trunkRad = tree->getTrunkRadius();
+    float radius = tree->getCrownRadius();
+    float height = tree->getHeight();
+    QVector3D treeClr = QVector3D(1,0,0);
+
+    QVector2D pos = tree->getOrigin();
+    QVector3D treePos = QVector3D(pos[0], y, pos[1]);
+
+    return RevSurface::makeRevSurface(trunkRad, radius, height, treeClr, treePos);
+}
+
+RevSurface *RevSurface::makeRevSurface(float trunkRad, float radius, float height, QVector3D treeClr, QVector3D pos)
+{
+    float y = 0;
+
+    //make a tree!!
+    std::vector<QVector2D*> *pts_1 = new std::vector<QVector2D*>();
+    pts_1->push_back(new QVector2D(0.47, 0));
+    pts_1->push_back(new QVector2D(0.365, 1.2));
+    pts_1->push_back(new QVector2D(0.46, 1.5));
+    pts_1->push_back(new QVector2D(1.5, 2.2));
+    pts_1->push_back(new QVector2D(2.1, 3));
+    pts_1->push_back(new QVector2D(2.1, 4));
+    pts_1->push_back(new QVector2D(1.7, 5));
+    pts_1->push_back(new QVector2D(1, 6));
+    pts_1->push_back(new QVector2D(0, 7));
+
+    float youngScale = (1.0 / 2.1) * 0.25;
+
+    for (int i = 0; i < pts_1->size(); i++)
+    {
+        QVector2D &pt = *(*pts_1)[i];
+        pt *= youngScale;
+    }
+
+    float oldScale = 1.0 / 2.3;
+    std::vector<QVector2D*> *pts_2 = new std::vector<QVector2D*>();
+    pts_2->push_back(new QVector2D(0.65, 0));
+    pts_2->push_back(new QVector2D(0.55, 0.3));
+    pts_2->push_back(new QVector2D(0.6, 0.6));
+    pts_2->push_back(new QVector2D(2, 1));
+    pts_2->push_back(new QVector2D(2.3, 2));
+    pts_2->push_back(new QVector2D(2.2, 3));
+    pts_2->push_back(new QVector2D(2.1, 4));
+    pts_2->push_back(new QVector2D(1.7, 5));
+    pts_2->push_back(new QVector2D(1, 6));
+    pts_2->push_back(new QVector2D(0, 7));
+
+    for (int i = 0; i < pts_2->size(); i++)
+    {
+        QVector2D &pt = *(*pts_2)[i];
+        pt *= oldScale;
+    }
+
+    BSpline *young = new BSpline(4, pts_1);
+    BSpline *old = new BSpline(4, pts_2);
+
+    std::vector<BSpline*> *splines = new std::vector<BSpline*>();
+    splines->push_back(young);
+    splines->push_back(old);
+
+    float adjust_trunkRad = trunkRad / 0.01;
+    BSpline_Blended *curve = new BSpline_Blended(adjust_trunkRad, 2, splines);
+
+    RevSurface *result = new RevSurface(curve, treeClr);
+    result->position = QVector3D(pos.x(), pos.y(), pos.z());
+    return result;
 }
 
 // v range = [0,1]
@@ -175,5 +260,6 @@ ObjModel *RevSurface::getObjModel(float u_step, float v_step)
             */
         }
     }
+    result->color = vec3(color[0], color[1], color[2]);
     return result;
 }

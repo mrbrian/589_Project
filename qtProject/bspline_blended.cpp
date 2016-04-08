@@ -1,6 +1,6 @@
 #include "bspline_blended.h"
 
-BSpline_Blended :: BSpline_Blended(int k, vector<BSpline*> *b)
+BSpline_Blended :: BSpline_Blended(float bf, int k, vector<BSpline*> *b)
     : BSpline()
 {
 /*
@@ -12,6 +12,12 @@ BSpline_Blended :: BSpline_Blended(int k, vector<BSpline*> *b)
     knots = standardKnotSeq(b->size() - 1, k);
     //ctrlPts
     splines = b;
+    m_blend_factor = bf;
+}
+
+QVector2D *BSpline_Blended::evalPoint(float u) {
+
+    return (evalPoint(m_blend_factor, u));	// evaluate the final curve point and store it
 }
 
 QVector2D *BSpline_Blended::evalPoint(float blend_factor, float u)
@@ -51,7 +57,7 @@ QVector2D *BSpline_Blended::effSum(int d, float blend_factor, float u)
     {
         if (d - i < 0)
             throw std::invalid_argument( "tried to access invalid array index" );
-        BSpline *bs = (*splines)[i];
+        BSpline *bs = (*splines)[d - i];
         QVector2D *pt = bs->evalPoint(u);
         c[i] = pt;		//nonzero coefficients
     }

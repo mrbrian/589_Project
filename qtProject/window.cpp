@@ -5,7 +5,7 @@
 Window::Window(QWidget *parent) :
     QMainWindow(parent)
 {
-    setWindowTitle("CPSC453: Creature Loader");
+    setWindowTitle("CPSC589 Project: Populating Trees");
 
     // Create the main drawing object
     renderer = new Renderer();
@@ -17,7 +17,6 @@ Window::Window(QWidget *parent) :
     // Setup the file menu
     mFileMenu = menuBar()->addMenu(tr("&File"));
     mFileMenu->addAction(mLoadHeightMapAction);
-    mFileMenu->addAction(mLoadModelAction);
     mFileMenu->addAction(mLoadTextureAction);
     mFileMenu->addAction(mResetModelsAction);
     mFileMenu->addAction(mResetViewAction);
@@ -84,12 +83,6 @@ void Window::createActions()
     mLoadHeightMapAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     mLoadHeightMapAction->setStatusTip(tr("Loads a heightMap"));
     mLoadGroup->addAction(mLoadHeightMapAction);
-
-    // open model
-    mLoadModelAction = new QAction(tr("&Open Model"), this);
-//    mLoadModelAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
-    mLoadModelAction->setStatusTip(tr("Loads a model"));
-    mLoadGroup->addAction(mLoadModelAction);
 
     // open texture
     mLoadTextureAction = new QAction(tr("&Load Texture"), this);
@@ -300,33 +293,7 @@ void Window::load(QAction * action)
 {
     if(action == mLoadHeightMapAction)
     {
- /*       {
-            vector<QVector2D*> *pts = new vector<QVector2D*>();
 
-            pts->push_back(new QVector2D(1, 0));
-            pts->push_back(new QVector2D(1, 2.5));
-            pts->push_back(new QVector2D(2.5, 2.5));
-            pts->push_back(new QVector2D(3, 5));
-            pts->push_back(new QVector2D(0, 7));
-=======
-        //LoadModel
-//Disable        QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
-
-        QString filename = "../datafiles/example.jpg";
-//>>>>>>> Yasir
-
-            BSpline *bs = new BSpline(3, pts);
-            RevSurface *rs = new RevSurface(bs);
-
-            ObjModel *obj = rs->getObjModel(0.01, 0.01);
-
-            Model *m_model = new Model(obj, NULL);
-
-            renderer->setModel(obj);
-
-            return;
-        }
-*/
         {
             //LoadModel
             QString filename = QFileDialog::getOpenFileName(this, tr("Open Texture"), "./", tr("Obj Files (*.png *.xpm *.jpg)"), 0, QFileDialog::DontUseNativeDialog);
@@ -341,40 +308,10 @@ void Window::load(QAction * action)
 
             ObjModel *obj = terrain->getObjModel();
             Model *m_model = new Model(obj, NULL);   // NULL = no parent
-
-            if (m_model != NULL)
-            {
-                if (action == mLoadModelAction)     // new root model
-                    renderer->setModel(obj);
-                else
-                    renderer->setSubmodel(obj);     // new child model
-            }
+            renderer->setModel(obj);
         }
     }
 
-    if (action == mLoadModelAction)
-    {
-        /*
-        //LoadModel
-        QString filename = QFileDialog::getOpenFileName(this, tr("Open Model"), "./", tr("Obj Files (*.obj)"), 0, QFileDialog::DontUseNativeDialog);
-
-        if (filename == "")
-            return;
-
-        QByteArray qa = filename.toLatin1();
-        const char *str = qa.data();
-
-        ObjModel *obj = new ObjModel();
-
-        if (obj->LoadModel(str))
-        {
-            if (action == mLoadModelAction)     // new root model
-                renderer->setModel(obj);
-            else
-                renderer->setSubmodel(obj);     // new child model
-        }
-        addToSelectMenu("&" + filename);        // update selection menu*/
-    }
 
     if (action == mLoadTextureAction)
     {

@@ -44,7 +44,7 @@ void main(void)
     vs_out.N = mat3(mv_matrix) * normal_attr;
 
     // Calculate light vector
-    vs_out.L = light_pos - P.xyz;
+    vs_out.L = -P.xyz;
 
     // Calculate view vector
     vs_out.V = -P.xyz;

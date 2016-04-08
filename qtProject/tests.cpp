@@ -320,7 +320,7 @@ void BSplineBlend_Test1()
     splines->push_back(b_1);
     splines->push_back(b_2);
 
-    BSpline_Blended *bsb = new BSpline_Blended(2, splines);
+    BSpline_Blended *bsb = new BSpline_Blended(0.5, 2, splines);
 
     QVector2D *expected = new QVector2D(0.5, 0.5);
     QVector2D *actual = bsb->evalPoint(0.5, 1);
@@ -351,7 +351,7 @@ void BSplineBlend_Test2()
     splines->push_back(b_1);
     splines->push_back(b_2);
 
-    BSpline_Blended *bsb = new BSpline_Blended(2, splines);
+    BSpline_Blended *bsb = new BSpline_Blended(0.5, 2, splines);
 
     QVector2D *expected = new QVector2D(0, 0.5);
     QVector2D *actual = bsb->evalPoint(0.5, 0);
@@ -372,11 +372,11 @@ void BSplineBlend_Test3()
 
     vector<QVector2D*> *pts_2 = new vector<QVector2D*>();
     pts_2->push_back(new QVector2D(0,0));
-    pts_2->push_back(new QVector2D(1,0));
+    pts_2->push_back(new QVector2D(1,1));
 
     vector<QVector2D*> *pts_3 = new vector<QVector2D*>();
     pts_3->push_back(new QVector2D(0,0));
-    pts_3->push_back(new QVector2D(1,1));
+    pts_3->push_back(new QVector2D(1,0));
 
     BSpline *b_1 = new BSpline(2, pts_1);
     BSpline *b_2 = new BSpline(2, pts_2);
@@ -386,10 +386,12 @@ void BSplineBlend_Test3()
     splines->push_back(b_2);
     splines->push_back(b_3);
 
-    BSpline_Blended *bsb = new BSpline_Blended(3, splines);
+    // 0    0.5     0.5     0       0.125   .25
+    // 0.5  0       0.5     0.125   0       .25
+    BSpline_Blended *bsb = new BSpline_Blended(0.5, 3, splines);
 
-    QVector2D *expected = new QVector2D(0, 1);
-    QVector2D *actual = bsb->evalPoint(0.5, 0);
+    QVector2D *expected = new QVector2D(0.375, 0.375);
+    QVector2D *actual = bsb->evalPoint(0.5, 0.5);
 
     if (*expected != *actual)
         qDebug() << "BSplineBlend_Test3 fail";
@@ -397,8 +399,174 @@ void BSplineBlend_Test3()
         qDebug() << "BSplineBlend_Test3 pass";
 }
 
-Tests::Tests()
+
+void RevSurf_1()
 {
+    RevSurface *r = RevSurface::makeRevSurface(0, 1, 1, QVector3D(0,1,0), QVector3D(0,0,0));
+
+    QVector3D expected = QVector3D(0.6, 0, 0);
+    QVector3D *actual = r->eval(0,0);
+
+    if (expected[0] != (*actual)[0] ||
+        expected[1] != (*actual)[1] ||
+        expected[2] != (*actual)[2])
+        qDebug() << "RevSurf_1 fail";
+    else
+        qDebug() << "RevSurf_1 pass";
+}
+
+void RevSurf_2()
+{
+    RevSurface *r = RevSurface::makeRevSurface(0, 1, 1, QVector3D(0,1,0), QVector3D(1,1,1));
+
+    QVector3D expected = QVector3D(0.6, 0, 0);
+    QVector3D *actual = r->eval(0,0);
+
+    if (expected[0] != (*actual)[0] ||
+        expected[1] != (*actual)[1] ||
+        expected[2] != (*actual)[2])
+        qDebug() << "RevSurf_1 fail";
+    else
+        qDebug() << "RevSurf_1 pass";
+}
+
+void getY()
+{
+    vector<QVector3D> pts;
+
+    pts.push_back(QVector3D(0,1,0)); // a
+    pts.push_back(QVector3D(1,2,0)); // b
+    pts.push_back(QVector3D(0,3,1)); // c
+    pts.push_back(QVector3D(1,4,1)); // d
+
+    float expected = 2.5;
+    float actual = Terrain::get_y_height(0.5, 0.5, 1, 1, pts);
+
+    if (expected != actual)
+        qDebug() << "getY fail";
+    else
+        qDebug() << "getY pass";
+}
+
+void getY2()
+{
+    vector<QVector3D> pts;
+
+    pts.push_back(QVector3D(0,1,0)); // a
+    pts.push_back(QVector3D(1,2,0)); // b
+    pts.push_back(QVector3D(0,3,1)); // c
+    pts.push_back(QVector3D(1,4,1)); // d
+
+    float expected = 3.25;
+    float actual = Terrain::get_y_height(0.75, 0.75, 1, 1, pts);
+
+    if (expected != actual)
+        qDebug() << "getY fail";
+    else
+        qDebug() << "getY pass";
+}
+
+void getY3()
+{
+    vector<QVector3D> pts;
+
+    pts.push_back(QVector3D(0,1,0)); // a
+    pts.push_back(QVector3D(1,2,0)); // b
+    pts.push_back(QVector3D(2,3,0)); // c
+    pts.push_back(QVector3D(3,4,0)); // d
+
+    pts.push_back(QVector3D(0,1,1)); // a
+    pts.push_back(QVector3D(1,2,1)); // b
+    pts.push_back(QVector3D(2,3,1)); // c
+    pts.push_back(QVector3D(1,4,1)); // d
+
+    pts.push_back(QVector3D(0,1,2)); // a
+    pts.push_back(QVector3D(1,2,2)); // b
+    pts.push_back(QVector3D(2,3,2)); // c
+    pts.push_back(QVector3D(3,4,2)); // d
+
+    pts.push_back(QVector3D(0,1,3)); // a
+    pts.push_back(QVector3D(1,2,3)); // b
+    pts.push_back(QVector3D(2,3,3)); // c
+    pts.push_back(QVector3D(3,4,3)); // d
+
+    float expected = 2.75;
+    float actual = Terrain::get_y_height(1.75/3, 1.75/3, 3, 3, pts);
+
+    if (expected != actual)
+        qDebug() << "getY3 fail";
+    else
+        qDebug() << "getY3 pass";
+}
+
+void getY4()
+{
+    vector<QVector3D> pts;
+
+    pts.push_back(QVector3D(0,1,0)); // a
+    pts.push_back(QVector3D(1,2,0)); // b
+    pts.push_back(QVector3D(2,3,0)); // c
+    pts.push_back(QVector3D(3,4,0)); // d
+
+    pts.push_back(QVector3D(0,1,1)); // a
+    pts.push_back(QVector3D(1,2,1)); // b
+    pts.push_back(QVector3D(2,3,1)); // c
+    pts.push_back(QVector3D(1,4,1)); // d
+
+    pts.push_back(QVector3D(0,1,2)); // a
+    pts.push_back(QVector3D(1,2,2)); // b
+    pts.push_back(QVector3D(2,3,2)); // c
+    pts.push_back(QVector3D(3,4,2)); // d
+
+    pts.push_back(QVector3D(0,1,3)); // a
+    pts.push_back(QVector3D(1,2,3)); // b
+    pts.push_back(QVector3D(2,3,3)); // c
+    pts.push_back(QVector3D(3,4,3)); // d
+
+    float expected = 2.2;
+    float actual = Terrain::get_y_height(0.4, 0.4, 3, 3, pts);
+
+    if (expected != actual)
+        qDebug() << "getY4 fail";
+    else
+        qDebug() << "getY4 pass";
+}
+/*
+void getY5()
+{
+    QString filename = "../datafiles/example2.jpg";
+
+    QImage *i = new QImage();
+    i->load(filename);
+
+    Terrain *terrain = new Terrain(i, 25);
+
+    //ObjModel *obj = terrain->getObjModel();
+
+    float w = terrain->get_meshWidth();
+    float h = terrain->get_meshHeight();
+    float expected = 0;
+    float actual = Terrain::get_y_height(92,204, terrain->get_meshWidth(), terrain->get_meshHeight(), terrain->m_controlMesh);
+//    float actual = Terrain::get_y_height(0.18,0.4, terrain->get_meshWidth(), terrain->get_meshHeight(), terrain->m_controlMesh);
+    actual = Terrain::get_y_height(0.4,0.18, terrain->get_meshWidth(), terrain->get_meshHeight(), terrain->m_controlMesh);
+    actual = Terrain::get_y_height(171,2, terrain->get_meshWidth(), terrain->get_meshHeight(), terrain->m_controlMesh);
+    actual = Terrain::get_y_height(286, 138, terrain->get_meshWidth(), terrain->get_meshHeight(), terrain->m_controlMesh);
+
+    if (expected != actual)
+        qDebug() << "getY5 fail";
+    else
+        qDebug() << "getY5 pass";
+}
+*/
+Tests:: Tests()
+{
+    /*getY5();
+    getY4();
+    getY();
+    getY2();
+    getY3();
+    //RevSurf_2();
+
     BSplineBlend_Test1();
     BSplineBlend_Test2();
     BSplineBlend_Test3();

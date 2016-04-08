@@ -19,7 +19,8 @@ HEADERS += renderer.h window.h \
     objModel.h \
     tests.h \
     ray.h \
-    bspline_blended.h
+    bspline_blended.h \
+    simulation.h
 SOURCES += main.cpp renderer.cpp window.cpp \
     trackball.cpp \ 
     model.cpp \
