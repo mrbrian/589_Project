@@ -58,7 +58,7 @@ class ObjModel {
         vector<vec3> m_vertices; // vertex array
         vector<vec2> texs;  // texture coordinates
         vector<tri> tris;   // triangles
-
+        vec3 color;
 
 
 };

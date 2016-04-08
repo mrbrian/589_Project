@@ -59,7 +59,6 @@ private:
 
     QActionGroup * mLoadGroup;
     QAction * mLoadHeightMapAction;
-    QAction * mLoadModelAction;
     QAction * mLoadTextureAction;
 
     QActionGroup * mDrawGroup;

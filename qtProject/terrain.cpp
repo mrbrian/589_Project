@@ -1,29 +1,39 @@
 #include "terrain.h"
+#include "tests.h"
 
-float TreeSimulation::getRadius()
+vector<RevSurface*> *Terrain::addTreesToTerrain(std::vector<QVector3D> controlPoints)
 {
-    return m_radius;
-}
-
-float TreeSimulation::getAge()
-{
-    return m_age;
-}
-
-float TreeSimulation::getHeight()
-{
-    return m_height;
-}
-
-void Terrain::addTreesToTerain(std::vector<QVector3D> controlPoints)
-{
-   std::vector<TreeSimulation *> toMake = simulateTreeGrowth(controlPoints);
+    Simulation * sim = new Simulation();
+    std::vector<TreeSimulation *> toMake = sim->simulate(controlPoints);
+    std::cout << "Made " << toMake.size() << " new trees \n";
     //turn those into rev surfaces
-   for (int i = 0; i < toMake.size(); i++)
-   {
+    std::cout << "addtreesToTerrain\n" << endl;
+/*
+    for (int i = 0; i < m_controlMesh.size(); i++)
+    {
+        QVector3D p = m_controlMesh[i];
+        std::cout << p[0] << ",asd " << p[1] << ", " << p[2] << endl;
+    }
+*/
+    for (int i = 0; i < toMake.size(); i++)
+    {
+       QVector3D treeClr = QVector3D(1,0,0);
        TreeSimulation *tree = toMake[i];
-        m_trees.push_back(RevSurface::makeRevSurface(tree->getAge(), tree->getRadius(), tree->getHeight()));
-   }
+       QVector2D p = tree->getOrigin();
+       m_trees.push_back(RevSurface::makeRevSurface(tree, 0, m_uvImage));
+    }
+    delete sim;
+    return &m_trees;
+}
+
+int Terrain::get_meshWidth()
+{
+    return m_meshWidth;
+}
+
+int Terrain::get_meshHeight()
+{
+    return m_meshHeight;
 }
 
 std::vector<TreeSimulation *> Terrain::simulateTreeGrowth(std::vector<QVector3D> controlPoints)
@@ -31,6 +41,77 @@ std::vector<TreeSimulation *> Terrain::simulateTreeGrowth(std::vector<QVector3D>
 
 }
 
+// x, z = not normalized values
+float Terrain::get_y_height(float x, float z)
+{
+    return get_y_height(x, z, m_meshWidth, m_meshHeight, m_controlMesh);
+}
+
+// x, z = not normalized values
+float Terrain::get_y_height(float x, float z, int width, int height, vector<QVector3D> pts)
+{
+    /*if (x > 1)
+        throw std::invalid_argument( "x > 1" );
+    if (z > 1)
+        throw std::invalid_argument( "z > 1" );*/
+    int vert_width = width;
+
+    int x_min = floor(x);
+    int x_max = x_min + 1;
+
+    int z_min = floor(z);
+    int z_max = z_min + 1;
+
+    int idx1 = z_min * vert_width + x_min;
+    int idx2 = z_min * vert_width + x_max;
+    int idx3 = z_max * vert_width + x_min;
+    int idx4 = z_max * vert_width + x_max;
+
+    QVector3D a = pts[idx1];
+    QVector3D b = pts[idx2];
+    QVector3D c = pts[idx4];
+    QVector3D d = pts[idx3];
+
+    // index of triangles  vert Idx 1, +1
+
+    float x_pos = x;
+    float z_pos = z;
+
+    float xOffs = x_pos - x_min;
+    float zOffs = z_pos - z_min;
+
+    bool topTri = (z_pos) < (z_max - xOffs);    // is it above or below the diagonal?
+    int triIdx = -1;
+
+    if (topTri)
+    {
+//        triIdx = 2 * idx1;
+
+
+        QVector3D xDir = b - a;
+        QVector3D zDir = d - a;
+
+        QVector3D final_pos = a + ((xOffs * xDir) + (zOffs * zDir));
+
+        return final_pos[1];
+    }
+    else
+    {
+    //    triIdx = 2 * idx1 + 1;
+
+        QVector3D xDir = d - c;
+        QVector3D zDir = b - c;
+
+        QVector3D final_pos = c + (((1 - xOffs) * xDir) + ((1 - zOffs) * zDir));
+
+        return final_pos[1];
+    }
+}
+
+QImage *Terrain::getImage()
+{
+    return m_uvImage;
+}
 
 int low_res_modifier = 30;
 
@@ -108,6 +189,7 @@ void Terrain::createControlMesh(QImage * heightMap, float heightToAreaScale)
 
             m_controlMesh.push_back(QVector3D((float)i, height, (float)j));
 
+            //std::cout << i << ", height " << height << ", " << j << endl;
             if(i % low_res_modifier== 0 && j % low_res_modifier == 0)
             {
                 m_selectableControlMesh.push_back(QVector3D((float)i, height, (float)j));
