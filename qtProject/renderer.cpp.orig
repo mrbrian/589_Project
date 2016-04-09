@@ -4,6 +4,7 @@
 #include <cmath>
 #include "trackball.h"
 #include <QFileDialog>
+#include "tests.h"
 
 #define CHECKERBOARD_SIZE   50
 #define FPS                 60.0
@@ -20,7 +21,7 @@ float def_light[3] = {0.1, 0.1, 0.1};
 
 float select_light[3] = {0.3, 0.3, 0.3};    // selected model has extra ambient light applied
 
-float selectDistance = 10;
+float selectDistance = 11;
 int mode = 0;
 
 // constructor
@@ -42,7 +43,6 @@ Renderer::Renderer(QWidget *parent)
     ctrlDown = false;
     shiftDown = false;
 
-    m_tree = new Tree(1.5, 1, .04);
     resetView();    // initialize camera
 }
 
@@ -76,6 +76,7 @@ void Renderer::initializeGL()
     m_TextureUniform = m_program->uniformLocation("texObject");
     m_OverrideColourUniform = m_program->uniformLocation("overrideColour");
     m_AmbientUniform = m_program->uniformLocation("ambient");
+    m_SelectCodeUniform = m_program->uniformLocation("selectCode");
     m_programID = m_program->programId();
 
     m_terrain = NULL;
@@ -100,18 +101,16 @@ void Renderer::paintGL()
     glUseProgram(m_programID);
 
     glUniformMatrix4fv(m_VMatrixUniform, 1, false, m_view.data());
+    glUniform1i(m_SelectCodeUniform, -1);
 
     // Not implemented: set up lighting (if necessary)
 
     drawCheckerboard();
 
-    {
-        QMatrix4x4 t;
-        glUniformMatrix4fv(m_MMatrixUniform, 1, false, t.data());
-        drawTree(m_tree);
-    }
 
     //findIntersection
+
+
 
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
     {
@@ -122,9 +121,11 @@ void Renderer::paintGL()
         {
             drawNormals(m_model);
         }
+
+<<<<<<< HEAD
         if (mode == 1)
         {
-            glPointSize(5);
+            glPointSize(10);
 
     //        glColor3f (0.0f, 0.0f, 1.0f);
     //        cout << "num control points: " << m_terrain->getControlMeshSize();
@@ -146,111 +147,93 @@ void Renderer::paintGL()
                         }
 
                         glBegin(GL_POINTS);
-//                        for (int i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
-  //                          cout << "cp: " << m_terrain->m_selectableControlMesh.at(i)[0] << ","<< m_terrain->m_selectableControlMesh.at(i)[1] << ","<< m_terrain->m_selectableControlMesh.at(i)[2] << endl;
-                            //qDebug() << m_terrain->m_selectableControlMesh.at(i);
-                        //cout << "cp: " << m_terrain->m_selectableControlMesh.at(0)[0] << ","<< m_terrain->m_selectableControlMesh.at(0)[1] << ","<< m_terrain->m_selectableControlMesh.at(0)[2] << endl;
-/*
-
-                        glVertex3f(0.0, 0.0, 0.0)                 ;
-                        glVertex3f(0, 1, 0)                 ;
-                        glVertex3f(4, 1, 0)                 ;
-                        glVertex3f(6, 1, 0)                 ;
-                        glVertex3f(5.41421, 1, -1.41421)    ;
-                        glVertex3f(5.41421, 1, 1.41421)     ;
-                        glVertex3f(2.82843, 1, -2.82843)    ;
-                        glVertex3f(4.82843, 1, -2.82843)    ;
-                        glVertex3f(2.82843, 1, -4.82843)    ;
-                        glVertex3f(4.82843, 1, -2.82843)    ;
-                        glVertex3f(2.82843, 1, 2.82843)     ;
-                        glVertex3f(4.82843, 1, 2.82843)     ;
-                        glVertex3f(4.82843, 1, 2.82843)     ;
-                        glVertex3f(2.82843, 1, 4.82843)     ;
-                        glVertex3f(0, 2, 0)                 ;
-                        glVertex3f(4, 2, 0)                 ;
-                        glVertex3f(6, 2, 0)                 ;
-                        glVertex3f(2.58579, 2, -1.41421)    ;
-                        glVertex3f(5.41421, 2, -1.41421)    ;
-                        glVertex3f(-2.82843, 2, -2.82843)   ;
-                        glVertex3f(-0.828427, 2, -2.82843)  ;
-                        glVertex3f(-4.82843, 2, -2.82843)   ;
-                        glVertex3f(-2.82843, 2, -4.82843)   ;
-                        glVertex3f(2.82843, 2, -2.82843)    ;
-                        glVertex3f(4.82843, 2, -2.82843)    ;
-                        glVertex3f(2.82843, 2, -4.82843)    ;
-                        glVertex3f(4.82843, 2, -2.82843)    ;
-                        glVertex3f(0, 3, 0)                 ;
-                        glVertex3f(4, 3, 0)                 ;
-                        glVertex3f(6, 3, 0)                 ;
-                        glVertex3f(5.41421, 3, 1.41421)     ;
-                        glVertex3f(2.58579, 3, 1.41421)     ;
-                        glVertex3f(2.82843, 3, 2.82843)     ;
-                        glVertex3f(4.82843, 3, 2.82843)     ;
-                        glVertex3f(4.82843, 3, 2.82843)     ;
-                        glVertex3f(2.82843, 3, 4.82843)     ;
-                        glVertex3f(-2.82843, 3, 2.82843)    ;
-                        glVertex3f(-0.828427, 3, 2.82843)   ;
-                        glVertex3f(-2.82843, 3, 4.82843)    ;
-                        glVertex3f(-4.82843, 3, 2.82843)    ;
-                        glVertex3f(0, 4, 0)                 ;
-                        glVertex3f(4, 4, 0)                 ;
-                        glVertex3f(6, 4, 0)                 ;
-                        glVertex3f(2.58579, 4, 1.41421)     ;
-                        glVertex3f(2.58579, 4, -1.41421)   ;
-                        glVertex3f(-2.82843, 4, 2.82843)   ;
-                        glVertex3f(-0.828427, 4, 2.82843)  ;
-                        glVertex3f(-2.82843, 4, 4.82843)   ;
-                        glVertex3f(-4.82843, 4, 2.82843)   ;
-                        glVertex3f(-2.82843, 4, -2.82843)  ;
-                        glVertex3f(-0.828427, 4, -2.82843) ;
-                        glVertex3f(-4.82843, 4, -2.82843)  ;
-                        glVertex3f(-2.82843, 4, -4.82843)  ;
-                        glVertex3f(0, 1, 0)                ;
-                        glVertex3f(0, 2, 0)                ;
-                        glVertex3f(3, 2, 0)                ;
-                        glVertex3f(2.12132, 2, -2.12132)   ;
-                        glVertex3f(2.12132, 2, 2.12132)    ;
-                        glVertex3f(0, 4, 0)                ;
-                        glVertex3f(3, 4, 0)                ;
-                        glVertex3f(-2.12132, 4, -2.12132)  ;
-                        glVertex3f(2.12132, 4, -2.12132)   ;
-                        glVertex3f(0, 6, 0)                ;
-                        glVertex3f(3, 6, 0)                ;
-                        glVertex3f(2.12132, 6, 2.12132)    ;
-                        glVertex3f(-2.12132, 6, 2.12132)   ;
-                        glVertex3f(0, 8, 0)                ;
-                        glVertex3f(3, 8, 0)                ;
-                        glVertex3f(-2.12132, 8, 2.12132)   ;
-                        glVertex3f(-2.12132, 8, -2.12132)  ;
-                        glVertex3f(0, 2, 0)                ;
-                        glVertex3f(0, 3, 0)                ;
-                        glVertex3f(2, 3, 0)                ;
-                        glVertex3f(1.41421, 3, -1.41421)   ;
-                        glVertex3f(1.41421, 3, 1.41421)    ;
-                        glVertex3f(0, 6, 0)                ;
-                        glVertex3f(2, 6, 0)                ;
-                        glVertex3f(-1.41421, 6, -1.41421)  ;
-                        glVertex3f(1.41421, 6, -1.41421)   ;
-                        glVertex3f(0, 9, 0)                ;
-                        glVertex3f(2, 9, 0)                ;
-                        glVertex3f(1.41421, 9, 1.41421)    ;
-                        glVertex3f(-1.41421, 9, 1.41421)   ;
-                        glVertex3f(0, 12, 0)               ;
-                        glVertex3f(2, 12, 0)               ;
-                        glVertex3f(-1.41421, 12, 1.41421)  ;
-                        glVertex3f(-1.41421, 12, -1.41421) ;
-                        glVertex3f(0, 3, 0)                ;
-                        glVertex3f(0, 4, 0)                ;
-                        glVertex3f(0, 8, 0)                ;
-                        glVertex3f(0, 12, 0)               ;
-                        glVertex3f(0, 16, 0)               ;
-                        glVertex3f(0, 4, 0)*/                ;
-
                         glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
                         glEnd();
-                        break;
                     }
             }
+=======
+        glPointSize(10);
+        if(m_model == selectedModel)
+        {
+                //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
+
+                for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
+                {
+                    glClear(GL_DEPTH_BUFFER_BIT);
+
+                    glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
+
+                    glBegin(GL_POINTS);
+                    glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
+                    glEnd();
+                }
+        }
+//        glColor3f (0.0f, 0.0f, 1.0f);
+//        cout << "num control points: " << m_terrain->getControlMeshSize();
+        if(m_model == selectedModel)
+        {
+
+            //render selected points
+            if(m_currentlySelected.size() > 0)
+            for(uint i = 0; i < m_currentlySelected.size(); i += 1)
+            {
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+                glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+                glBegin(GL_POINTS);
+                glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
+                glEnd();
+
+
+            }
+
+            //render lines
+            if(m_currentlySelected.size() > 2)
+            {
+//                std::cout << "lines!" << endl;
+                glClear(GL_DEPTH_BUFFER_BIT);
+
+
+                glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+
+
+
+                for(uint i = 0; i < m_currentlySelected.size(); i += 1)
+                {
+
+                    glClear(GL_DEPTH_BUFFER_BIT);
+                    glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+                    glLineWidth( 1 );
+                    glBegin( GL_LINE_STRIP );
+
+                    if(i == m_currentlySelected.size()-1)
+                    {
+                        glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
+                        glVertex3f(m_currentlySelected.at(0)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(0)[2]);
+
+
+                    }
+                    else
+                    {
+                        glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
+                        if(i != (m_currentlySelected.size() -1))
+                            glVertex3f(m_currentlySelected.at(i+1)[0], m_currentlySelected.at(i+1)[1],m_currentlySelected.at(i+1)[2]);
+                    }
+
+
+
+                    glEnd();
+
+
+                }
+            }
+            glEnd();
+
+
+
+            //render selected points
+
+>>>>>>> Yasir
         }
     }
 
@@ -484,7 +467,7 @@ void Renderer::drawModel(Model *m_model)
         if(mode == 1)
         {
 //            cout << "num control points: " << m_terrain->getControlMeshSize();
-            double a =  m_model->findIntersection(cam_ray);
+//            double a =  m_model->findIntersection(cam_ray);
 
 //            if(a != 0)
 //                glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
@@ -612,70 +595,59 @@ void Renderer::mousePressEvent(QMouseEvent * event)
     prev_x = curr_x;
     prev_y = curr_y;
 
-    float nor_mouse_x = event->x();
-    float nor_mouse_y = event->y();
-
-//    cout << "*********************************\n";
+    float norm_mouse_x = event->x();
+    float norm_mouse_y = event->y();
 
     if(mode == 1)
     {
-//        mode = 1;
-//        cout << "mode 1 pressed" << endl;
-        normalizeMouseToSelect(nor_mouse_x, nor_mouse_y);
+        normalizeMouseToSelect(norm_mouse_x, norm_mouse_y);
 
-
-
-        for (int i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
+        for (uint i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
         {
-//            cout << "loop point: " << i << endl;
-            if(i == 0)
-            {
-//                cout << "abs x: " << abs(m_terrain->m_selectableControlMesh.at(i)[0] - nor_mouse_x) << endl;
-//                cout << "abs y: " << abs(m_terrain->m_selectableControlMesh.at(i)[2] - nor_mouse_y) << endl;
-            }
 
-
-            if (abs(m_terrain->m_selectableControlMesh.at(i)[0] - nor_mouse_x) < selectDistance && abs(m_terrain->m_selectableControlMesh.at(i)[2] - nor_mouse_y) < selectDistance)
+            if (abs(m_terrain->m_selectableControlMesh.at(i)[0] - norm_mouse_x) < selectDistance && abs(m_terrain->m_selectableControlMesh.at(i)[2] - norm_mouse_y) < selectDistance)
             {
-                if(m_terrain->m_selectabledFlag.at(i) == 0 )
+
+                if (m_currentlySelected.size() == 0)
                 {
-                    m_terrain->m_selectabledFlag.at(i) = 1;
-                    old_select_point = current_selected_point;
-                    current_selected_point = i;
-                    numSelectedPoints++;
-//                    cout << "selected point: " << i << endl;
-
-                    if(numSelectedPoints > 1)
+                    m_currentlySelected.push_back(m_terrain->m_selectableControlMesh.at(i));
+                    std::cout << "added first point!" << endl;
+                }
+                else
+                {
+                    bool alreadySelected = false;
+                    for(uint j = 0; j < m_currentlySelected.size(); j++ )
                     {
-//                        connectPoints(old_select_point, current_selected_point); Not Sure if nessecary?
+                        //loop for all selected points to avoid redundant adds to selected points
+                        if( m_terrain->m_selectableControlMesh.at(i)[0] == m_currentlySelected.at(j)[0] && m_terrain->m_selectableControlMesh.at(i)[2] ==  m_currentlySelected.at(j)[2])
+                        {
+                                alreadySelected = true;
+                                std::cout << "point already selected!" << endl;
+                                break;
+                        }
                     }
 
+                    if(!alreadySelected)
+                    {
+                        m_currentlySelected.push_back(m_terrain->m_selectableControlMesh.at(i));
+                        std::cout << "added new point!" << endl;
+
+                    }
                 }
-
-//                cout << "old control : " << old_select_point << endl;
-//                cout << "curr control : " << current_selected_point << endl;
-
-
 
             }
         }
-
     }
     else if (mode == 0)
     {
+<<<<<<< HEAD
 //        mode = 0;
         //cout << "mode 0 pressed" << endl;
 
+=======
+        cout << "mode 0 pressed" << endl;
+>>>>>>> Yasir
     }
-
-//    cout << "Stub: Motion at " << nor_mouse_x << ", " << nor_mouse_y << ".\n";
-//    cout << "first point: " << m_terrain->m_selectableControlMesh.at(0)[0] << ", " <<  m_terrain->m_selectableControlMesh.at(0)[2]
-//         << endl << "mid point: " << m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()/2)[0] << ", " <<  m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()/2)[2]
-//         << endl << "last point: " << m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()-1)[0] << ", " <<  m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()-1)[2]
-//         << endl;
-//    cout << "size control mesh : " << m_terrain->m_selectableControlMesh.size() << endl;
-//    cout << "size control flag : " << m_terrain->m_selectabledFlag.size() << endl;
-
 
 
 }
@@ -1128,6 +1100,7 @@ void Renderer::selectMesh()
 
         camera.setPosition(old_cam_position);
         updateCamera();
+<<<<<<< HEAD
         std::cout << "gathering control points\n" << endl;
 
         if (numSelectedPoints > 2)
@@ -1145,12 +1118,15 @@ void Renderer::selectMesh()
                 }
             }
         }
-        else
-            return;
+=======
+
+>>>>>>> Yasir
 
         //std::cout << "Added trees to terrain\n";
         vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
 
+        if (treeRevs == 0)
+            return;
         for (int i = 0; i < treeRevs->size(); i++)
         {
             RevSurface *tree = (*treeRevs)[i];
@@ -1189,6 +1165,8 @@ void Renderer::selectMesh()
         camera.setForward(QVector3D(0,0,1));
         camera.setRight(QVector3D(1,0,0));
         camera.setUp(QVector3D(0,1,0));
+
+        m_currentlySelected.clear();
 
         updateCamera();
         resetModels();
@@ -1317,54 +1295,4 @@ void Renderer::connectPoints(int oldPoint, int newPoint)
 
     cout <<"############################\n";
 
-}
-
-void Renderer::drawTree(Tree *t)
-{
-    glLineWidth(2);
-    glBegin(GL_LINES);
-    std::vector<TreeNode *> mLeafNodes = t->getLeafNodes();
-
-    for (int i = 0; i < mLeafNodes.size(); i++)
-    {
-        TreeNode * node = mLeafNodes[i];
-        while (!node->hasBeenDrawn() && node->getPreviousNode() != NULL)
-        {
-
-            node->setDrawn(true);
-            QVector3D color;
-            switch (node->getType())
-            {
-            case(0):
-                glLineWidth(5);
-                color = QVector3D(1,0,0);
-                break;
-            case(1):
-                glLineWidth(3);
-                color = QVector3D(1,0,0);
-                break;
-            case(2):
-                glLineWidth(1);
-                color = QVector3D(0,1,0);
-                break;
-            }
-
-            QVector4D currentPosition = node->getPosition();
-            QVector4D previousPosition = node->getPreviousNode()->getPosition();
-
-            glColor3f(color.x(), color.y(), color.z());
-            glVertex3f(currentPosition.x(), currentPosition.y(), currentPosition.z());
-            //std::cout <<currentPosition.x() << "," << currentPosition.y() << "," << currentPosition.z() << std::endl;
-            glColor3f(color.x(), color.y(), color.z());
-            glVertex3f(previousPosition.x(), previousPosition.y(), previousPosition.z());
-            node = node->getPreviousNode();
-        }
-
-    }
-    glEnd();
-    std::vector<TreeNode *> mTreeNodes = t->getTreeNodes();
-    for (int i = 0; i < mTreeNodes.size(); i++)
-    {
-        mTreeNodes[i]->setDrawn(false);
-    }
 }
