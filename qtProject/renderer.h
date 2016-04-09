@@ -53,6 +53,7 @@ public:
     QString getNormalMode();
     QString getSelectedModel();
     void drawTree(Tree *t);
+    void drawCylinder(float r1, float r2, QVector3D p1, QVector3D p2, QVector3D color);
 
 public slots:
     void setKeyPressed(int val);

@@ -13,7 +13,7 @@ class Renderer;
 class TreeNode
 {
 public:
-    TreeNode(int type, QVector4D position, TreeNode *mPrevious);
+    TreeNode(int type, QVector4D position, TreeNode *mPrevious, QMatrix4x4 *t);
     int getType();
     QVector4D getGrowthDirection();
     QVector4D getPosition();
@@ -24,6 +24,7 @@ public:
 private: //members
     int mType;
     QVector4D mPosition;
+    QMatrix4x4 *mTransform;
     TreeNode * mPreviousNode;
     bool mDrawn;
 };

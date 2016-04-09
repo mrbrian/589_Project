@@ -15,6 +15,18 @@ RevSurface *RevSurface::makeCylinder(float r, float h, QVector3D color)
     return result;
 }
 
+RevSurface *RevSurface::makeCylinder(float r1, float r2, float h, QVector3D color)
+{
+    std::vector<QVector2D*> *pts_1 = new std::vector<QVector2D*>();
+    pts_1->push_back(new QVector2D(r1, 0));
+    pts_1->push_back(new QVector2D(r2, h));
+
+    BSpline *bs = new BSpline(2, pts_1);
+
+    RevSurface *result = new RevSurface(bs, color);
+    return result;
+}
+
 RevSurface::RevSurface(BSpline *u, QVector3D clr)
 {
     curve = u;

@@ -1319,6 +1319,82 @@ void Renderer::connectPoints(int oldPoint, int newPoint)
 
 }
 
+void Renderer::drawCylinder(float r1, float r2, QVector3D p1, QVector3D p2, QVector3D clr)
+{
+    // todo:  make a non-uniform scale matrix   to get r1 & r2
+    float height = (p2 - p1).length();
+    RevSurface *cyl = RevSurface::makeCylinder(r1, r2, height, clr);
+
+    // update matrix
+    QMatrix4x4 final_trans;
+
+    QMatrix4x4 y_scale;
+    y_scale.setColumn(1, QVector4D(0,height,0,0));
+
+    QMatrix4x4 r_scale;
+    r_scale.setColumn(0, QVector4D(r1, 0, 0, 0));
+    r_scale.setColumn(2, QVector4D(0, 0, r1, 0));
+
+    QMatrix4x4 rot;
+    rot.lookAt(p1, p2, QVector3D(0,1,0));
+
+
+    // draw the same unit cylinder. transformed.  ... what about colour.  a cylinder for each color?  eh  ignore for now.
+
+}
+
+
+void Renderer::drawTree(Tree *t)
+{
+    glLineWidth(1);
+    glBegin(GL_LINES);
+    std::vector<TreeNode *> mLeafNodes = t->getLeafNodes();
+
+    for (int i = 0; i < mLeafNodes.size(); i++)
+    {
+        TreeNode * node = mLeafNodes[i];
+        while (!node->hasBeenDrawn() && node->getPreviousNode() != NULL)
+        {
+
+            node->setDrawn(true);
+            QVector3D color;
+            switch (node->getType())
+            {
+            case(0):
+                glLineWidth(5);
+                color = QVector3D(1,0,0);
+                break;
+            case(1):
+                glLineWidth(3);
+                color = QVector3D(1,0,0);
+                break;
+            case(2):
+                glLineWidth(1);
+                color = QVector3D(0,1,0);
+                break;
+            }
+
+            QVector4D currentPosition = node->getPosition();
+            QVector4D previousPosition = node->getPreviousNode()->getPosition();
+
+            glColor3f(color.x(), color.y(), color.z());
+            glVertex3f(currentPosition.x(), currentPosition.y(), currentPosition.z());
+            //std::cout <<currentPosition.x() << "," << currentPosition.y() << "," << currentPosition.z() << std::endl;
+            glColor3f(color.x(), color.y(), color.z());
+            glVertex3f(previousPosition.x(), previousPosition.y(), previousPosition.z());
+            node = node->getPreviousNode();
+        }
+
+    }
+    glEnd();
+    std::vector<TreeNode *> mTreeNodes = t->getTreeNodes();
+    for (int i = 0; i < mTreeNodes.size(); i++)
+    {
+        mTreeNodes[i]->setDrawn(false);
+    }
+}
+
+/*
 void Renderer::drawTree(Tree *t)
 {
     glLineWidth(2);
@@ -1368,3 +1444,4 @@ void Renderer::drawTree(Tree *t)
         mTreeNodes[i]->setDrawn(false);
     }
 }
+*/

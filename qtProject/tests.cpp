@@ -7,6 +7,7 @@
 #include "model.h"
 #include "bspline_blended.h"
 #include "treemodel.h"
+#include "treenode.h"
 
 using namespace std;
 
@@ -587,26 +588,64 @@ void rotTest()
 
 }
 
+QMatrix4x4 *makeTransform(float r1, float r2, QVector3D p1, QVector3D p2)
+{
+    float height = (p2 - p1).length();
+    // update matrix
+    QMatrix4x4 final_trans;
+
+    QMatrix4x4 y_scale;
+    y_scale.setColumn(1, QVector4D(0,height,0,0));
+
+    QMatrix4x4 r_scale;
+    r_scale.setColumn(0, QVector4D(r1, 0, 0, 0));
+    r_scale.setColumn(2, QVector4D(0, 0, r1, 0));
+
+    QMatrix4x4 rot;
+    rot.lookAt(p1, p2, QVector3D(0,0,1));
+    //rot.rotate(90, 1, 0, 0);
+
+    //QMatrix4x4 translate;
+    //translate.translate(p1);
+
+    QVector3D dir = (p2 - p1).normalized();
+    if (dir == QVector3D(0,0,1))
+        return new QMatrix4x4(final_trans);
+
+    final_trans = rot * r_scale * y_scale * final_trans;
+
+    //final_trans.setColumn(3, QVector4D(p1,1));
+    return new QMatrix4x4(final_trans);
+}
+/*
 void matrix_rotTest()
 {
-    QVector3D from = QVector3D(0,0,0);
-//    QVector3D to = QVector3D(0,0,-1);   gives identity
-    QVector3D to = QVector3D(0,1,0);
+    QVector3D from = QVector3D(1,1,1);
+    QVector3D to = QVector3D(1,3,1);   // should give identity    i have some sort of matrix to point at a direction
 
-    float r = (to - from).length();
-    QVector3D dir = to - from;
-    dir.normalize();
-    QVector3D up = QVector3D(0,1,0);
-
-    // rotate identity into this dir
-    QMatrix4x4 trans;
-    trans.lookAt(from, to, up);
+    QMatrix4x4 *t = makeTransform(0.1, 0.1, from, to);
 
     // take whats looking up and rotate to dir
 
-    QVector3D fwd = QVector3D(0,1,0);
-    QVector3D expected = dir;
-    QVector3D actual = trans * fwd;
+    QVector3D pts[8] = {
+        QVector3D(0,0,1),
+        QVector3D(0,0,-1),
+        QVector3D(1,0,0),
+        QVector3D(-1,0,0),
+        QVector3D(0,1,1),
+        QVector3D(0,1,-1),
+        QVector3D(1,1,0),
+        QVector3D(-1,1,0)
+    };
+
+    QVector3D expected = QVector3D(0,1,0);           // i want to point the thing
+    QVector3D actual =  QVector3D(0,1,0);
+
+    for (int i = 0 ; i < 8; i++)
+    {
+        actual = *t * pts[i];
+        qDebug() << actual;
+    }
 
     if (expected[0] != actual[0] ||
         expected[1] != actual[1] ||
@@ -616,11 +655,76 @@ void matrix_rotTest()
         qDebug() << "matrix_rotTest pass";
 }
 
+
+void matrix_rotTest2()
+{
+    QVector3D from = QVector3D(0,0,0);
+    QVector3D to = QVector3D(0,1,0);   // should give identity    i have some sort of matrix to point at a direction
+
+    QMatrix4x4 *t = makeTransform(1, 1, from, to);
+
+    // take whats looking up and rotate to dir
+
+    QVector3D pts[8] = {
+
+        QVector3D(0,0,0),
+        QVector3D(0,0,1),
+        QVector3D(0,1,0),
+        QVector3D(1,0,0),
+
+        QVector3D(0,1,1),
+        QVector3D(0,1,-1),
+        QVector3D(1,1,0),
+        QVector3D(-1,1,0)
+    };
+
+    QVector3D expected = QVector3D(0,1,0);           // i want to point the thing
+    QVector3D actual =  QVector3D(0,1,0);
+
+    for (int i = 0 ; i < 8; i++)
+    {
+        actual = *t * pts[i];
+        qDebug() << actual;
+    }
+
+    if (expected[0] != actual[0] ||
+        expected[1] != actual[1] ||
+        expected[2] != actual[2])
+        qDebug() << "matrix_rotTest fail";
+    else
+        qDebug() << "matrix_rotTest pass";
+}
+
+*/
+void ptree_Test()
+{
+    Tree mTree = Tree(1.5, 1, .04);
+
+    QMatrix4x4 t;
+    //float rotationAngle = 35.0f / 180.0f * 3.14;
+    float rotationAngle = 35.0f;
+    t.rotate(rotationAngle, 0, 1, 0);
+    QVector4D v = t * QVector3D(1,0,0);
+    qDebug() << v;
+}
+
+void orderTest()
+{
+    QMatrix4x4 t;
+    QVector3D pos = QVector3D(1,0,0);
+
+    t.translate(pos);
+    t.rotate(90,0,1,0);
+    qDebug() << t;
+}
+
 Tests:: Tests()
 {
-    matrix_rotTest();
-    rotTest();
-    treeTest();
+    orderTest();
+    //matrix_rotTest2();
+   // matrix_rotTest();
+    //matrix_rotTest();
+    //ptree_Test();
 
     /*getY5();
     getY4();
