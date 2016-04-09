@@ -46,6 +46,7 @@ public:
     void makeVbo(Model *model);
     void setModel(ObjModel *model);
     void setSubmodel(ObjModel *model);
+    Model *setSubmodel_hack(ObjModel *obj_m);
     void setNormalMode(NormalMode mode);
 
     QString getDrawMode();
@@ -149,10 +150,9 @@ private:
 
     // mouse buttons that are currently pressed
     int mouseButtons;
-    bool ctrlDown;
-    bool shiftDown;
     bool altDown;
-
+    bool ctrlDown;
+    bool shiftDown;    
 
     void normalizeMouseToSelect(float &, float &);
     void connectPoints(int oldPoint, int newPoint);
@@ -162,7 +162,7 @@ private:
     int old_select_point;
     int current_selected_point;
     int numSelectedPoints = 0;
-    vector<QVector3D> m_currentlySelected;
+    std::vector<QVector3D> m_currentlySelected;
 
 
     float elapsedTime;

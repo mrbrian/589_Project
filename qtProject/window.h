@@ -19,6 +19,7 @@
 #include <QFileDialog>
 #include <QLabel>
 #include "objModel.h"
+#include "revsurface.h"
 
 class Renderer;
 
@@ -58,7 +59,6 @@ private:
 
     QActionGroup * mLoadGroup;
     QAction * mLoadHeightMapAction;
-    QAction * mLoadModelAction;
     QAction * mLoadTextureAction;
 
     QActionGroup * mDrawGroup;

@@ -1,5 +1,9 @@
 #include "bspline.h"
 
+BSpline :: BSpline(){
+
+}
+
 BSpline :: BSpline(int k, vector<QVector2D*> *pts){
     ctrlPts = pts;
     knots = BSpline::standardKnotSeq(pts->size() - 1, k);
@@ -99,8 +103,9 @@ QVector2D *BSpline::evalPoint(float u)
         while (u >= knots[d + 1] && d < m + k)
             d++;
     }
-    else if (u == 1)
+    else if (u >= 1)
     {
+        u = 1;      // clamp to end of curve
         while (u > knots[d+1] && d < m + k)
             d++;
     }

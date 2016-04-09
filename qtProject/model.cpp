@@ -443,11 +443,12 @@ Model::Model(ObjModel *m, Model *par)
     int numFloats = m->num_tris * 9;
     float *c_ = new float[numFloats];
 
+    QVector3D clr = QVector3D(m->color[0], m->color[1], m->color[2]);
     for (int i = 0; i < numFloats; i += 3)  // initialize colours as white
     {
-        c_[i]   = 1;
-        c_[i+1] = 1;
-        c_[i+2] = 1;
+        c_[i]   = clr[0];
+        c_[i+1] = clr[1];
+        c_[i+2] = clr[2];
     }
     sizeColours = numFloats * sizeof(float);
     colours = c_;
