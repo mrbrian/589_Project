@@ -3,11 +3,12 @@
 
 vector<RevSurface*> *Terrain::addTreesToTerrain(std::vector<QVector3D> controlPoints)
 {
+    m_trees.clear(); //NOTE: remove trees every time this is run for Performance
     Simulation * sim = new Simulation();
     std::vector<TreeSimulation *> toMake = sim->simulate(controlPoints);
     std::cout << "Made " << toMake.size() << " new trees \n";
     //turn those into rev surfaces
-    std::cout << "addtreesToTerrain\n" << endl;
+
 /*
     for (int i = 0; i < m_controlMesh.size(); i++)
     {
@@ -192,9 +193,7 @@ void Terrain::createControlMesh(QImage * heightMap, float heightToAreaScale)
             //std::cout << i << ", height " << height << ", " << j << endl;
             if(i % low_res_modifier== 0 && j % low_res_modifier == 0)
             {
-                m_selectableControlMesh.push_back(QVector3D((float)i, height, (float)j));
-                m_selectabledFlag.push_back(0);
-
+                m_selectableControlMesh.push_back(QVector3D((float)i + (i*j*0.000001), height, (float)j + (i*j*0.00001)));
             }
 
             //m_controlMesh.push_back(QVector3D((float)i / (float)m_meshWidth, height,(float)j / (float)m_meshHeight));

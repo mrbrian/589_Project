@@ -544,6 +544,10 @@ moc_renderer.cpp: model.h \
 		renderable.h \
 		revsurface.h \
 		bspline.h \
+<<<<<<< HEAD
+=======
+		bspline_blended.h \
+>>>>>>> Yasir
 		simulation.h \
 		renderer.h
 	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/uga/ymohamma/Desktop/589_Project/qtProject -I/home/uga/ymohamma/Desktop/589_Project/qtProject -I'/home/uga/ymohamma/Desktop/589_Project/qtProject/..\glew-1.13.0\include' -I'/home/uga/ymohamma/Desktop/589_Project/qtProject/..\glm' -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtTest -I/usr/include/qt5/QtCore -I/usr/include/c++/5.3.1 -I/usr/include/c++/5.3.1/x86_64-redhat-linux -I/usr/include/c++/5.3.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.3.1/include -I/usr/local/include -I/usr/include renderer.h -o moc_renderer.cpp
@@ -551,6 +555,15 @@ moc_renderer.cpp: model.h \
 moc_window.cpp: objModel.h \
 		revsurface.h \
 		bspline.h \
+<<<<<<< HEAD
+=======
+		bspline_blended.h \
+		terrain.h \
+		renderable.h \
+		ray.h \
+		camera.h \
+		simulation.h \
+>>>>>>> Yasir
 		window.h
 	/usr/lib64/qt5/bin/moc $(DEFINES) -I/usr/lib64/qt5/mkspecs/linux-g++ -I/home/uga/ymohamma/Desktop/589_Project/qtProject -I/home/uga/ymohamma/Desktop/589_Project/qtProject -I'/home/uga/ymohamma/Desktop/589_Project/qtProject/..\glew-1.13.0\include' -I'/home/uga/ymohamma/Desktop/589_Project/qtProject/..\glm' -I/usr/include/qt5 -I/usr/include/qt5/QtWidgets -I/usr/include/qt5/QtGui -I/usr/include/qt5/QtTest -I/usr/include/qt5/QtCore -I/usr/include/c++/5.3.1 -I/usr/include/c++/5.3.1/x86_64-redhat-linux -I/usr/include/c++/5.3.1/backward -I/usr/lib/gcc/x86_64-redhat-linux/5.3.1/include -I/usr/local/include -I/usr/include window.h -o moc_window.cpp
 
@@ -572,6 +585,15 @@ main.o: main.cpp window.h \
 		objModel.h \
 		revsurface.h \
 		bspline.h \
+<<<<<<< HEAD
+=======
+		bspline_blended.h \
+		terrain.h \
+		renderable.h \
+		ray.h \
+		camera.h \
+		simulation.h \
+>>>>>>> Yasir
 		tests.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
@@ -584,14 +606,22 @@ renderer.o: renderer.cpp renderer.h \
 		renderable.h \
 		revsurface.h \
 		bspline.h \
+<<<<<<< HEAD
 		simulation.h \
 		trackball.h
+=======
+		bspline_blended.h \
+		simulation.h \
+		trackball.h \
+		tests.h
+>>>>>>> Yasir
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o renderer.o renderer.cpp
 
 window.o: window.cpp window.h \
 		objModel.h \
 		revsurface.h \
 		bspline.h \
+<<<<<<< HEAD
 		renderer.h \
 		model.h \
 		ray.h \
@@ -599,6 +629,16 @@ window.o: window.cpp window.h \
 		terrain.h \
 		renderable.h \
 		simulation.h
+=======
+		bspline_blended.h \
+		terrain.h \
+		renderable.h \
+		ray.h \
+		camera.h \
+		simulation.h \
+		renderer.h \
+		model.h
+>>>>>>> Yasir
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o window.o window.cpp
 
 trackball.o: trackball.cpp trackball.h
@@ -616,6 +656,10 @@ camera.o: camera.cpp camera.h
 revsurface.o: revsurface.cpp revsurface.h \
 		bspline.h \
 		objModel.h \
+<<<<<<< HEAD
+=======
+		bspline_blended.h \
+>>>>>>> Yasir
 		terrain.h \
 		renderable.h \
 		ray.h \
@@ -633,7 +677,13 @@ terrain.o: terrain.cpp terrain.h \
 		camera.h \
 		revsurface.h \
 		bspline.h \
+<<<<<<< HEAD
 		simulation.h
+=======
+		bspline_blended.h \
+		simulation.h \
+		tests.h
+>>>>>>> Yasir
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o terrain.o terrain.cpp
 
 objModel.o: objModel.cpp objModel.h
@@ -643,10 +693,20 @@ tests.o: tests.cpp tests.h \
 		bspline.h \
 		revsurface.h \
 		objModel.h \
+<<<<<<< HEAD
 		model.h \
 		ray.h \
 		camera.h \
 		bspline_blended.h
+=======
+		bspline_blended.h \
+		terrain.h \
+		renderable.h \
+		ray.h \
+		camera.h \
+		simulation.h \
+		model.h
+>>>>>>> Yasir
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tests.o tests.cpp
 
 ray.o: ray.cpp ray.h \

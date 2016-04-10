@@ -20,7 +20,7 @@ float def_light[3] = {0.1, 0.1, 0.1};
 
 float select_light[3] = {0.3, 0.3, 0.3};    // selected model has extra ambient light applied
 
-float selectDistance = 10;
+float selectDistance = 11;
 int mode = 0;
 
 // constructor
@@ -42,7 +42,6 @@ Renderer::Renderer(QWidget *parent)
     ctrlDown = false;
     shiftDown = false;
 
-    m_tree = new Tree(1.5, 1, .04);
     resetView();    // initialize camera
 }
 
@@ -106,10 +105,6 @@ void Renderer::paintGL()
 
     drawCheckerboard();
 
-    
-    drawTree(m_tree);
-    
-
     //findIntersection
 
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
@@ -123,37 +118,71 @@ void Renderer::paintGL()
         }
         if (mode == 1)
         {
-            glPointSize(5);
-
-    //        glColor3f (0.0f, 0.0f, 1.0f);
-    //        cout << "num control points: " << m_terrain->getControlMeshSize();
-            if(m_model == selectedModel && m_terrain)
+            glPointSize(10);
+            if(m_model == selectedModel)
             {
-                    //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
+                //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
 
-                    for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
+                for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
+                {
+                    glClear(GL_DEPTH_BUFFER_BIT);
+
+                    glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
+
+                    glBegin(GL_POINTS);
+                    glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
+                    glEnd();
+                }
+            }
+
+            if(m_model == selectedModel)
+            {
+
+                //render selected points
+                if(m_currentlySelected.size() > 0)
+                for(uint i = 0; i < m_currentlySelected.size(); i += 1)
+                {
+                    glClear(GL_DEPTH_BUFFER_BIT);
+
+                    glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+                    glBegin(GL_POINTS);
+                    glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
+                    glEnd();
+                }
+
+                //render lines
+                if(m_currentlySelected.size() > 1)
+                {
+                    glClear(GL_DEPTH_BUFFER_BIT);
+
+
+                    glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+
+                    for(uint i = 0; i < m_currentlySelected.size(); i += 1)
                     {
-                        if(m_terrain->m_selectabledFlag.at(i) == 1)
+
+                        glClear(GL_DEPTH_BUFFER_BIT);
+                        glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+                        glLineWidth( 1 );
+                        glBegin( GL_LINE_STRIP );
+
+                        if(i == m_currentlySelected.size()-1)
                         {
-    //                      cout << "selected: " << i <<endl;
-                            glUniform3fv(m_OverrideColourUniform, 1, &red_override[0]);
+                            glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
+                            glVertex3f(m_currentlySelected.at(0)[0], m_currentlySelected.at(0)[1],m_currentlySelected.at(0)[2]);
+
                         }
                         else
                         {
-                            glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
-
+                            glVertex3f(m_currentlySelected.at(i)[0], m_currentlySelected.at(i)[1],m_currentlySelected.at(i)[2]);
+                            if(i != (m_currentlySelected.size() -1))
+                                glVertex3f(m_currentlySelected.at(i+1)[0], m_currentlySelected.at(i+1)[1],m_currentlySelected.at(i+1)[2]);
                         }
-
-                        glBegin(GL_POINTS);
-//                        for (int i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
-  //                          cout << "cp: " << m_terrain->m_selectableControlMesh.at(i)[0] << ","<< m_terrain->m_selectableControlMesh.at(i)[1] << ","<< m_terrain->m_selectableControlMesh.at(i)[2] << endl;
-                            //qDebug() << m_terrain->m_selectableControlMesh.at(i);
-                        //cout << "cp: " << m_terrain->m_selectableControlMesh.at(0)[0] << ","<< m_terrain->m_selectableControlMesh.at(0)[1] << ","<< m_terrain->m_selectableControlMesh.at(0)[2] << endl;
-
-                        glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
                         glEnd();
-                        break;
                     }
+                }
+                glEnd();
+                //render selected points
             }
         }
     }
@@ -383,12 +412,14 @@ void Renderer::drawModel(Model *m_model)
 
     Ray cam_ray (camera.getPosition(), camera.getRotation());
 
+
+
     if(m_model == selectedModel)
     {
         if(mode == 1)
-        {
+        {           
 //            cout << "num control points: " << m_terrain->getControlMeshSize();
-            double a =  m_model->findIntersection(cam_ray);
+//            double a =  m_model->findIntersection(cam_ray);
 
 //            if(a != 0)
 //                glUniform3fv(m_AmbientUniform, 1, &def_light[0]);
@@ -510,76 +541,60 @@ void Renderer::mousePressEvent(QMouseEvent * event)
     QTextStream cout(stdout);
 
     mouseButtons = event->buttons();
+
     curr_x = event->x();
     curr_y = event->y();
 
     prev_x = curr_x;
     prev_y = curr_y;
 
-    float nor_mouse_x = event->x();
-    float nor_mouse_y = event->y();
-
-//    cout << "*********************************\n";
+    float norm_mouse_x = event->x();
+    float norm_mouse_y = event->y();
 
     if(mode == 1)
     {
-//        mode = 1;
-//        cout << "mode 1 pressed" << endl;
-        normalizeMouseToSelect(nor_mouse_x, nor_mouse_y);
+        normalizeMouseToSelect(norm_mouse_x, norm_mouse_y);
 
-
-
-        for (int i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
+        for (uint i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
         {
-//            cout << "loop point: " << i << endl;
-            if(i == 0)
-            {
-//                cout << "abs x: " << abs(m_terrain->m_selectableControlMesh.at(i)[0] - nor_mouse_x) << endl;
-//                cout << "abs y: " << abs(m_terrain->m_selectableControlMesh.at(i)[2] - nor_mouse_y) << endl;
-            }
 
-
-            if (abs(m_terrain->m_selectableControlMesh.at(i)[0] - nor_mouse_x) < selectDistance && abs(m_terrain->m_selectableControlMesh.at(i)[2] - nor_mouse_y) < selectDistance)
+            if (abs(m_terrain->m_selectableControlMesh.at(i)[0] - norm_mouse_x) < selectDistance && abs(m_terrain->m_selectableControlMesh.at(i)[2] - norm_mouse_y) < selectDistance)
             {
-                if(m_terrain->m_selectabledFlag.at(i) == 0 )
+
+                if (m_currentlySelected.size() == 0)
                 {
-                    m_terrain->m_selectabledFlag.at(i) = 1;
-                    old_select_point = current_selected_point;
-                    current_selected_point = i;
-                    numSelectedPoints++;
-//                    cout << "selected point: " << i << endl;
-
-                    if(numSelectedPoints > 1)
+                    m_currentlySelected.push_back(m_terrain->m_selectableControlMesh.at(i));
+//                    std::cout << "added first point!" << endl;
+                }
+                else
+                {
+                    bool alreadySelected = false;
+                    for(uint j = 0; j < m_currentlySelected.size(); j++ )
                     {
-//                        connectPoints(old_select_point, current_selected_point); Not Sure if nessecary?
+                        //loop for all selected points to avoid redundant adds to selected points
+                        if( m_terrain->m_selectableControlMesh.at(i)[0] == m_currentlySelected.at(j)[0] && m_terrain->m_selectableControlMesh.at(i)[2] ==  m_currentlySelected.at(j)[2])
+                        {
+                                alreadySelected = true;
+//                                std::cout << "point already selected!" << endl;
+                                break;
+                        }
                     }
 
+                    if(!alreadySelected)
+                    {
+                        m_currentlySelected.push_back(m_terrain->m_selectableControlMesh.at(i));
+//                        std::cout << "added new point!" << endl;
+
+                    }
                 }
-
-//                cout << "old control : " << old_select_point << endl;
-//                cout << "curr control : " << current_selected_point << endl;
-
-
 
             }
         }
-
     }
     else if (mode == 0)
     {
-//        mode = 0;
-        //cout << "mode 0 pressed" << endl;
-
+//        cout << "mode 0 pressed" << endl;
     }
-
-//    cout << "Stub: Motion at " << nor_mouse_x << ", " << nor_mouse_y << ".\n";
-//    cout << "first point: " << m_terrain->m_selectableControlMesh.at(0)[0] << ", " <<  m_terrain->m_selectableControlMesh.at(0)[2]
-//         << endl << "mid point: " << m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()/2)[0] << ", " <<  m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()/2)[2]
-//         << endl << "last point: " << m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()-1)[0] << ", " <<  m_terrain->m_selectableControlMesh.at(m_terrain->m_selectableControlMesh.size()-1)[2]
-//         << endl;
-//    cout << "size control mesh : " << m_terrain->m_selectableControlMesh.size() << endl;
-//    cout << "size control flag : " << m_terrain->m_selectabledFlag.size() << endl;
-
 
 
 }
@@ -588,6 +603,7 @@ void Renderer::mousePressEvent(QMouseEvent * event)
 void Renderer::mouseReleaseEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
+//    cout << "Stub: Button " << event->button() << " pressed.\n";
     mouseButtons = event->buttons();
 }
 
@@ -596,15 +612,15 @@ void Renderer::setKeyPressed(int val)
 {
     switch (val)
     {
-        case Qt::Key_Alt:
-            altDown = true;
-        break;
         case Qt::Key_Shift:
             shiftDown = true;
         break;
         case Qt::Key_Control:
             ctrlDown = true;
-        break;        
+        break;
+        case Qt::Key_Alt:
+            altDown = true;
+        break;
     }
 }
 
@@ -613,14 +629,14 @@ void Renderer::setKeyReleased(int val)
 {
     switch (val)
     {
-        case Qt::Key_Alt:
-            altDown = false;
-        break;
         case Qt::Key_Shift:
             shiftDown = false;
         break;
         case Qt::Key_Control:
             ctrlDown = false;
+        break;
+        case Qt::Key_Alt:
+            altDown = false;
         break;
     }
 }
@@ -629,6 +645,9 @@ void Renderer::setKeyReleased(int val)
 void Renderer::mouseMoveEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
+//    cout << "Stub: Motion at " << event->x() << ", " << event->y() << ".\n";
+
+
     prev_x = curr_x;
     prev_y = curr_y;
 
@@ -802,6 +821,7 @@ void Renderer::updateCamera()
 
     if(mode == 1)
     {
+
         m_view.rotate(90, camera.getUp());
     }
 }
@@ -932,6 +952,8 @@ void Renderer::handleInteraction()
         return;
     }
 
+
+
     if (shiftDown)                // modify camera position
     {
         if (mouseButtons & Qt::LeftButton)
@@ -1039,45 +1061,57 @@ void Renderer::selectMesh()
 
     if(mode == 1)
     {
-        cout << "select mesh mode off" << endl;
+//        cout << "select mesh mode off" << endl;
         mode = 0;
 
         camera.setPosition(old_cam_position);
         updateCamera();
-        std::cout << "gathering control points\n" << endl;
 
-        if (numSelectedPoints > 2)
+        if(m_currentlySelected.size() < 3)
+        {
+            std::cout << "at least 3 points are required for selection\n" << endl;
+            return;
+        }
+
+
+        vector<QVector3D> tempConvert = m_currentlySelected;
+        if (tempConvert.size() > 2)
         {
             m_currentlySelected.clear();
-            for (int i = 0; i < m_terrain->m_selectableControlMesh.size(); i++)
+            for (int i = 0; i < tempConvert.size(); i++)
             {
-                if(m_terrain->m_selectabledFlag.at(i) == 1 )
-                {                    
-                    QVector3D point = QVector3D(m_terrain->m_selectableControlMesh.at(i).x() / (float)width(), 0 , m_terrain->m_selectableControlMesh.at(i).z() / (float) height());
+                    QVector3D point = QVector3D(tempConvert.at(i).x() / (float)width(), 0 , tempConvert.at(i).z() / (float) height());
                     //std::cout << point.x() << "," << m_terrain->m_selectableControlMesh.at(i).y() << "," << point.z() << std::endl;
                     m_currentlySelected.push_back(point);
 
 
                 }
-            }
         }
         else
             return;
 
-        //std::cout << "Added trees to terrain\n";
+//        std::cout << "gathering control points\n" << endl;
+
+        for (uint i = 0; i < m_currentlySelected.size(); i++)
+        {
+            std::cout << "point " << i << ": " << m_currentlySelected.at(i)[0] << ", " << m_currentlySelected.at(i)[1] << ", "  << m_currentlySelected.at(i)[2] << endl;
+        }
+
         vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
+        std::cout << "Added trees to terrain\n";
 
         for (int i = 0; i < treeRevs->size(); i++)
         {
             RevSurface *tree = (*treeRevs)[i];
-            ObjModel *obj = tree->getObjModel(0.01, 0.01);
+            ObjModel *obj = tree->getObjModel(0.1, 0.1);
 
             QMatrix4x4 trans;
 
             //trans.scale(tree);
             QVector3D treePos = tree->position;
-            treePos[0] *= m_terrain->get_meshWidth();
-            treePos[2] *= m_terrain->get_meshHeight();
+
+            treePos[0] *=  (float)width();
+            treePos[2] *=  (float)height();
             treePos[1] = m_terrain->get_y_height(treePos[0], treePos[2]);
             trans.setColumn(3, QVector4D(treePos, 1));
 
@@ -1088,12 +1122,18 @@ void Renderer::selectMesh()
         }
 
         //cout << "num selected: " << m_currentlySelected.size();
-
+        m_currentlySelected = tempConvert;
     }
     else if (mode == 0)
     {
-        cout << "select mesh mode on" << endl;
+//        cout << "select mesh mode on" << endl;
         mode = 1;
+        m_currentlySelected.clear();
+
+        while (m_models.size() > 1)
+        {
+            m_models.pop_back();
+        }
 
         old_cam_position = camera.getPosition();
 
@@ -1108,6 +1148,7 @@ void Renderer::selectMesh()
 
         updateCamera();
         resetModels();
+
 
     }
 
@@ -1164,7 +1205,7 @@ QString Renderer::getSelectedModel()
 
 Terrain *Renderer::createTerrain(QImage * image)
 {
-        std::cout << "got here" << std::endl;
+//        std::cout << "got here" << std::endl;
         GLuint terrainVAO;
         QOpenGLFunctions_4_2_Core::glGenVertexArrays(1, &terrainVAO);
         m_terrain = new Terrain(image, 25);

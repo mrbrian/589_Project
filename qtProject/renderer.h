@@ -52,7 +52,6 @@ public:
     QString getDrawMode();
     QString getNormalMode();
     QString getSelectedModel();
-    void drawTree(Tree *t);
 
 public slots:
     void setKeyPressed(int val);
@@ -104,7 +103,6 @@ private slots:
 
 private:
     Model *m_cylinder;
-    Tree *m_tree;
     // member variables for shader manipulation
     GLuint m_programID;
     GLuint m_posAttr;
@@ -166,7 +164,7 @@ private:
     int old_select_point;
     int current_selected_point;
     int numSelectedPoints = 0;
-    vector<QVector3D> m_currentlySelected;
+    std::vector<QVector3D> m_currentlySelected;
 
 
     float elapsedTime;
@@ -185,6 +183,8 @@ private:
     void drawNormals(Model * m_model);
     void doTrackball();
     void populateTerrainVAO();
+    void drawTree_cylinders(Tree *t);
+    void drawTree_wireframe(Tree *t);
 };
 
 #endif // RENDERER_H
