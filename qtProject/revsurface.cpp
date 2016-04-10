@@ -3,8 +3,9 @@
 
 #define ONE_REV_DEG 360
 
-RevSurface *RevSurface::makeCylinder(float r, float h, QVector3D color)
+RevSurface *RevSurface::makeCylinder(float r, float h)
 {
+    QVector3D color = QVector3D(1,1,1);
     std::vector<QVector2D*> *pts_1 = new std::vector<QVector2D*>();
     pts_1->push_back(new QVector2D(r, 0));
     pts_1->push_back(new QVector2D(r, h));

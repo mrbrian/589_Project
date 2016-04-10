@@ -20,7 +20,7 @@
 #include "model.h"
 #include "camera.h"
 #include "terrain.h"
-
+#include "treenode.h"
 #include "ray.h"
 
 using namespace std;
@@ -96,11 +96,13 @@ protected:
 
     void vPerformTransfo(float fOldX, float fNewX, float fOldY, float fNewY);
 
+    void drawCylinder(float r1,float r2, QVector3D p1, QVector3D p2);
+
 private slots:
     void update();
 
 private:
-
+    Model *m_cylinder;
     // member variables for shader manipulation
     GLuint m_programID;
     GLuint m_posAttr;
@@ -170,7 +172,7 @@ private:
     // helper function for loading shaders
     GLuint loadShader(GLenum type, const char *source);
 
-
+    void initCylinder();
     void handleInteraction();
     void createWhiteTexture();
     void updateCamera();
@@ -181,6 +183,8 @@ private:
     void drawNormals(Model * m_model);
     void doTrackball();
     void populateTerrainVAO();
+    void drawTree_cylinders(Tree *t);
+    void drawTree_wireframe(Tree *t);
 };
 
 #endif // RENDERER_H
