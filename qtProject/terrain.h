@@ -33,15 +33,8 @@ public:
     std::vector<RevSurface*> *addTreesToTerrain(std::vector<QVector3D> controlPoints);
     std::vector<TreeSimulation *> simulateTreeGrowth(std::vector<QVector3D> controlPoints);
 
-
-
-
-
     int getControlMeshSize();
     std::vector<QVector3D> m_selectableControlMesh;
-    std::vector<int> m_selectabledFlag;
-
-
 
     ObjModel *getObjModel();
     QImage *getImage();

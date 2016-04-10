@@ -135,7 +135,7 @@ public:
 
     Simulation(float terrainScale = 100, int arrayDimensions = 100)
     {
-        std::cout << "created Simulation \n";
+//        std::cout << "created Simulation \n";
         mGrowthArray = new int[arrayDimensions * arrayDimensions];
         for (int i = 0; i < arrayDimensions * arrayDimensions; i++)
         {
@@ -258,8 +258,10 @@ private:
     {
        // std::cout << "tracing bounding volume \n";
         if (points.size() < 2 ) return;
+
             for (uint i = 0 ; i < points.size(); i++)
             {
+//                std::cout << points[i].x() << "," << points[i].z() << std::endl;
                 QVector2D  point1 = QVector2D(points[i].x(), points[i].z()), point2;
                 if (i == points.size() - 1)
                     point2 = QVector2D(points[0].x(), points[0].z());
@@ -284,6 +286,7 @@ private:
                     }
                     for (int i = lower; i <= upper; i++)
                     {
+                        //std::cout << "trace point \n";
                         mGrowthArray[i * mArrayDimensions + (int)point1.x()] = 1;
                     }
                 } else
@@ -334,48 +337,48 @@ private:
 
     void fillBoundingVolume()
     {
-        //std::cout << "filling bounding volume \n";
+        std::cout << "filling bounding volume \n";
         bool inVolume = false;
-            bool inBorder = false;
-            std::vector<int> tally;
-            for (int j = 0; j < mArrayDimensions; j++)
+        bool inBorder = false;
+        std::vector<int> tally;
+
+        for (int j = 0; j < mArrayDimensions; j++)
+        {
+            inVolume = false;
+            tally.clear();
+
+            for (int i = 0; i < mArrayDimensions; i++)
             {
-                inVolume = false;
-                tally.clear();
-                for (int i = 0; i < mArrayDimensions; i++)
+                switch(mGrowthArray[j * mArrayDimensions + i])
                 {
-                    switch(mGrowthArray[j * mArrayDimensions + i])
-                    {
-                        case (0):
-                            if(inBorder) //crossed over the border
-                            {
-                                inBorder = false;
-                                if (inVolume){ //exited the volume
-                                    inVolume = false;
-                                } else {
-                                    inVolume = true; //entering the volume
-                                }
+                    case (0):
+                        if(inBorder) //crossed over the border
+                        {
+                            inBorder = false;
+                            if (inVolume){ //exited the volume
+                                inVolume = false;
+                            } else {
+                                inVolume = true; //entering the volume
                             }
-                            if (inVolume) tally.push_back(i);
-                            break;
-                        case (1):
-                            if (!inBorder) //entered a border
+                        }
+                        if (inVolume) tally.push_back(i);
+                        break;
+                    case (1):
+                        if (!inBorder) //entered a border
+                        {
+                            inBorder = true;
+                            for (int t = 0; t < tally.size(); t++)
                             {
-                                inBorder = true;
-                                for (int t = 0; t < tally.size(); t++)
-                                {
-                                    mGrowthArray[j * mArrayDimensions + tally[t]] = 2;
-                                }
-                                tally.clear();
+                                mGrowthArray[j * mArrayDimensions + tally[t]] = 2;
                             }
-                            break;
-                        default:
-                            break;
-                    }
-
-
+                            tally.clear();
+                        }
+                        break;
+                    default:
+                        break;
                 }
             }
+        }
     }
 };
 

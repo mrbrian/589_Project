@@ -162,7 +162,7 @@ private:
     int old_select_point;
     int current_selected_point;
     int numSelectedPoints = 0;
-    vector<QVector3D> m_currentlySelected;
+    std::vector<QVector3D> m_currentlySelected;
 
 
     float elapsedTime;
