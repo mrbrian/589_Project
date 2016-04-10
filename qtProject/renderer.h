@@ -20,7 +20,7 @@
 #include "model.h"
 #include "camera.h"
 #include "terrain.h"
-
+#include "treenode.h"
 #include "ray.h"
 
 using namespace std;
@@ -52,6 +52,7 @@ public:
     QString getDrawMode();
     QString getNormalMode();
     QString getSelectedModel();
+    void drawTree(Tree *t);
 
 public slots:
     void setKeyPressed(int val);
@@ -100,7 +101,7 @@ private slots:
     void update();
 
 private:
-
+    Tree *m_tree;
     // member variables for shader manipulation
     GLuint m_programID;
     GLuint m_posAttr;

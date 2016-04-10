@@ -573,8 +573,53 @@ void treeTest()
         qDebug() << "treeTest pass";
 }
 
+void rotTest()
+{
+    QVector3D fwd = QVector3D(1,0,0);
+    QMatrix4x4 b_trans;
+    for (int i = 0 ; i < 4; i++)
+    {
+        qDebug() << (b_trans * fwd);
+        b_trans.rotate(90, 0, 1, 0);
+        //b_trans = b_trans * trans;
+    }
+    //branches.push_back(makeBranch(level - 1, b_trans));
+
+}
+
+void matrix_rotTest()
+{
+    QVector3D from = QVector3D(0,0,0);
+//    QVector3D to = QVector3D(0,0,-1);   gives identity
+    QVector3D to = QVector3D(0,1,0);
+
+    float r = (to - from).length();
+    QVector3D dir = to - from;
+    dir.normalize();
+    QVector3D up = QVector3D(0,1,0);
+
+    // rotate identity into this dir
+    QMatrix4x4 trans;
+    trans.lookAt(from, to, up);
+
+    // take whats looking up and rotate to dir
+
+    QVector3D fwd = QVector3D(0,1,0);
+    QVector3D expected = dir;
+    QVector3D actual = trans * fwd;
+
+    if (expected[0] != actual[0] ||
+        expected[1] != actual[1] ||
+        expected[2] != actual[2])
+        qDebug() << "matrix_rotTest fail";
+    else
+        qDebug() << "matrix_rotTest pass";
+}
+
 Tests:: Tests()
 {
+    matrix_rotTest();
+    rotTest();
     treeTest();
 
     /*getY5();
