@@ -590,19 +590,16 @@ void rotTest()
 void matrix_rotTest()
 {
     QVector3D from = QVector3D(0,0,0);
-//    QVector3D to = QVector3D(0,0,-1);   gives identity
     QVector3D to = QVector3D(0,1,0);
 
     float r = (to - from).length();
     QVector3D dir = to - from;
     dir.normalize();
-    QVector3D up = QVector3D(0,1,0);
 
-    // rotate identity into this dir
+    QVector3D up = QVector3D(0,0,1);
     QMatrix4x4 trans;
     trans.lookAt(from, to, up);
-
-    // take whats looking up and rotate to dir
+    trans = trans.inverted();
 
     QVector3D fwd = QVector3D(0,1,0);
     QVector3D expected = dir;
@@ -618,9 +615,9 @@ void matrix_rotTest()
 
 Tests:: Tests()
 {
-    matrix_rotTest();
-    rotTest();
-    treeTest();
+   // matrix_rotTest();
+   // rotTest();
+   // treeTest();
 
     /*getY5();
     getY4();
