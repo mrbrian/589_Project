@@ -13,7 +13,7 @@
 
 TreeNode::TreeNode(int type, QVector4D position, TreeNode *mPrevious)
 {
-    std::cout << "made new node at : " << position.x() << "," << position.y() << "," << position.z() << std::endl;
+    //std::cout << "made new node at : " << position.x() << "," << position.y() << "," << position.z() << std::endl;
     mType = type;
     mPosition = position;
     mPreviousNode = mPrevious;

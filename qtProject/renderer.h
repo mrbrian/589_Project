@@ -97,10 +97,13 @@ protected:
 
     void vPerformTransfo(float fOldX, float fNewX, float fOldY, float fNewY);
 
+    void drawCylinder(float r1,float r2, QVector3D p1, QVector3D p2);
+
 private slots:
     void update();
 
 private:
+    Model *m_cylinder;
     Tree *m_tree;
     // member variables for shader manipulation
     GLuint m_programID;
@@ -171,7 +174,7 @@ private:
     // helper function for loading shaders
     GLuint loadShader(GLenum type, const char *source);
 
-
+    void initCylinder();
     void handleInteraction();
     void createWhiteTexture();
     void updateCamera();

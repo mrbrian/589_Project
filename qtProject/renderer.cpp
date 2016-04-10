@@ -81,6 +81,7 @@ void Renderer::initializeGL()
     m_terrain = NULL;
     createWhiteTexture();
     setupGround();
+    initCylinder();
 }
 
 // called by the Qt GUI system, to allow OpenGL drawing commands
@@ -105,11 +106,9 @@ void Renderer::paintGL()
 
     drawCheckerboard();
 
-    {
-        QMatrix4x4 t;
-        glUniformMatrix4fv(m_MMatrixUniform, 1, false, t.data());
-        drawTree(m_tree);
-    }
+    
+    drawTree(m_tree);
+    
 
     //findIntersection
 
@@ -150,101 +149,6 @@ void Renderer::paintGL()
   //                          cout << "cp: " << m_terrain->m_selectableControlMesh.at(i)[0] << ","<< m_terrain->m_selectableControlMesh.at(i)[1] << ","<< m_terrain->m_selectableControlMesh.at(i)[2] << endl;
                             //qDebug() << m_terrain->m_selectableControlMesh.at(i);
                         //cout << "cp: " << m_terrain->m_selectableControlMesh.at(0)[0] << ","<< m_terrain->m_selectableControlMesh.at(0)[1] << ","<< m_terrain->m_selectableControlMesh.at(0)[2] << endl;
-/*
-
-                        glVertex3f(0.0, 0.0, 0.0)                 ;
-                        glVertex3f(0, 1, 0)                 ;
-                        glVertex3f(4, 1, 0)                 ;
-                        glVertex3f(6, 1, 0)                 ;
-                        glVertex3f(5.41421, 1, -1.41421)    ;
-                        glVertex3f(5.41421, 1, 1.41421)     ;
-                        glVertex3f(2.82843, 1, -2.82843)    ;
-                        glVertex3f(4.82843, 1, -2.82843)    ;
-                        glVertex3f(2.82843, 1, -4.82843)    ;
-                        glVertex3f(4.82843, 1, -2.82843)    ;
-                        glVertex3f(2.82843, 1, 2.82843)     ;
-                        glVertex3f(4.82843, 1, 2.82843)     ;
-                        glVertex3f(4.82843, 1, 2.82843)     ;
-                        glVertex3f(2.82843, 1, 4.82843)     ;
-                        glVertex3f(0, 2, 0)                 ;
-                        glVertex3f(4, 2, 0)                 ;
-                        glVertex3f(6, 2, 0)                 ;
-                        glVertex3f(2.58579, 2, -1.41421)    ;
-                        glVertex3f(5.41421, 2, -1.41421)    ;
-                        glVertex3f(-2.82843, 2, -2.82843)   ;
-                        glVertex3f(-0.828427, 2, -2.82843)  ;
-                        glVertex3f(-4.82843, 2, -2.82843)   ;
-                        glVertex3f(-2.82843, 2, -4.82843)   ;
-                        glVertex3f(2.82843, 2, -2.82843)    ;
-                        glVertex3f(4.82843, 2, -2.82843)    ;
-                        glVertex3f(2.82843, 2, -4.82843)    ;
-                        glVertex3f(4.82843, 2, -2.82843)    ;
-                        glVertex3f(0, 3, 0)                 ;
-                        glVertex3f(4, 3, 0)                 ;
-                        glVertex3f(6, 3, 0)                 ;
-                        glVertex3f(5.41421, 3, 1.41421)     ;
-                        glVertex3f(2.58579, 3, 1.41421)     ;
-                        glVertex3f(2.82843, 3, 2.82843)     ;
-                        glVertex3f(4.82843, 3, 2.82843)     ;
-                        glVertex3f(4.82843, 3, 2.82843)     ;
-                        glVertex3f(2.82843, 3, 4.82843)     ;
-                        glVertex3f(-2.82843, 3, 2.82843)    ;
-                        glVertex3f(-0.828427, 3, 2.82843)   ;
-                        glVertex3f(-2.82843, 3, 4.82843)    ;
-                        glVertex3f(-4.82843, 3, 2.82843)    ;
-                        glVertex3f(0, 4, 0)                 ;
-                        glVertex3f(4, 4, 0)                 ;
-                        glVertex3f(6, 4, 0)                 ;
-                        glVertex3f(2.58579, 4, 1.41421)     ;
-                        glVertex3f(2.58579, 4, -1.41421)   ;
-                        glVertex3f(-2.82843, 4, 2.82843)   ;
-                        glVertex3f(-0.828427, 4, 2.82843)  ;
-                        glVertex3f(-2.82843, 4, 4.82843)   ;
-                        glVertex3f(-4.82843, 4, 2.82843)   ;
-                        glVertex3f(-2.82843, 4, -2.82843)  ;
-                        glVertex3f(-0.828427, 4, -2.82843) ;
-                        glVertex3f(-4.82843, 4, -2.82843)  ;
-                        glVertex3f(-2.82843, 4, -4.82843)  ;
-                        glVertex3f(0, 1, 0)                ;
-                        glVertex3f(0, 2, 0)                ;
-                        glVertex3f(3, 2, 0)                ;
-                        glVertex3f(2.12132, 2, -2.12132)   ;
-                        glVertex3f(2.12132, 2, 2.12132)    ;
-                        glVertex3f(0, 4, 0)                ;
-                        glVertex3f(3, 4, 0)                ;
-                        glVertex3f(-2.12132, 4, -2.12132)  ;
-                        glVertex3f(2.12132, 4, -2.12132)   ;
-                        glVertex3f(0, 6, 0)                ;
-                        glVertex3f(3, 6, 0)                ;
-                        glVertex3f(2.12132, 6, 2.12132)    ;
-                        glVertex3f(-2.12132, 6, 2.12132)   ;
-                        glVertex3f(0, 8, 0)                ;
-                        glVertex3f(3, 8, 0)                ;
-                        glVertex3f(-2.12132, 8, 2.12132)   ;
-                        glVertex3f(-2.12132, 8, -2.12132)  ;
-                        glVertex3f(0, 2, 0)                ;
-                        glVertex3f(0, 3, 0)                ;
-                        glVertex3f(2, 3, 0)                ;
-                        glVertex3f(1.41421, 3, -1.41421)   ;
-                        glVertex3f(1.41421, 3, 1.41421)    ;
-                        glVertex3f(0, 6, 0)                ;
-                        glVertex3f(2, 6, 0)                ;
-                        glVertex3f(-1.41421, 6, -1.41421)  ;
-                        glVertex3f(1.41421, 6, -1.41421)   ;
-                        glVertex3f(0, 9, 0)                ;
-                        glVertex3f(2, 9, 0)                ;
-                        glVertex3f(1.41421, 9, 1.41421)    ;
-                        glVertex3f(-1.41421, 9, 1.41421)   ;
-                        glVertex3f(0, 12, 0)               ;
-                        glVertex3f(2, 12, 0)               ;
-                        glVertex3f(-1.41421, 12, 1.41421)  ;
-                        glVertex3f(-1.41421, 12, -1.41421) ;
-                        glVertex3f(0, 3, 0)                ;
-                        glVertex3f(0, 4, 0)                ;
-                        glVertex3f(0, 8, 0)                ;
-                        glVertex3f(0, 12, 0)               ;
-                        glVertex3f(0, 16, 0)               ;
-                        glVertex3f(0, 4, 0)*/                ;
 
                         glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
                         glEnd();
@@ -762,6 +666,18 @@ Model *Renderer::setSubmodel_hack(ObjModel *obj_m)
 
     m_submodel->texture = m_whiteTexture;
     return m_submodel;
+}
+
+// create a unit cylinder for later
+void Renderer::initCylinder()
+{
+    RevSurface *c = RevSurface::makeCylinder(1,1);
+    // create new model
+    m_cylinder = new Model(c->getObjModel(1,0.25), NULL);   // NULL = no parent
+
+    makeVbo(m_cylinder);
+
+    m_cylinder->texture = m_whiteTexture;
 }
 
 // create a Model using a given ObjModel
@@ -1319,7 +1235,86 @@ void Renderer::connectPoints(int oldPoint, int newPoint)
 
 }
 
-void Renderer::drawTree(Tree *t)
+void scale_aim(QMatrix4x4 *t, float r1, float r2, QVector3D from, QVector3D to, QVector3D up)
+{
+    QMatrix4x4 t1;
+    t1.rotate(-90,1,0,0); // align to +z
+
+    float h = (to - from).length();
+    QVector3D dir = to - from;
+    dir.normalize();
+
+    QMatrix4x4 y_scale;
+    y_scale.setColumn(1, QVector4D(0,h,0,0));
+
+    QMatrix4x4 r_scale;
+    r_scale.setColumn(0, QVector4D(r1,0,0,0));
+    r_scale.setColumn(2, QVector4D(0,0,r1,0));
+
+    QMatrix4x4 &trans = *t;
+    trans.lookAt(from, to, up);
+    trans = trans.inverted();
+
+    trans = trans * t1 * r_scale * y_scale ;
+}
+
+void Renderer::drawCylinder(float r1,float r2, QVector3D p1, QVector3D p2)
+{
+    QMatrix4x4 t2;
+
+    scale_aim(&t2, r1, r2, p1, p2, QVector3D(0,0,1));
+
+    m_cylinder->setLocalTransform(t2);
+    QVector3D test = t2 * QVector3D(0,0,1);
+    drawModel(m_cylinder);
+
+    //delete c;
+}
+
+void Renderer::drawTree_cylinders(Tree *t)
+{
+    std::vector<TreeNode *> mLeafNodes = t->getLeafNodes();
+
+    for (int i = 0; i < mLeafNodes.size(); i++)
+    {
+        TreeNode * node = mLeafNodes[i];
+        while (!node->hasBeenDrawn() && node->getPreviousNode() != NULL)
+        {
+
+            node->setDrawn(true);
+            QVector3D color;
+            switch (node->getType())
+            {
+            case(0):
+                color = QVector3D(1,0,0);
+                break;
+            case(1):
+                color = QVector3D(1,0,0);
+                break;
+            case(2):
+                color = QVector3D(0,1,0);
+                break;
+            }
+
+            QVector4D currentPosition = node->getPosition();
+            QVector4D previousPosition = node->getPreviousNode()->getPosition();
+
+            QVector3D p1 = QVector3D(currentPosition.x(), currentPosition.y(), currentPosition.z());
+            QVector3D p2 = QVector3D(previousPosition.x(), previousPosition.y(), previousPosition.z());
+
+            drawCylinder(0.01, 0.01, p1, p2);
+            node = node->getPreviousNode();
+        }
+
+    }
+    std::vector<TreeNode *> mTreeNodes = t->getTreeNodes();
+    for (int i = 0; i < mTreeNodes.size(); i++)
+    {
+        mTreeNodes[i]->setDrawn(false);
+    }
+}
+
+void Renderer::drawTree_wireframe(Tree *t)
 {
     glLineWidth(2);
     glBegin(GL_LINES);
