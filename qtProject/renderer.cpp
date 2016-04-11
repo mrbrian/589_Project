@@ -42,6 +42,7 @@ Renderer::Renderer(QWidget *parent)
     ctrlDown = false;
     shiftDown = false;
 
+    m_tree = new Tree(1,1,1);
     resetView();    // initialize camera
 }
 
@@ -81,6 +82,9 @@ void Renderer::initializeGL()
     createWhiteTexture();
     setupGround();
     initCylinder();
+
+    ObjModel *o = m_tree->getObjModel(1, 0.33);
+    setModel(o);
 }
 
 // called by the Qt GUI system, to allow OpenGL drawing commands
@@ -105,7 +109,9 @@ void Renderer::paintGL()
 
     drawCheckerboard();
 
+    //drawTree_cylinders(m_tree);
     //findIntersection
+
 
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
     {
@@ -116,9 +122,12 @@ void Renderer::paintGL()
         {
             drawNormals(m_model);
         }
+
+        drawTree_wireframe(m_tree);
         if (mode == 1)
         {
             glPointSize(10);
+
             if(m_model == selectedModel)
             {
                 //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
@@ -692,7 +701,7 @@ void Renderer::initCylinder()
 {
     RevSurface *c = RevSurface::makeCylinder(1,1);
     // create new model
-    m_cylinder = new Model(c->getObjModel(1,0.25), NULL);   // NULL = no parent
+    m_cylinder = new Model(c->getObjModel(1,0.33), NULL);   // NULL = no parent
 
     makeVbo(m_cylinder);
 
@@ -1306,10 +1315,7 @@ void Renderer::drawCylinder(float r1,float r2, QVector3D p1, QVector3D p2)
     scale_aim(&t2, r1, r2, p1, p2, QVector3D(0,0,1));
 
     m_cylinder->setLocalTransform(t2);
-    QVector3D test = t2 * QVector3D(0,0,1);
     drawModel(m_cylinder);
-
-    //delete c;
 }
 
 void Renderer::drawTree_cylinders(Tree *t)
@@ -1357,6 +1363,9 @@ void Renderer::drawTree_cylinders(Tree *t)
 
 void Renderer::drawTree_wireframe(Tree *t)
 {
+    /*QMatrix4x4 model_matrix;
+    glUniformMatrix4fv(m_MMatrixUniform, 1, false, model_matrix.data());
+*/
     glLineWidth(2);
     glBegin(GL_LINES);
     std::vector<TreeNode *> mLeafNodes = t->getLeafNodes();

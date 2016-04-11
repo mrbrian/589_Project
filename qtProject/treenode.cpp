@@ -10,6 +10,7 @@
 #define NUM_PRIMARY_BRANCH_NODES 10
 #define NUM_SECONDARY_BRANCH_NODES 2
 
+void scale_aim(QMatrix4x4 *t, float r1, float r2, QVector3D from, QVector3D to, QVector3D up);
 
 TreeNode::TreeNode(int type, QVector4D position, TreeNode *mPrevious)
 {
@@ -39,6 +40,97 @@ bool TreeNode::hasBeenDrawn(){return mDrawn;}
 #define NUM_TRUNK_NODES 12
 #define NUM_PRIMARY_BRANCH_NODES 10
 #define NUM_SECONDARY_BRANCH_NODES 2
+
+ObjModel *Tree::getObjModel(float u_step, float v_step)
+{
+    RevSurface *rs = RevSurface::makeCylinder(1, 1);
+    // get a point list and trilist
+
+    ObjModel *obj = new ObjModel();
+    obj->m_vertices.clear();
+    obj->tris.clear();
+    obj->num_tris = 0;
+    obj->num_xyz = 0;
+
+    for (int i = 0; i < mLeafNodes.size(); i++)
+    {
+        TreeNode * node = mLeafNodes[i];
+        while (!node->hasBeenDrawn() && node->getPreviousNode() != NULL)
+        {
+
+            node->setDrawn(true);
+            QVector3D color;
+            switch (node->getType())
+            {
+            case(0):
+                color = QVector3D(1,0,0);
+                break;
+            case(1):
+                color = QVector3D(1,0,0);
+                break;
+            case(2):
+                color = QVector3D(0,1,0);
+                break;
+            }
+
+            QVector4D currentPosition = node->getPosition();
+            QVector4D previousPosition = node->getPreviousNode()->getPosition();
+
+            QVector3D p1 = QVector3D(currentPosition.x(), currentPosition.y(), currentPosition.z());
+            QVector3D p2 = QVector3D(previousPosition.x(), previousPosition.y(), previousPosition.z());
+
+            QMatrix4x4 trans;
+            scale_aim(&trans, 0.01, 0.02, p1, p2, QVector3D(0,0,1));
+
+            //transform every vert
+            ObjModel *o = rs->getObjModel(u_step, v_step);
+
+            obj->num_tris += o->num_tris;
+            obj->num_xyz += o->num_xyz;
+
+            int idxOffs = obj->m_vertices.size();
+
+            for(int k = 0; k < o->tris.size(); k++)
+            {
+                tri t = o->tris[k];
+                t.index_xyz[0] += idxOffs;
+                t.index_xyz[1] += idxOffs;
+                t.index_xyz[2] += idxOffs;
+                t.index_uv[0] += idxOffs;
+                t.index_uv[1] += idxOffs;
+
+                obj->tris.push_back(t);
+            }
+
+            for(int k = 0; k < o->texs.size(); k++)
+            {
+                vec2 t = o->texs[k];
+
+                obj->texs.push_back(t);
+            }
+
+            for(int k = 0; k < o->m_vertices.size(); k++)
+            {
+                vec3 p = o->m_vertices[k];
+                QVector3D p2 = QVector3D(p[0],p[1],p[2]);
+                p2 = trans * p2;
+
+                obj->m_vertices.push_back(vec3(p2[0],p2[1],p2[2]));
+            }
+
+            // get the lists
+            //offset the index of every tri
+
+            node = node->getPreviousNode();
+        }
+
+    }
+    for (int i = 0; i < mTreeNodes.size(); i++)
+    {
+        mTreeNodes[i]->setDrawn(false);
+    }
+    return obj;
+}
 
 Tree::Tree(float height, float crownRadius, float trunkRadius) : mHeight(height), mCrownRadius(crownRadius), mTrunkRadius(trunkRadius)
 {

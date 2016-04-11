@@ -7,6 +7,7 @@
 #include <QVector3D>
 #include <QVector4D>
 #include <QMatrix4x4>
+#include "objModel.h"
 
 class Renderer;
 
@@ -33,6 +34,7 @@ class Tree
 public:
     Tree(float height, float crownRadius, float trunkRadius);
 
+    ObjModel *getObjModel(float u_step, float v_step);
     bool growTree(int nodeDepth, TreeNode * previousNode);
     void draw(Renderer *r);
 

@@ -102,6 +102,8 @@ private slots:
     void update();
 
 private:
+    Tree *m_tree;
+    Model *tree;
     Model *m_cylinder;
     // member variables for shader manipulation
     GLuint m_programID;

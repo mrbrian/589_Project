@@ -21,7 +21,6 @@ HEADERS += renderer.h window.h \
     ray.h \
     bspline_blended.h \
     simulation.h \
-    treemodel.h \
     treenode.h
 SOURCES += main.cpp renderer.cpp window.cpp \
     trackball.cpp \ 
@@ -34,5 +33,4 @@ SOURCES += main.cpp renderer.cpp window.cpp \
     tests.cpp \
     ray.cpp \
     bspline_blended.cpp \
-    treemodel.cpp \
     treenode.cpp
