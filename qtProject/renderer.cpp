@@ -904,48 +904,6 @@ void Renderer::handleInteraction()
 
     if ((cntlMode == FPS) || altDown)
     {
-        float move_rate = 1;
-
-        if ((keys == Qt::Key_Up) || (keys == Qt::Key_Down))
-        {
-            int sign = -1;
-
-            if (keys & Qt::Key_S)
-                sign = -1;
-
-            QVector3D targ = camera.getTarget();
-            QVector3D camPos = camera.getPosition();
-
-            QVector3D fwd = sign * camera.getForward() * move_rate;
-
-            targ += fwd;
-            camPos += fwd;
-
-            camera.setTarget(targ);
-            camera.setPosition(camPos);
-            updateCamera();
-        }
-
-        if ((keys == Qt::Key_Left) || (keys == Qt::Key_Right))
-        {
-            int sign = -1;
-
-            if (keys & Qt::Key_Left)
-                sign = -1;
-
-            QVector3D targ = camera.getTarget();
-            QVector3D camPos = camera.getPosition();
-
-            QVector3D left = sign * camera.getRight() * -move_rate;
-
-            targ += left;
-            camPos += left;
-
-            camera.setTarget(targ);
-            camera.setPosition(camPos);
-            updateCamera();
-        }
-
         if (mouseButtons & Qt::RightButton)
         {
             delta[0] = dx;
@@ -956,6 +914,11 @@ void Renderer::handleInteraction()
             camPos += forward * delta[0];
             QVector3D dir = forward - camPos;
 
+            float travel_dist = delta[0];
+            float targ_dist = (camPos - camera.getTarget()).length();
+
+            if (travel_dist > targ_dist)
+                return;
             if (dir[0] != 0 || dir[2] != 0) // not facing straight down
                 camera.setPosition(camPos);
         }
