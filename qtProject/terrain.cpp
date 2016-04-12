@@ -192,7 +192,7 @@ void Terrain::createControlMesh(QImage * heightMap, float heightToAreaScale)
             //std::cout << i << ", height " << height << ", " << j << endl;
             if(i % low_res_modifier== 0 && j % low_res_modifier == 0)
             {
-                m_selectableControlMesh.push_back(QVector3D((float)i + (i*j*0.000001), height, (float)j + (i*j*0.00001)));
+                m_selectableControlMesh.push_back(QVector3D((float)i + (i*0.000001) + (j*0.000001), height, (float)j + (i*0.00001) +(j*0.000001)));
             }
 
             //m_controlMesh.push_back(QVector3D((float)i / (float)m_meshWidth, height,(float)j / (float)m_meshHeight));
