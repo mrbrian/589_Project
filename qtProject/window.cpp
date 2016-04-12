@@ -17,6 +17,7 @@ Window::Window(QWidget *parent) :
     // Setup the file menu
     mFileMenu = menuBar()->addMenu(tr("&File"));
     mFileMenu->addAction(mLoadHeightMapAction);
+    mFileMenu->addAction(mLoadTreeAction);
     mFileMenu->addAction(mLoadTextureAction);
     mFileMenu->addAction(mResetModelsAction);
     mFileMenu->addAction(mResetViewAction);
@@ -36,6 +37,11 @@ Window::Window(QWidget *parent) :
     mNormalsMenu->addAction(mShowNormalAction);
 
     mDrawMenu->addAction(mSelectModelAction);
+
+    // Setup the draw menu
+    mOptionMenu = menuBar()->addMenu(tr("&Options"));
+    mOptionMenu->addAction(mFpsAction);
+    mOptionMenu->addAction(mOrigAction);
 
     mSelectMenu = menuBar()->addMenu(tr("&Select"));
     mSelectMenu->addAction(mDeselectAction);
@@ -70,7 +76,6 @@ void Window::createActions()
 {
     // Quits the application
     mQuitAction = new QAction(tr("&Quit"), this);
-    mQuitAction->setShortcut(QKeySequence(Qt::Key_Q));
     mQuitAction->setStatusTip(tr("Quits the application"));
     connect(mQuitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
@@ -84,6 +89,11 @@ void Window::createActions()
     mLoadHeightMapAction->setStatusTip(tr("Loads a heightMap"));
     mLoadGroup->addAction(mLoadHeightMapAction);
 
+    // make tree
+    mLoadTreeAction = new QAction(tr("Create Tree"), this);
+    mLoadTreeAction->setStatusTip(tr("Create a tree"));
+    mLoadGroup->addAction(mLoadTreeAction);
+
     // open texture
     mLoadTextureAction = new QAction(tr("&Load Texture"), this);
     mLoadTextureAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
@@ -92,19 +102,16 @@ void Window::createActions()
 
     // reset models
     mResetModelsAction = new QAction(tr("&Reset Models"), this);
-    mResetModelsAction->setShortcut(QKeySequence(Qt::Key_R));
     mResetModelsAction->setStatusTip(tr("Reset models to their default positions"));
     connect(mResetModelsAction, SIGNAL(triggered()), renderer, SLOT(resetModels()));
 
     // reset view
     mResetViewAction = new QAction(tr("&Reset View"), this);
-    mResetViewAction->setShortcut(QKeySequence(Qt::Key_V));
     mResetViewAction->setStatusTip(tr("Reset camera view"));
     connect(mResetViewAction, SIGNAL(triggered()), renderer, SLOT(resetView()));
 
     // reset all
     mResetAllAction = new QAction(tr("&Reset All"), this);
-    mResetAllAction->setShortcut(QKeySequence(Qt::Key_A));
     mResetAllAction->setStatusTip(tr("Resets models and camera"));
     connect(mResetAllAction, SIGNAL(triggered()), renderer, SLOT(resetAll()));
 
@@ -114,6 +121,24 @@ void Window::createActions()
     mClearAction->setStatusTip(tr("Clears all models"));
     connect(mClearAction, SIGNAL(triggered()), this, SLOT(clearModels()));
 
+    // option mode menu group
+    mOptionGroup = new QActionGroup(this);
+    connect(mOptionGroup, SIGNAL(triggered(QAction *)), this, SLOT(setControlMode(QAction *)));
+    mOptionGroup->setExclusive(true);
+
+    // Sets drawing mode to wireframe
+    mFpsAction = new QAction(tr("&FPS"), this);
+    mFpsAction->setStatusTip(tr("FPS controls"));
+    mFpsAction->setCheckable(true);
+    mOptionGroup->addAction(mFpsAction);
+
+    mOrigAction = new QAction(tr("&Original"), this);
+    mOrigAction->setStatusTip(tr("Original controls"));
+    mOrigAction->setCheckable(true);
+    mOptionGroup->setExclusive(true);
+    mOrigAction->setChecked(true);
+    mOptionGroup->addAction(mOrigAction);
+
     // draw mode menu group
     mDrawGroup = new QActionGroup(this);
     connect(mDrawGroup, SIGNAL(triggered(QAction *)), this, SLOT(setDrawMode(QAction *)));
@@ -121,25 +146,21 @@ void Window::createActions()
 
     // Sets drawing mode to wireframe
     mWireAction = new QAction(tr("&Wireframe"), this);
-    mWireAction->setShortcut(QKeySequence(Qt::Key_W));
     mWireAction->setStatusTip(tr("Wireframe mode"));
     mDrawGroup->addAction(mWireAction);
 
     // face drawing mode
     mFaceAction = new QAction(tr("&Face"), this);
-    mFaceAction->setShortcut(QKeySequence(Qt::Key_F));
     mFaceAction->setStatusTip(tr("Face mode"));
     mDrawGroup->addAction(mFaceAction);
 
     // textured drawing mode
     mTextureAction = new QAction(tr("&Textured"), this);
-    mTextureAction->setShortcut(QKeySequence(Qt::Key_T));
     mTextureAction->setStatusTip(tr("Textured mode"));
     mDrawGroup->addAction(mTextureAction);
 
     // select model mode
     mSelectModelAction = new QAction(tr("&Select Model"), this);
-    mSelectModelAction->setShortcut(QKeySequence(Qt::Key_S));
     mSelectModelAction->setStatusTip(tr("Select model"));
     mSelectModelAction->setEnabled(false);
 
@@ -147,7 +168,6 @@ void Window::createActions()
     connect(mSelectGroup, SIGNAL(triggered(QAction *)), this, SLOT(selectModel(QAction *)));
 
     mDeselectAction = new QAction(tr("&Deselect"), this);
-    mDeselectAction->setShortcut(QKeySequence(Qt::Key_D));
     mDeselectAction->setStatusTip(tr("Select model"));
     connect(mDeselectAction, SIGNAL(triggered()), renderer, SLOT(deselectModel()));
     connect(mDeselectAction, SIGNAL(triggered()), this, SLOT(updateModelLabel()));  // also trigger label update
@@ -231,6 +251,19 @@ void Window::setDrawMode(QAction * action)
     updateModelLabel();
 }
 
+// Sets the control mode
+void Window::setControlMode(QAction * action)
+{
+    if (action == mFpsAction)
+    {
+        renderer->setControlMode(Renderer::FPS);
+    }
+    else
+    {
+        renderer->setControlMode(Renderer::ORIG);
+    }
+}
+
 // Set the normal mode
 void Window::setNormalMode(QAction * action)
 {
@@ -291,6 +324,15 @@ void Window::selectModel(QAction * action)
 
 void Window::load(QAction * action)
 {
+    if(action == mLoadTreeAction)
+    {
+        Tree t = Tree(1.5, 0.5, 0.04);
+
+        ObjModel *obj = t.getObjModel(0.5, 0.1, 0.01);
+        Model *m_model = new Model(obj, NULL);   // NULL = no parent
+        renderer->setModel(obj);
+    }
+
     if(action == mLoadHeightMapAction)
     {
 

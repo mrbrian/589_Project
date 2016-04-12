@@ -20,7 +20,7 @@
 #include "model.h"
 #include "camera.h"
 #include "terrain.h"
-
+#include "treenode.h"
 #include "ray.h"
 
 using namespace std;
@@ -39,6 +39,7 @@ public:
     enum DrawMode {WIRE, FACES, TEXTURED};
     enum NormalMode {VERTEX, SURFACE};
     enum EditMode {VIEW_R, VIEW_T, VIEW_P, MODEL_R, MODEL_S, MODEL_T, VIEWPORT};
+    enum ControlMode {ORIG, FPS};
 
     // destructor
     virtual ~Renderer();
@@ -48,6 +49,7 @@ public:
     void setSubmodel(ObjModel *model);
     Model *setSubmodel_hack(ObjModel *obj_m);
     void setNormalMode(NormalMode mode);
+    void setControlMode(ControlMode mode);
 
     QString getDrawMode();
     QString getNormalMode();
@@ -96,11 +98,12 @@ protected:
 
     void vPerformTransfo(float fOldX, float fNewX, float fOldY, float fNewY);
 
+    void drawCylinder(float r1,float r2, QVector3D p1, QVector3D p2);
+
 private slots:
     void update();
 
 private:
-
     // member variables for shader manipulation
     GLuint m_programID;
     GLuint m_posAttr;
@@ -147,12 +150,14 @@ private:
     NormalMode normalMode;
     bool displayNormals;
     EditMode editMode;
+    ControlMode cntlMode;
 
     // mouse buttons that are currently pressed
     int mouseButtons;
     bool altDown;
     bool ctrlDown;
     bool shiftDown;    
+    int keys;
 
     void normalizeMouseToSelect(float &, float &);
     void connectPoints(int oldPoint, int newPoint);
@@ -170,7 +175,8 @@ private:
     // helper function for loading shaders
     GLuint loadShader(GLenum type, const char *source);
 
-
+    void initCylinder();
+    void handleKeyboard();
     void handleInteraction();
     void createWhiteTexture();
     void updateCamera();
@@ -181,6 +187,8 @@ private:
     void drawNormals(Model * m_model);
     void doTrackball();
     void populateTerrainVAO();
+    void drawTree_cylinders(Tree *t);
+    void drawTree_wireframe(Tree *t);
 };
 
 #endif // RENDERER_H

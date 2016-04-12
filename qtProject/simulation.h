@@ -128,13 +128,14 @@ private:
 
 };
 
-
+#define RANGE_CONVERSION_SCALAR_AMOUNT 100000
 class Simulation
 {
 public:
 
-    Simulation(float terrainScale = 100, int arrayDimensions = 100)
+    Simulation(float terrainScale = 100, int arrayDimensions = 10000)
     {
+
 //        std::cout << "created Simulation \n";
         mGrowthArray = new int[arrayDimensions * arrayDimensions];
         for (int i = 0; i < arrayDimensions * arrayDimensions; i++)
@@ -147,9 +148,9 @@ public:
 
     ~Simulation()
     {
+        delete[] mGrowthArray;
 
-        //delete mGrowthArray;
-        //delete[] mGrowthArray;
+
 
         for (uint i = 0; i < mGrowingTrees.size(); i++)
         {
@@ -163,7 +164,7 @@ public:
         std::cout << "Simulating tree growth \n";
         traceBoundingVolume(controlPoints);
         fillBoundingVolume();
-        runSimulation(60 + rand() % 60);
+        runSimulation(500 + rand() % 60);
         return mGrowingTrees;
 
     }
@@ -172,6 +173,11 @@ private://members
     int * mGrowthArray;
     int mArrayDimensions;
     float mTerrainScale;
+    float mBoundingXmin;
+    float mBoundingYmin;
+    int mBoundingXRange;
+    int mBoundingYRange;
+
     std::vector<QVector2D> mNewTrees;
     std::vector<TreeSimulation *> mGrowingTrees;
 private:
@@ -179,8 +185,8 @@ private:
     {
         for (uint i = 0; i < numSeeds; i++)
         {
-            float x = (float)(rand() % (mArrayDimensions-1)) / mArrayDimensions;
-            float y = (float)(rand() % (mArrayDimensions-1)) / mArrayDimensions;
+            float x = mBoundingXmin + (float)(rand() % mBoundingXRange) / RANGE_CONVERSION_SCALAR_AMOUNT;
+            float y = mBoundingYmin + (float)(rand() % mBoundingYRange) / RANGE_CONVERSION_SCALAR_AMOUNT;
             //std::cout << x <<"," << y << endl;
             mNewTrees.push_back(
                QVector2D(x,y));
@@ -198,7 +204,7 @@ private:
                 if (mGrowthArray[index] == 2)
 
                 {
-                    mGrowingTrees.push_back(new TreeSimulation(mNewTrees[i], rand() % 2, mTerrainScale));
+                    mGrowingTrees.push_back(new TreeSimulation(mNewTrees[i], 0, mTerrainScale));
 
                 } else {
                     //std::cout << ".. Failed\n";
@@ -219,11 +225,11 @@ private:
         //std::cout << "Running simulation...."<< std::endl;
         while (numIterations-- > 0)
         {
-            throwSeeds(3000);
+            throwSeeds(50);
             //std::cout << "culled seeds\n";
             cullNewSeeds();
             //std::cout << "growing trees\n";
-            float yearsPassed = 14;
+            float yearsPassed = 50;
             for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
             {
                 mGrowingTrees[i]->grow(yearsPassed);
@@ -259,92 +265,96 @@ private:
        // std::cout << "tracing bounding volume \n";
         if (points.size() < 2 ) return;
 
-            for (uint i = 0 ; i < points.size(); i++)
-            {
+        float boundingXmin = 1;
+        float boundingXmax = 0;
+        float boundingYmin = 1;
+        float boundingYmax = 0;
+
+        for (uint i = 0 ; i < points.size(); i++)
+        {
 //                std::cout << points[i].x() << "," << points[i].z() << std::endl;
-                QVector2D  point1 = QVector2D(points[i].x(), points[i].z()), point2;
-                if (i == points.size() - 1)
-                    point2 = QVector2D(points[0].x(), points[0].z());
-                else
-                    point2 =  QVector2D(points[i+1].x(), points[i+1].z());
-                float x1 = point1.x()* mArrayDimensions,
-                x2 = point2.x()* mArrayDimensions,
-                y1 = point1.y()* mArrayDimensions,
-                y2 = point2.y()* mArrayDimensions;
+            QVector2D  point1 = QVector2D(points[i].x(), points[i].z()), point2;
+            boundingXmin = point1.x() < boundingXmin ? point1.x() : boundingXmin;
+            boundingXmax = point1.x() > boundingXmax ? point1.x() : boundingXmax;
+
+            boundingYmin = point1.y() < boundingYmin ? point1.y() : boundingYmin;
+            boundingYmax = point1.y() > boundingYmax ? point1.y() : boundingYmax;
+
+
+            if (i == points.size() - 1)
+                point2 = QVector2D(points[0].x(), points[0].z());
+            else
+                point2 =  QVector2D(points[i+1].x(), points[i+1].z());
+            float x1 = point1.x()* mArrayDimensions,
+            x2 = point2.x()* mArrayDimensions,
+            y1 = point1.y()* mArrayDimensions,
+            y2 = point2.y()* mArrayDimensions;
 
 
 
-                if (point1.x() == point2.x())
+            if (point1.x() == point2.x())
+            {
+                int lower, upper;
+                if (point1.y() < point2.y()){
+                    lower = point1.y();
+                    upper = point2.y();
+                } else {
+                    lower = point2.y();
+                    upper = point1.y();
+                }
+                for (int i = lower; i <= upper; i++)
                 {
-                    int lower, upper;
-                    if (point1.y() < point2.y()){
-                        lower = point1.y();
-                        upper = point2.y();
-                    } else {
-                        lower = point2.y();
-                        upper = point1.y();
-                    }
-                    for (int i = lower; i <= upper; i++)
-                    {
-                        //std::cout << "trace point \n";
-                        mGrowthArray[i * mArrayDimensions + (int)point1.x()] = 1;
-                    }
-                } else
-                {
+                    //std::cout << "trace point \n";
+                    mGrowthArray[i * mArrayDimensions + (int)point1.x()] = 1;
+                }
+            } else
+            {
 
-                    const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+                const bool steep = (fabs(y2 - y1) > fabs(x2 - x1));
+                if(steep)
+                {
+                    std::swap(x1, y1);
+                    std::swap(x2, y2);
+                }
+
+                if(x1 > x2)
+                {
+                    std::swap(x1, x2);
+                    std::swap(y1, y2);
+                }
+
+                const float dx = x2 - x1;
+                const float dy = fabs(y2 - y1);
+
+                float error = dx / 2.0f;
+                const int ystep = (y1 < y2) ? 1 : -1;
+                int y = (int)y1;
+
+                const int maxX = (int)x2;
+
+                for(int x=(int)x1; x<maxX; x++)
+                {
                     if(steep)
                     {
-                        std::swap(x1, y1);
-                        std::swap(x2, y2);
+                        mGrowthArray[x * mArrayDimensions + y] = 1;
                     }
-
-                    if(x1 > x2)
+                    else
                     {
-                        std::swap(x1, x2);
-                        std::swap(y1, y2);
+                        mGrowthArray[y * mArrayDimensions + x] = 1;
                     }
-
-                    const float dx = x2 - x1;
-                    const float dy = fabs(y2 - y1);
-
-                    float error = dx / 2.0f;
-                    const int ystep = (y1 < y2) ? 1 : -1;
-                    int y = (int)y1;
-
-                    const int maxX = (int)x2;
-
-                    for(int x=(int)x1; x<maxX; x++)
+                    error -= dy;
+                    if(error < 0)
                     {
-                        if(steep)
-                        {
-//                            std::cout << "trace point \n";
-                            mGrowthArray[x * mArrayDimensions + y] = 1;
-                        }
-                        else
-                        {
-//                            std::cout << "trace point \n";
-                            mGrowthArray[y * mArrayDimensions + x] = 1;
-                        }
-                        error -= dy;
-                        if(error < 0)
-                        {
-                            y += ystep;
-                            error += dx;
-                        }
+                        y += ystep;
+                        error += dx;
                     }
                 }
             }
-
-//            int j = 0;
-//            for (int i = 0; i < 10000; i++)
-//            {
-//                if (mGrowthArray[i] == 1)
-//                {
-//                    j++;
-//                    std::cout << "j is now: " << j << endl;
-//                }
-//            }
+        }
+        mBoundingXmin = boundingXmin;
+        mBoundingYmin = boundingYmin;
+        mBoundingXRange = (boundingXmax - boundingXmin) * RANGE_CONVERSION_SCALAR_AMOUNT;
+        mBoundingYRange = (boundingYmax - boundingYmin) * RANGE_CONVERSION_SCALAR_AMOUNT;
     }
 
     void fillBoundingVolume()
