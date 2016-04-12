@@ -26,7 +26,7 @@ Window::Window(QWidget *parent) :
     mFileMenu->addAction(mQuitAction);  // add quitting
 
     // Setup the draw menu
-    mDrawMenu = menuBar()->addMenu(tr("&Draw"));
+    mDrawMenu = menuBar()->addMenu(tr("Draw"));
     mDrawMenu->addAction(mWireAction);
     mDrawMenu->addAction(mFaceAction);
     mDrawMenu->addAction(mTextureAction);
@@ -43,7 +43,7 @@ Window::Window(QWidget *parent) :
     mOptionMenu->addAction(mFpsAction);
     mOptionMenu->addAction(mOrigAction);
 
-    mSelectMenu = menuBar()->addMenu(tr("&Select"));
+    mSelectMenu = menuBar()->addMenu(tr("Select"));
     mSelectMenu->addAction(mDeselectAction);
     mSelectMenu->addAction(mCycleAction);
     mSelectMenu->addAction(mSelectMesh);
@@ -75,7 +75,7 @@ Window::Window(QWidget *parent) :
 void Window::createActions()
 {
     // Quits the application
-    mQuitAction = new QAction(tr("&Quit"), this);
+    mQuitAction = new QAction(tr("Quit"), this);
     mQuitAction->setStatusTip(tr("Quits the application"));
     connect(mQuitAction, SIGNAL(triggered()), qApp, SLOT(quit()));
 
@@ -145,7 +145,7 @@ void Window::createActions()
     mDrawGroup->setExclusive(true);
 
     // Sets drawing mode to wireframe
-    mWireAction = new QAction(tr("&Wireframe"), this);
+    mWireAction = new QAction(tr("Wireframe"), this);
     mWireAction->setStatusTip(tr("Wireframe mode"));
     mDrawGroup->addAction(mWireAction);
 
@@ -160,14 +160,14 @@ void Window::createActions()
     mDrawGroup->addAction(mTextureAction);
 
     // select model mode
-    mSelectModelAction = new QAction(tr("&Select Model"), this);
+    mSelectModelAction = new QAction(tr("Select Model"), this);
     mSelectModelAction->setStatusTip(tr("Select model"));
     mSelectModelAction->setEnabled(false);
 
     mSelectGroup = new QActionGroup(this);
     connect(mSelectGroup, SIGNAL(triggered(QAction *)), this, SLOT(selectModel(QAction *)));
 
-    mDeselectAction = new QAction(tr("&Deselect"), this);
+    mDeselectAction = new QAction(tr("Deselect"), this);
     mDeselectAction->setStatusTip(tr("Select model"));
     connect(mDeselectAction, SIGNAL(triggered()), renderer, SLOT(deselectModel()));
     connect(mDeselectAction, SIGNAL(triggered()), this, SLOT(updateModelLabel()));  // also trigger label update
@@ -179,7 +179,7 @@ void Window::createActions()
     connect(mCycleAction, SIGNAL(triggered()), this, SLOT(updateModelLabel()));     // also trigger label update
 
 
-    mSelectMesh = new QAction(tr("&Select Mesh"), this);
+    mSelectMesh = new QAction(tr("Select Mesh"), this);
     mSelectMesh->setShortcut(QKeySequence(Qt::Key_M));
     mSelectMesh->setStatusTip(tr("Select Control Points on the Mesh"));
     connect(mSelectMesh, SIGNAL(triggered()), renderer, SLOT(selectMesh()));

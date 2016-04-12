@@ -1508,5 +1508,10 @@ void Renderer::drawTree_wireframe(Tree *t)
 
 void Renderer::setControlMode(ControlMode mode){
     cntlMode = mode;
+    if (mode == FPS)
+    {
+        QVector3D newTarg = camera.getPosition() + camera.getForward() * 0.1f;
+        camera.setTarget(newTarg);    // camera points at the origin
+    }
 }
 
