@@ -133,7 +133,7 @@ class Simulation
 {
 public:
 
-    Simulation(float terrainScale = 100, int arrayDimensions = 10000)
+    Simulation(float terrainScale = 200, int arrayDimensions = 10000)
     {
 
 //        std::cout << "created Simulation \n";
@@ -164,7 +164,7 @@ public:
         std::cout << "Simulating tree growth \n";
         traceBoundingVolume(controlPoints);
         fillBoundingVolume();
-        runSimulation(500 + rand() % 60);
+        runSimulation(50 + rand() % 60);
         return mGrowingTrees;
 
     }
@@ -225,11 +225,11 @@ private:
         //std::cout << "Running simulation...."<< std::endl;
         while (numIterations-- > 0)
         {
-            throwSeeds(50);
+            throwSeeds(1000);
             //std::cout << "culled seeds\n";
             cullNewSeeds();
             //std::cout << "growing trees\n";
-            float yearsPassed = 50;
+            float yearsPassed = 33;
             for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
             {
                 mGrowingTrees[i]->grow(yearsPassed);
