@@ -17,6 +17,7 @@ Window::Window(QWidget *parent) :
     // Setup the file menu
     mFileMenu = menuBar()->addMenu(tr("&File"));
     mFileMenu->addAction(mLoadHeightMapAction);
+    mFileMenu->addAction(mLoadTreeAction);
     mFileMenu->addAction(mLoadTextureAction);
     mFileMenu->addAction(mResetModelsAction);
     mFileMenu->addAction(mResetViewAction);
@@ -83,6 +84,12 @@ void Window::createActions()
     mLoadHeightMapAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_O));
     mLoadHeightMapAction->setStatusTip(tr("Loads a heightMap"));
     mLoadGroup->addAction(mLoadHeightMapAction);
+
+    // make tree
+    mLoadTreeAction = new QAction(tr("Create Tree"), this);
+    mLoadTreeAction->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_T));
+    mLoadTreeAction->setStatusTip(tr("Create a tree"));
+    mLoadGroup->addAction(mLoadTreeAction);
 
     // open texture
     mLoadTextureAction = new QAction(tr("&Load Texture"), this);
@@ -291,6 +298,15 @@ void Window::selectModel(QAction * action)
 
 void Window::load(QAction * action)
 {
+    if(action == mLoadTreeAction)
+    {
+        Tree t = Tree(1.5, 1, 0.04);
+
+        ObjModel *obj = t.getObjModel(0.5, 0.1, 0.01);
+        Model *m_model = new Model(obj, NULL);   // NULL = no parent
+        renderer->setModel(obj);
+    }
+
     if(action == mLoadHeightMapAction)
     {
 

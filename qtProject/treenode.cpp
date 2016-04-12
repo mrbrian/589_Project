@@ -41,7 +41,7 @@ bool TreeNode::hasBeenDrawn(){return mDrawn;}
 #define NUM_PRIMARY_BRANCH_NODES 10
 #define NUM_SECONDARY_BRANCH_NODES 2
 
-ObjModel *Tree::getObjModel(float u_step, float v_step)
+ObjModel *Tree::getObjModel(float u_step, float v_step, float radius)
 {
     RevSurface *rs = RevSurface::makeCylinder(1, 1);
     // get a point list and trilist
@@ -57,7 +57,6 @@ ObjModel *Tree::getObjModel(float u_step, float v_step)
         TreeNode * node = mLeafNodes[i];
         while (!node->hasBeenDrawn() && node->getPreviousNode() != NULL)
         {
-
             node->setDrawn(true);
             QVector3D color;
             switch (node->getType())
@@ -80,7 +79,7 @@ ObjModel *Tree::getObjModel(float u_step, float v_step)
             QVector3D p2 = QVector3D(previousPosition.x(), previousPosition.y(), previousPosition.z());
 
             QMatrix4x4 trans;
-            scale_aim(&trans, 0.01, 0.02, p1, p2, QVector3D(0,0,1));
+            scale_aim(&trans, radius, radius, p1, p2, QVector3D(0,0,1));
 
             //transform every vert
             ObjModel *o = rs->getObjModel(u_step, v_step);

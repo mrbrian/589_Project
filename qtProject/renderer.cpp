@@ -42,7 +42,6 @@ Renderer::Renderer(QWidget *parent)
     ctrlDown = false;
     shiftDown = false;
 
-    m_tree = new Tree(1,1,1);
     resetView();    // initialize camera
 }
 
@@ -81,10 +80,6 @@ void Renderer::initializeGL()
     m_terrain = NULL;
     createWhiteTexture();
     setupGround();
-    initCylinder();
-
-    ObjModel *o = m_tree->getObjModel(1, 0.33);
-    setModel(o);
 }
 
 // called by the Qt GUI system, to allow OpenGL drawing commands
@@ -123,8 +118,7 @@ void Renderer::paintGL()
             drawNormals(m_model);
         }
 
-        drawTree_wireframe(m_tree);
-        if (mode == 1)
+        if (mode == 1 && m_terrain)
         {
             glPointSize(10);
 
@@ -696,18 +690,6 @@ Model *Renderer::setSubmodel_hack(ObjModel *obj_m)
     return m_submodel;
 }
 
-// create a unit cylinder for later
-void Renderer::initCylinder()
-{
-    RevSurface *c = RevSurface::makeCylinder(1,1);
-    // create new model
-    m_cylinder = new Model(c->getObjModel(1,0.33), NULL);   // NULL = no parent
-
-    makeVbo(m_cylinder);
-
-    m_cylinder->texture = m_whiteTexture;
-}
-
 // create a Model using a given ObjModel
 void Renderer::setModel(ObjModel *obj_m)
 {
@@ -1082,7 +1064,6 @@ void Renderer::selectMesh()
             return;
         }
 
-
         vector<QVector3D> tempConvert = m_currentlySelected;
         if (tempConvert.size() > 2)
         {
@@ -1092,8 +1073,6 @@ void Renderer::selectMesh()
                     QVector3D point = QVector3D(tempConvert.at(i).x() / (float)width(), 0 , tempConvert.at(i).z() / (float) height());
                     //std::cout << point.x() << "," << m_terrain->m_selectableControlMesh.at(i).y() << "," << point.z() << std::endl;
                     m_currentlySelected.push_back(point);
-
-
                 }
         }
         else
@@ -1106,28 +1085,38 @@ void Renderer::selectMesh()
             std::cout << "point " << i << ": " << m_currentlySelected.at(i)[0] << ", " << m_currentlySelected.at(i)[1] << ", "  << m_currentlySelected.at(i)[2] << endl;
         }
 
-        vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
-        std::cout << "Added trees to terrain\n";
-
-        for (int i = 0; i < treeRevs->size(); i++)
         {
-            RevSurface *tree = (*treeRevs)[i];
-            ObjModel *obj = tree->getObjModel(0.1, 0.1);
+            Simulation sim;
+            std::vector<TreeSimulation *> treeSims = sim.simulate(m_currentlySelected);
+            std::cout << "Made " << treeSims.size() << " new trees \n" << endl;
 
-            QMatrix4x4 trans;
+            std::cout << "Added trees to terrain\n" << endl;
 
-            //trans.scale(tree);
-            QVector3D treePos = tree->position;
+            for (int i = 0; i < treeSims.size(); i++)
+            {
+                TreeSimulation *ts = treeSims[i];
 
-            treePos[0] *=  (float)width();
-            treePos[2] *=  (float)height();
-            treePos[1] = m_terrain->get_y_height(treePos[0], treePos[2]);
-            trans.setColumn(3, QVector4D(treePos, 1));
+                // make tree
+                Tree tree = Tree(ts->getHeight(), ts->getCrownRadius(), ts->getTrunkRadius());
 
-            //std::cout << treePos.x() << "," << treePos.y() << "," << treePos.z() << std::endl;
+                // make the model
+                ObjModel *o = tree.getObjModel(1, 0.33f, 0.00025);
 
-            Model *treeModel = this->setSubmodel_hack(obj);
-            treeModel->setLocalTransform(trans);
+                // position the tree
+                QVector2D pos = ts->getOrigin();
+                pos[0] *= (float)width();
+                pos[1] *= (float)height();
+                float y_pos = m_terrain->get_y_height(pos[0], pos[1]);
+
+                QMatrix4x4 trans;
+                trans.setColumn(3, QVector4D(pos[0], y_pos, pos[1], 1));
+                trans.scale(100);
+                //trans.translate(pos[0], y_pos, pos[1]);
+
+                o->color = vec3(1,0,0);
+                Model *m = this->setSubmodel_hack(o);
+                m->setLocalTransform(trans);
+            }
         }
 
         //cout << "num selected: " << m_currentlySelected.size();
@@ -1307,7 +1296,7 @@ void scale_aim(QMatrix4x4 *t, float r1, float r2, QVector3D from, QVector3D to, 
 
     trans = trans * t1 * r_scale * y_scale ;
 }
-
+/*
 void Renderer::drawCylinder(float r1,float r2, QVector3D p1, QVector3D p2)
 {
     QMatrix4x4 t2;
@@ -1359,7 +1348,7 @@ void Renderer::drawTree_cylinders(Tree *t)
     {
         mTreeNodes[i]->setDrawn(false);
     }
-}
+}*/
 
 void Renderer::drawTree_wireframe(Tree *t)
 {

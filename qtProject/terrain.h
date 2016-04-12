@@ -30,7 +30,8 @@ public:
     virtual ~Terrain(){}
     virtual void draw(){}
 
-    std::vector<RevSurface*> *addTreesToTerrain(std::vector<QVector3D> controlPoints);
+    vector<TreeSimulation *> *addTreesToTerrain(std::vector<QVector3D> controlPoints);
+    //std::vector<RevSurface*> *addTreesToTerrain(std::vector<QVector3D> controlPoints);
     std::vector<TreeSimulation *> simulateTreeGrowth(std::vector<QVector3D> controlPoints);
 
     int getControlMeshSize();

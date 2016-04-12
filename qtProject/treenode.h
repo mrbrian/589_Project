@@ -34,7 +34,7 @@ class Tree
 public:
     Tree(float height, float crownRadius, float trunkRadius);
 
-    ObjModel *getObjModel(float u_step, float v_step);
+    ObjModel *getObjModel(float u_step, float v_step, float radius);
     bool growTree(int nodeDepth, TreeNode * previousNode);
     void draw(Renderer *r);
 
