@@ -527,6 +527,14 @@ void Renderer::resizeGL(int w, int h)
     // width and height are better variables to use
     Q_UNUSED(w); Q_UNUSED(h);
 
+    int maxWindow;
+    if(width() > height())
+        maxWindow = height();
+    else
+        maxWindow = width();
+
+    this->resize(maxWindow,maxWindow);
+
     // update viewing projections
     glUseProgram(m_programID);
 
@@ -669,9 +677,16 @@ void Renderer::mouseMoveEvent(QMouseEvent * event)
 }
 
 void Renderer::normalizeMouseToSelect(float & x , float & y)
-{
-    x = ((x - 10) / (593 - 10)) * 510;
-    y = ((y - 10) / (593 - 10)) * 510;
+{   //    x = ((x - 10) / (593 - 10)) * 510;
+    //    y = ((y - 10) / (593 - 10)) * 510;
+
+        cout << "x: " << x << endl;
+        cout << "y: " << y << endl;
+
+        x = ((x - 10) / (width() - 10)) * 510;
+        y = ((y - 10) / (height() - 10)) * 510;
+
+
 }
 
 // load a model and make the selected model it's parent
