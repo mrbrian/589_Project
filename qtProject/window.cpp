@@ -130,13 +130,13 @@ void Window::createActions()
     mFpsAction = new QAction(tr("&FPS"), this);
     mFpsAction->setStatusTip(tr("FPS controls"));
     mFpsAction->setCheckable(true);
-    mFpsAction->setChecked(true);
     mOptionGroup->addAction(mFpsAction);
 
     mOrigAction = new QAction(tr("&Original"), this);
     mOrigAction->setStatusTip(tr("Original controls"));
     mOrigAction->setCheckable(true);
     mOptionGroup->setExclusive(true);
+    mOrigAction->setChecked(true);
     mOptionGroup->addAction(mOrigAction);
 
     // draw mode menu group
@@ -326,7 +326,7 @@ void Window::load(QAction * action)
 {
     if(action == mLoadTreeAction)
     {
-        Tree t = Tree(1.5, 1, 0.04);
+        Tree t = Tree(1.5, 0.5, 0.04);
 
         ObjModel *obj = t.getObjModel(0.5, 0.1, 0.01);
         Model *m_model = new Model(obj, NULL);   // NULL = no parent

@@ -148,8 +148,9 @@ bool Tree::growTree(int nodeDepth, TreeNode * previousNode)
         {
             TreeNode * nextNode;
 
+            int NUM_PRIMARY_TO_TRUNK = rand() % 4 + 4;
             //make 5-6 '1' nodes rotated around y axis
-            #define NUM_PRIMARY_TO_TRUNK 6 // potential to be randomized/varied
+            //#define NUM_PRIMARY_TO_TRUNK 6 // potential to be randomized/varied
             for (int i = 0; i < NUM_PRIMARY_TO_TRUNK; i++)
             {
                 QMatrix4x4 t;
@@ -158,17 +159,14 @@ bool Tree::growTree(int nodeDepth, TreeNode * previousNode)
                 QVector4D growthDirection(0,1,0,0);
                 float rotationAngle;
                 //rotate to the horizontal plane
-                //rotationAngle = (80.0f / 180.0f) * 3.14; //potential to be randomized. (85-75 degrees)
-                //growthDirection = glm::rotateX(growthDirection, rotationAngle);
                 rotationAngle = 80.0f; //potential to be randomized. (85-75 degrees)
                 t.rotate(rotationAngle, 1, 0, 0);
                 growthDirection = t * growthDirection;
+
                 //rotate around the y axis, staggered at each new level
-                //rotationAngle = (2.0f / NUM_PRIMARY_TO_TRUNK) * 3.14f * (float)i + nodeDepth * 5;
-                //growthDirection = glm::rotateY(growthDirection, rotationAngle);
                 QMatrix4x4 t2;
                 t2.rotate(rotationAngle,0,1,0);
-                rotationAngle = (360.0f / NUM_PRIMARY_TO_TRUNK) * (float)i + nodeDepth * 5;
+                rotationAngle = (360.0f / NUM_PRIMARY_TO_TRUNK) * (float)i + nodeDepth * 55;
                 t2.rotate(rotationAngle, 0, 1, 0);
                 growthDirection = t2 * growthDirection;
 

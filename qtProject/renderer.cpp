@@ -42,7 +42,7 @@ Renderer::Renderer(QWidget *parent)
     ctrlDown = false;
     shiftDown = false;
     altDown = false;
-    cntlMode = FPS;
+    cntlMode = ORIG;
 
     resetView();    // initialize camera
 }
@@ -534,7 +534,7 @@ void Renderer::resizeGL(int w, int h)
     // ratio of display
     QMatrix4x4 projection_matrix;
     projection_matrix.perspective(40.0f, (GLfloat)width() / (GLfloat)height(),
-                                  0.1f, 10000.0f);
+                                  0.01f, 10000.0f);
     glUniformMatrix4fv(m_PMatrixUniform, 1, false, projection_matrix.data());
 
     glViewport(0, 0, width(), height());
@@ -1068,7 +1068,7 @@ void Renderer::handleKeyboard()
         return;
     }
 
-    float move_rate = 0.00625;
+    float move_rate = 0.00225;
 
     if ((keys == Qt::Key_W) || (keys == Qt::Key_S))
     {
@@ -1239,7 +1239,7 @@ void Renderer::selectMesh()
 
                 QMatrix4x4 trans;
                 trans.setColumn(3, QVector4D(pos[0], y_pos, pos[1], 1));
-                trans.scale(100);
+                trans.scale(75);
                 //trans.translate(pos[0], y_pos, pos[1]);
 
                 o->color = vec3(1,0,0);
@@ -1335,7 +1335,7 @@ Terrain *Renderer::createTerrain(QImage * image)
 //        std::cout << "got here" << std::endl;
         GLuint terrainVAO;
         QOpenGLFunctions_4_2_Core::glGenVertexArrays(1, &terrainVAO);
-        m_terrain = new Terrain(image, 25);
+        m_terrain = new Terrain(image, 20);
         populateTerrainVAO();
         return m_terrain;
 }
