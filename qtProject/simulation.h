@@ -225,11 +225,11 @@ private:
         //std::cout << "Running simulation...."<< std::endl;
         while (numIterations-- > 0)
         {
-            throwSeeds(4500);
+            throwSeeds(50);
             //std::cout << "culled seeds\n";
             cullNewSeeds();
             //std::cout << "growing trees\n";
-            float yearsPassed = 1;
+            float yearsPassed = 50;
             for (unsigned int i = 0; i < mGrowingTrees.size(); i++)
             {
                 mGrowingTrees[i]->grow(yearsPassed);
