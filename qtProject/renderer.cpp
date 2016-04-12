@@ -4,6 +4,7 @@
 #include <cmath>
 #include "trackball.h"
 #include <QFileDialog>
+#include "tests.h"
 
 #define CHECKERBOARD_SIZE   50
 #define FPS_RATE            60.0
@@ -128,11 +129,17 @@ void Renderer::paintGL()
             {
                 //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
 
-                for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
-                {
-                    glClear(GL_DEPTH_BUFFER_BIT);
+                      for(int i = 0; i < m_terrain->getControlMeshSize(); i += 1)
+                      {
+                          glClear(GL_DEPTH_BUFFER_BIT);
 
-                    glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
+                          glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
+
+                          glBegin(GL_POINTS);
+                          glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
+                          glEnd();
+                      }
+              }
 
                     glBegin(GL_POINTS);
                     glVertex3f(m_terrain->m_selectableControlMesh.at(i)[0], m_terrain->m_selectableControlMesh.at(i)[1],m_terrain->m_selectableControlMesh.at(i)[2]);
@@ -191,6 +198,7 @@ void Renderer::paintGL()
             }
         }
     }
+
 
 /*
     if (m_terrain != NULL)
@@ -417,12 +425,10 @@ void Renderer::drawModel(Model *m_model)
 
     Ray cam_ray (camera.getPosition(), camera.getRotation());
 
-
-
     if(m_model == selectedModel)
     {
         if(mode == 1)
-        {           
+        {
 //            cout << "num control points: " << m_terrain->getControlMeshSize();
 //            double a =  m_model->findIntersection(cam_ray);
 
@@ -616,7 +622,6 @@ void Renderer::mousePressEvent(QMouseEvent * event)
 void Renderer::mouseReleaseEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
-//    cout << "Stub: Button " << event->button() << " pressed.\n";
     mouseButtons = event->buttons();
 }
 
@@ -625,6 +630,9 @@ void Renderer::setKeyPressed(int val)
 {
     switch (val)
     {
+        case Qt::Key_Alt:
+            altDown = true;
+        break;
         case Qt::Key_Shift:
             shiftDown = true;
         break;
@@ -645,6 +653,9 @@ void Renderer::setKeyReleased(int val)
 {
     switch (val)
     {
+        case Qt::Key_Alt:
+            altDown = false;
+        break;
         case Qt::Key_Shift:
             shiftDown = false;
         break;
@@ -664,9 +675,6 @@ void Renderer::setKeyReleased(int val)
 void Renderer::mouseMoveEvent(QMouseEvent * event)
 {
     QTextStream cout(stdout);
-//    cout << "Stub: Motion at " << event->x() << ", " << event->y() << ".\n";
-
-
     prev_x = curr_x;
     prev_y = curr_y;
 
@@ -835,7 +843,6 @@ void Renderer::updateCamera()
 
     if(mode == 1)
     {
-
         m_view.rotate(90, camera.getUp());
     }
 }
@@ -973,7 +980,65 @@ void Renderer::handleInteraction()
         return;
     }
 
+            QVector3D camPos = camera.getPosition();
+            QVector3D forward = camera.getForward();
 
+            camPos += forward * delta[0];
+            QVector3D dir = forward - camPos;
+
+            if (dir[0] != 0 || dir[2] != 0) // not facing straight down
+                camera.setPosition(camPos);
+        }
+        else if (mouseButtons & Qt::MiddleButton)
+        {
+            delta[0] = dx;
+            delta[1] = dy;
+
+            QVector3D targ = camera.getTarget();
+            QVector3D camPos = camera.getPosition();
+
+            QVector3D right = camera.getRight();
+            QVector3D up = camera.getUp();
+
+            right *= delta[0];
+            up *= delta[1];
+
+            targ += right + up;
+            camPos += right + up;
+
+            camera.setTarget(targ);
+            camera.setPosition(camPos);            
+        }
+        else if (mouseButtons & Qt::LeftButton)
+        {
+            delta[0] = -dx * 25;
+            delta[1] = dy * 25;
+
+            QVector3D targ = camera.getTarget();
+            QVector3D camPos = camera.getPosition();
+
+            QMatrix4x4 t;
+            t.translate(targ);
+
+            QMatrix4x4 invT;
+            invT.translate(-targ);
+
+            QMatrix4x4 rot;
+
+            QVector3D up = QVector3D(0,1,0);
+            QVector3D right = camera.getRight();
+
+            rot.rotate(delta[0], up);
+            rot.rotate(delta[1], right);
+
+            QMatrix4x4 transform = t * rot * invT;
+
+            camPos = transform * camPos;
+            camera.setPosition(camPos);
+        }
+        updateCamera();
+        return;
+    }
 
     if (shiftDown)                // modify camera position
     {
@@ -1253,7 +1318,6 @@ void Renderer::selectMesh()
 
         updateCamera();
         resetModels();
-
 
     }
 

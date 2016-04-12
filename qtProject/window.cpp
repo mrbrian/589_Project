@@ -354,6 +354,7 @@ void Window::load(QAction * action)
         }
     }
 
+
     if (action == mLoadTextureAction)
     {
         //LoadModel
