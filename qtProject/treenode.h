@@ -14,15 +14,18 @@ class Renderer;
 class TreeNode
 {
 public:
-    TreeNode(int type, QVector4D position, TreeNode *mPrevious);
+    TreeNode(int type, QVector4D position, TreeNode *mPrevious, float radius = 0);
     int getType();
     QVector4D getGrowthDirection();
     QVector4D getPosition();
     TreeNode * getPreviousNode();
     void setDrawn(bool drawn);
     bool hasBeenDrawn();
+    void setRadius(float radius);
+    float getRadius() { return mRadius;}
 
 private: //members
+    float mRadius;
     int mType;
     QVector4D mPosition;
     TreeNode * mPreviousNode;
@@ -38,14 +41,16 @@ public:
     bool growTree(int nodeDepth, TreeNode * previousNode);
     void draw(Renderer *r);
 
-    std::vector<TreeNode *> getTreeNodes(){return mTreeNodes;}
+    std::vector<TreeNode *> getTrunkNodes(){return mTrunkNodes;}
+    std::vector<TreeNode *> getPBranchNodes(){return mPBranchNodes;}
     std::vector<TreeNode *> getLeafNodes(){return mLeafNodes;}
     float getHeight(){return mHeight;}
     float getCrownRadius(){return mCrownRadius;}
     float getTrunkRadius(){return mTrunkRadius;}
 
 private: // members
-    std::vector<TreeNode *> mTreeNodes;
+    std::vector<TreeNode *> mTrunkNodes;
+    std::vector<TreeNode *> mPBranchNodes;
     std::vector<TreeNode *> mLeafNodes;
     float mHeight;
     float mCrownRadius;

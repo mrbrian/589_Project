@@ -1229,7 +1229,7 @@ void Renderer::selectMesh()
                 Tree tree = Tree(ts->getHeight(), ts->getCrownRadius(), ts->getTrunkRadius());
 
                 // make the model
-                ObjModel *o = tree.getObjModel(1, 0.33f, 0.00025);
+                ObjModel *o = tree.getObjModel(1, 0.33f, 0.00025f);
 
                 // position the tree
                 QVector2D pos = ts->getOrigin();
@@ -1525,11 +1525,7 @@ void Renderer::drawTree_wireframe(Tree *t)
 
     }
     glEnd();
-    std::vector<TreeNode *> mTreeNodes = t->getTreeNodes();
-    for (int i = 0; i < mTreeNodes.size(); i++)
-    {
-        mTreeNodes[i]->setDrawn(false);
-    }
+
 }
 
 void Renderer::setControlMode(ControlMode mode){
