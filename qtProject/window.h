@@ -43,6 +43,7 @@ private slots:
     void clearModels();
     void selectModel(QAction * action);
     void updateModelLabel();
+    void setControlMode(QAction * action);
 
 private:
     // Main widget for drawing
@@ -61,6 +62,11 @@ private:
     QAction * mLoadHeightMapAction;
     QAction * mLoadTreeAction;
     QAction * mLoadTextureAction;
+
+    QActionGroup * mOptionGroup;
+    QMenu * mOptionMenu;
+    QAction * mFpsAction;
+    QAction * mOrigAction;
 
     QActionGroup * mDrawGroup;
     QMenu * mDrawMenu;

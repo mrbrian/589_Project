@@ -6,8 +6,8 @@
 #include <QFileDialog>
 
 #define CHECKERBOARD_SIZE   50
-#define FPS                 60.0
-#define TIME_PER_FRAME      1.0/FPS
+#define FPS_RATE            60.0
+#define TIME_PER_FRAME      1.0/FPS_RATE
 
 // shader override colour defaults
 float def_override[3] = {0, 0, 0};
@@ -41,6 +41,8 @@ Renderer::Renderer(QWidget *parent)
     sel_modelIdx = 0;
     ctrlDown = false;
     shiftDown = false;
+    altDown = false;
+    cntlMode = FPS;
 
     resetView();    // initialize camera
 }
@@ -624,6 +626,9 @@ void Renderer::setKeyPressed(int val)
         case Qt::Key_Alt:
             altDown = true;
         break;
+        default:
+            keys = val;
+        break;
     }
 }
 
@@ -640,6 +645,9 @@ void Renderer::setKeyReleased(int val)
         break;
         case Qt::Key_Alt:
             altDown = false;
+        break;
+        default:
+            keys = 0;
         break;
     }
 }
@@ -822,6 +830,8 @@ void Renderer::update()
 {
     elapsedTime += TIME_PER_FRAME;
     QOpenGLWidget::update();
+    if (cntlMode == FPS && keys)
+        handleKeyboard();       // adjust the camera
 }
 
 // trackball rotation logic
@@ -877,8 +887,50 @@ void Renderer::handleInteraction()
 
     QMatrix4x4 modelTrans;
 
-    if (altDown)
+    if ((cntlMode == FPS) || altDown)
     {
+        float move_rate = 1;
+
+        if ((keys == Qt::Key_Up) || (keys == Qt::Key_Down))
+        {
+            int sign = -1;
+
+            if (keys & Qt::Key_S)
+                sign = -1;
+
+            QVector3D targ = camera.getTarget();
+            QVector3D camPos = camera.getPosition();
+
+            QVector3D fwd = sign * camera.getForward() * move_rate;
+
+            targ += fwd;
+            camPos += fwd;
+
+            camera.setTarget(targ);
+            camera.setPosition(camPos);
+            updateCamera();
+        }
+
+        if ((keys == Qt::Key_Left) || (keys == Qt::Key_Right))
+        {
+            int sign = -1;
+
+            if (keys & Qt::Key_Left)
+                sign = -1;
+
+            QVector3D targ = camera.getTarget();
+            QVector3D camPos = camera.getPosition();
+
+            QVector3D left = sign * camera.getRight() * -move_rate;
+
+            targ += left;
+            camPos += left;
+
+            camera.setTarget(targ);
+            camera.setPosition(camPos);
+            updateCamera();
+        }
+
         if (mouseButtons & Qt::RightButton)
         {
             delta[0] = dx;
@@ -910,7 +962,7 @@ void Renderer::handleInteraction()
             camPos += right + up;
 
             camera.setTarget(targ);
-            camera.setPosition(camPos);            
+            camera.setPosition(camPos);
         }
         else if (mouseButtons & Qt::LeftButton)
         {
@@ -985,13 +1037,15 @@ void Renderer::handleInteraction()
 
     if (!shiftDown && !ctrlDown && !altDown)    // translate / rotate the model
     {
+
+        /*
         if (mouseButtons & Qt::LeftButton)      // LB modifies along x-axis & y-axis
         {
             delta[0] = dx;
             delta[1] = -dy;
             modelTrans.translate(delta);
             applyTransform(&modelTrans);
-        }
+        }*/
         if (mouseButtons & Qt::MiddleButton)    // MB modifies  along z-axis
         {
             delta[2] = dx;
@@ -1004,6 +1058,77 @@ void Renderer::handleInteraction()
         }
     }
 
+}
+
+// user interacting with the scene via mouse
+void Renderer::handleKeyboard()
+{
+    if(mode == 1)
+    {
+        return;
+    }
+
+    float move_rate = 0.00625;
+
+    if ((keys == Qt::Key_W) || (keys == Qt::Key_S))
+    {
+        int sign = 1;
+
+        if (keys == Qt::Key_S)
+            sign = -1;
+
+        QVector3D targ = camera.getTarget();
+        QVector3D camPos = camera.getPosition();
+
+        QVector3D fwd = sign * camera.getForward() * move_rate;
+
+        targ += fwd;
+        camPos += fwd;
+
+        camera.setTarget(targ);
+        camera.setPosition(camPos);
+        updateCamera();
+    }
+
+    if ((keys == Qt::Key_A) || (keys == Qt::Key_D))
+    {
+        int sign = 1;
+
+        if (keys == Qt::Key_D)
+            sign = -1;
+
+        QVector3D targ = camera.getTarget();
+        QVector3D camPos = camera.getPosition();
+
+        QVector3D v = sign * camera.getRight() * move_rate;
+
+        targ += v;
+        camPos += v;
+
+        camera.setTarget(targ);
+        camera.setPosition(camPos);
+        updateCamera();
+    }
+
+    if ((keys == Qt::Key_Q) || (keys == Qt::Key_E))
+    {
+        int sign = 1;
+
+        if (keys == Qt::Key_E)
+            sign = -1;
+
+        QVector3D targ = camera.getTarget();
+        QVector3D camPos = camera.getPosition();
+
+        QVector3D v = sign * camera.getUp() * -move_rate;
+
+        targ += v;
+        camPos += v;
+
+        camera.setTarget(targ);
+        camera.setPosition(camPos);
+        updateCamera();
+    }
 }
 
 // reset model(s) transforms
@@ -1019,7 +1144,11 @@ void Renderer::resetModels()
 // reset camera
 void Renderer::resetView()
 {
-    camera.setTarget(QVector3D(0, 0, 0));    // camera points at the origin
+    if (cntlMode == FPS)
+        camera.setTarget(QVector3D(0, 0, 3.9));    // camera points at the origin
+    else
+        camera.setTarget(QVector3D(0, 0, 0));    // camera points at the origin
+
     camera.setPosition(QVector3D(0, 0, 4));       // starting position
     camera.setUp(QVector3D(0, 1, 0));        // up vector
     updateCamera();                     // update view matrix
@@ -1402,3 +1531,8 @@ void Renderer::drawTree_wireframe(Tree *t)
         mTreeNodes[i]->setDrawn(false);
     }
 }
+
+void Renderer::setControlMode(ControlMode mode){
+    cntlMode = mode;
+}
+

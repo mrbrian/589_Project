@@ -39,6 +39,7 @@ public:
     enum DrawMode {WIRE, FACES, TEXTURED};
     enum NormalMode {VERTEX, SURFACE};
     enum EditMode {VIEW_R, VIEW_T, VIEW_P, MODEL_R, MODEL_S, MODEL_T, VIEWPORT};
+    enum ControlMode {ORIG, FPS};
 
     // destructor
     virtual ~Renderer();
@@ -48,6 +49,7 @@ public:
     void setSubmodel(ObjModel *model);
     Model *setSubmodel_hack(ObjModel *obj_m);
     void setNormalMode(NormalMode mode);
+    void setControlMode(ControlMode mode);
 
     QString getDrawMode();
     QString getNormalMode();
@@ -148,12 +150,14 @@ private:
     NormalMode normalMode;
     bool displayNormals;
     EditMode editMode;
+    ControlMode cntlMode;
 
     // mouse buttons that are currently pressed
     int mouseButtons;
     bool altDown;
     bool ctrlDown;
     bool shiftDown;    
+    int keys;
 
     void normalizeMouseToSelect(float &, float &);
     void connectPoints(int oldPoint, int newPoint);
@@ -172,6 +176,7 @@ private:
     GLuint loadShader(GLenum type, const char *source);
 
     void initCylinder();
+    void handleKeyboard();
     void handleInteraction();
     void createWhiteTexture();
     void updateCamera();
