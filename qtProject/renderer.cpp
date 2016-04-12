@@ -527,6 +527,14 @@ void Renderer::resizeGL(int w, int h)
     // width and height are better variables to use
     Q_UNUSED(w); Q_UNUSED(h);
 
+    int maxWindow;
+    if(width() > height())
+        maxWindow = height();
+    else
+        maxWindow = width();
+
+    this->resize(maxWindow,maxWindow);
+
     // update viewing projections
     glUseProgram(m_programID);
 
@@ -669,9 +677,16 @@ void Renderer::mouseMoveEvent(QMouseEvent * event)
 }
 
 void Renderer::normalizeMouseToSelect(float & x , float & y)
-{
-    x = ((x - 10) / (593 - 10)) * 510;
-    y = ((y - 10) / (593 - 10)) * 510;
+{   //    x = ((x - 10) / (593 - 10)) * 510;
+    //    y = ((y - 10) / (593 - 10)) * 510;
+
+        cout << "x: " << x << endl;
+        cout << "y: " << y << endl;
+
+        x = ((x - 10) / (width() - 10)) * 510;
+        y = ((y - 10) / (height() - 10)) * 510;
+
+
 }
 
 // load a model and make the selected model it's parent
@@ -889,48 +904,6 @@ void Renderer::handleInteraction()
 
     if ((cntlMode == FPS) || altDown)
     {
-        float move_rate = 1;
-
-        if ((keys == Qt::Key_Up) || (keys == Qt::Key_Down))
-        {
-            int sign = -1;
-
-            if (keys & Qt::Key_S)
-                sign = -1;
-
-            QVector3D targ = camera.getTarget();
-            QVector3D camPos = camera.getPosition();
-
-            QVector3D fwd = sign * camera.getForward() * move_rate;
-
-            targ += fwd;
-            camPos += fwd;
-
-            camera.setTarget(targ);
-            camera.setPosition(camPos);
-            updateCamera();
-        }
-
-        if ((keys == Qt::Key_Left) || (keys == Qt::Key_Right))
-        {
-            int sign = -1;
-
-            if (keys & Qt::Key_Left)
-                sign = -1;
-
-            QVector3D targ = camera.getTarget();
-            QVector3D camPos = camera.getPosition();
-
-            QVector3D left = sign * camera.getRight() * -move_rate;
-
-            targ += left;
-            camPos += left;
-
-            camera.setTarget(targ);
-            camera.setPosition(camPos);
-            updateCamera();
-        }
-
         if (mouseButtons & Qt::RightButton)
         {
             delta[0] = dx;
@@ -941,6 +914,11 @@ void Renderer::handleInteraction()
             camPos += forward * delta[0];
             QVector3D dir = forward - camPos;
 
+            float travel_dist = delta[0];
+            float targ_dist = (camPos - camera.getTarget()).length();
+
+            if (travel_dist > targ_dist)
+                return;
             if (dir[0] != 0 || dir[2] != 0) // not facing straight down
                 camera.setPosition(camPos);
         }
@@ -1530,5 +1508,10 @@ void Renderer::drawTree_wireframe(Tree *t)
 
 void Renderer::setControlMode(ControlMode mode){
     cntlMode = mode;
+    if (mode == FPS)
+    {
+        QVector3D newTarg = camera.getPosition() + camera.getForward() * 0.1f;
+        camera.setTarget(newTarg);    // camera points at the origin
+    }
 }
 
