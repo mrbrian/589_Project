@@ -6,8 +6,8 @@
 #include <QFileDialog>
 
 #define CHECKERBOARD_SIZE   50
-#define FPS_RATE            60.0
-#define TIME_PER_FRAME      1.0/FPS_RATE
+#define FPS                 60.0
+#define TIME_PER_FRAME      1.0/FPS
 
 // shader override colour defaults
 float def_override[3] = {0, 0, 0};
@@ -41,8 +41,6 @@ Renderer::Renderer(QWidget *parent)
     sel_modelIdx = 0;
     ctrlDown = false;
     shiftDown = false;
-    altDown = false;
-    cntlMode = ORIG;
 
     resetView();    // initialize camera
 }
@@ -82,6 +80,7 @@ void Renderer::initializeGL()
     m_terrain = NULL;
     createWhiteTexture();
     setupGround();
+    initCylinder();
 }
 
 // called by the Qt GUI system, to allow OpenGL drawing commands
@@ -106,9 +105,7 @@ void Renderer::paintGL()
 
     drawCheckerboard();
 
-    //drawTree_cylinders(m_tree);
     //findIntersection
-
 
     for(std::vector<Model*>::iterator it = m_models.begin(); it != m_models.end(); ++it)
     {
@@ -119,11 +116,9 @@ void Renderer::paintGL()
         {
             drawNormals(m_model);
         }
-
-        if (mode == 1 && m_terrain)
+        if (mode == 1)
         {
             glPointSize(10);
-
             if(m_model == selectedModel)
             {
                 //Render the entire vector each time (Should be optimized.......maybee..... nah.... )
@@ -190,8 +185,6 @@ void Renderer::paintGL()
                 //render selected points
             }
         }
-        glUniform3fv(m_OverrideColourUniform, 1, &grn_override[0]);
-
     }
 
 /*
@@ -529,14 +522,6 @@ void Renderer::resizeGL(int w, int h)
     // width and height are better variables to use
     Q_UNUSED(w); Q_UNUSED(h);
 
-    int maxWindow;
-    if(width() > height())
-        maxWindow = height();
-    else
-        maxWindow = width();
-
-    this->resize(maxWindow,maxWindow);
-
     // update viewing projections
     glUseProgram(m_programID);
 
@@ -544,7 +529,7 @@ void Renderer::resizeGL(int w, int h)
     // ratio of display
     QMatrix4x4 projection_matrix;
     projection_matrix.perspective(40.0f, (GLfloat)width() / (GLfloat)height(),
-                                  0.01f, 10000.0f);
+                                  0.1f, 10000.0f);
     glUniformMatrix4fv(m_PMatrixUniform, 1, false, projection_matrix.data());
 
     glViewport(0, 0, width(), height());
@@ -636,9 +621,6 @@ void Renderer::setKeyPressed(int val)
         case Qt::Key_Alt:
             altDown = true;
         break;
-        default:
-            keys = val;
-        break;
     }
 }
 
@@ -655,9 +637,6 @@ void Renderer::setKeyReleased(int val)
         break;
         case Qt::Key_Alt:
             altDown = false;
-        break;
-        default:
-            keys = 0;
         break;
     }
 }
@@ -679,16 +658,9 @@ void Renderer::mouseMoveEvent(QMouseEvent * event)
 }
 
 void Renderer::normalizeMouseToSelect(float & x , float & y)
-{   //    x = ((x - 10) / (593 - 10)) * 510;
-    //    y = ((y - 10) / (593 - 10)) * 510;
-
-        cout << "x: " << x << endl;
-        cout << "y: " << y << endl;
-
-        x = ((x - 10) / (width() - 10)) * 510;
-        y = ((y - 10) / (height() - 10)) * 510;
-
-
+{
+    x = ((x - 10) / (593 - 10)) * 510;
+    y = ((y - 10) / (593 - 10)) * 510;
 }
 
 // load a model and make the selected model it's parent
@@ -713,6 +685,18 @@ Model *Renderer::setSubmodel_hack(ObjModel *obj_m)
 
     m_submodel->texture = m_whiteTexture;
     return m_submodel;
+}
+
+// create a unit cylinder for later
+void Renderer::initCylinder()
+{
+    RevSurface *c = RevSurface::makeCylinder(1,1);
+    // create new model
+    m_cylinder = new Model(c->getObjModel(1,0.25), NULL);   // NULL = no parent
+
+    makeVbo(m_cylinder);
+
+    m_cylinder->texture = m_whiteTexture;
 }
 
 // create a Model using a given ObjModel
@@ -847,8 +831,6 @@ void Renderer::update()
 {
     elapsedTime += TIME_PER_FRAME;
     QOpenGLWidget::update();
-    if (cntlMode == FPS && keys)
-        handleKeyboard();       // adjust the camera
 }
 
 // trackball rotation logic
@@ -904,7 +886,7 @@ void Renderer::handleInteraction()
 
     QMatrix4x4 modelTrans;
 
-    if ((cntlMode == FPS) || altDown)
+    if (altDown)
     {
         if (mouseButtons & Qt::RightButton)
         {
@@ -916,11 +898,6 @@ void Renderer::handleInteraction()
             camPos += forward * delta[0];
             QVector3D dir = forward - camPos;
 
-            float travel_dist = delta[0];
-            float targ_dist = (camPos - camera.getTarget()).length();
-
-            if (travel_dist > targ_dist)
-                return;
             if (dir[0] != 0 || dir[2] != 0) // not facing straight down
                 camera.setPosition(camPos);
         }
@@ -942,7 +919,7 @@ void Renderer::handleInteraction()
             camPos += right + up;
 
             camera.setTarget(targ);
-            camera.setPosition(camPos);
+            camera.setPosition(camPos);            
         }
         else if (mouseButtons & Qt::LeftButton)
         {
@@ -1017,15 +994,13 @@ void Renderer::handleInteraction()
 
     if (!shiftDown && !ctrlDown && !altDown)    // translate / rotate the model
     {
-
-        /*
         if (mouseButtons & Qt::LeftButton)      // LB modifies along x-axis & y-axis
         {
             delta[0] = dx;
             delta[1] = -dy;
             modelTrans.translate(delta);
             applyTransform(&modelTrans);
-        }*/
+        }
         if (mouseButtons & Qt::MiddleButton)    // MB modifies  along z-axis
         {
             delta[2] = dx;
@@ -1038,77 +1013,6 @@ void Renderer::handleInteraction()
         }
     }
 
-}
-
-// user interacting with the scene via mouse
-void Renderer::handleKeyboard()
-{
-    if(mode == 1)
-    {
-        return;
-    }
-
-    float move_rate = 0.00225;
-
-    if ((keys == Qt::Key_W) || (keys == Qt::Key_S))
-    {
-        int sign = 1;
-
-        if (keys == Qt::Key_S)
-            sign = -1;
-
-        QVector3D targ = camera.getTarget();
-        QVector3D camPos = camera.getPosition();
-
-        QVector3D fwd = sign * camera.getForward() * move_rate;
-
-        targ += fwd;
-        camPos += fwd;
-
-        camera.setTarget(targ);
-        camera.setPosition(camPos);
-        updateCamera();
-    }
-
-    if ((keys == Qt::Key_A) || (keys == Qt::Key_D))
-    {
-        int sign = 1;
-
-        if (keys == Qt::Key_D)
-            sign = -1;
-
-        QVector3D targ = camera.getTarget();
-        QVector3D camPos = camera.getPosition();
-
-        QVector3D v = sign * camera.getRight() * move_rate;
-
-        targ += v;
-        camPos += v;
-
-        camera.setTarget(targ);
-        camera.setPosition(camPos);
-        updateCamera();
-    }
-
-    if ((keys == Qt::Key_Q) || (keys == Qt::Key_E))
-    {
-        int sign = 1;
-
-        if (keys == Qt::Key_E)
-            sign = -1;
-
-        QVector3D targ = camera.getTarget();
-        QVector3D camPos = camera.getPosition();
-
-        QVector3D v = sign * camera.getUp() * -move_rate;
-
-        targ += v;
-        camPos += v;
-
-        camera.setTarget(targ);
-        camera.setPosition(camPos);
-        updateCamera();
-    }
 }
 
 // reset model(s) transforms
@@ -1124,11 +1028,7 @@ void Renderer::resetModels()
 // reset camera
 void Renderer::resetView()
 {
-    if (cntlMode == FPS)
-        camera.setTarget(QVector3D(0, 0, 3.9));    // camera points at the origin
-    else
-        camera.setTarget(QVector3D(0, 0, 0));    // camera points at the origin
-
+    camera.setTarget(QVector3D(0, 0, 0));    // camera points at the origin
     camera.setPosition(QVector3D(0, 0, 4));       // starting position
     camera.setUp(QVector3D(0, 1, 0));        // up vector
     updateCamera();                     // update view matrix
@@ -1173,6 +1073,7 @@ void Renderer::selectMesh()
             return;
         }
 
+
         vector<QVector3D> tempConvert = m_currentlySelected;
         if (tempConvert.size() > 2)
         {
@@ -1182,6 +1083,8 @@ void Renderer::selectMesh()
                     QVector3D point = QVector3D(tempConvert.at(i).x() / (float)width(), 0 , tempConvert.at(i).z() / (float) height());
                     //std::cout << point.x() << "," << m_terrain->m_selectableControlMesh.at(i).y() << "," << point.z() << std::endl;
                     m_currentlySelected.push_back(point);
+
+
                 }
         }
         else
@@ -1194,38 +1097,28 @@ void Renderer::selectMesh()
             std::cout << "point " << i << ": " << m_currentlySelected.at(i)[0] << ", " << m_currentlySelected.at(i)[1] << ", "  << m_currentlySelected.at(i)[2] << endl;
         }
 
+        vector<RevSurface*> *treeRevs = m_terrain->addTreesToTerrain(m_currentlySelected);
+        std::cout << "Added trees to terrain\n";
+
+        for (int i = 0; i < treeRevs->size(); i++)
         {
-            Simulation sim;
-            std::vector<TreeSimulation *> treeSims = sim.simulate(m_currentlySelected);
-            std::cout << "Made " << treeSims.size() << " new trees \n" << endl;
+            RevSurface *tree = (*treeRevs)[i];
+            ObjModel *obj = tree->getObjModel(0.1, 0.1);
 
-            std::cout << "Added trees to terrain\n" << endl;
+            QMatrix4x4 trans;
 
-            for (int i = 0; i < treeSims.size(); i++)
-            {
-                TreeSimulation *ts = treeSims[i];
+            //trans.scale(tree);
+            QVector3D treePos = tree->position;
 
-                // make tree
-                Tree tree = Tree(ts->getHeight(), ts->getCrownRadius(), ts->getTrunkRadius());
+            treePos[0] *=  (float)width();
+            treePos[2] *=  (float)height();
+            treePos[1] = m_terrain->get_y_height(treePos[0], treePos[2]);
+            trans.setColumn(3, QVector4D(treePos, 1));
 
-                // make the model
-                ObjModel *o = tree.getObjModel(1, 0.33f, 0.00025f);
+            //std::cout << treePos.x() << "," << treePos.y() << "," << treePos.z() << std::endl;
 
-                // position the tree
-                QVector2D pos = ts->getOrigin();
-                pos[0] *= (float)width();
-                pos[1] *= (float)height();
-                float y_pos = m_terrain->get_y_height(pos[0], pos[1]);
-
-                QMatrix4x4 trans;
-                trans.setColumn(3, QVector4D(pos[0], y_pos, pos[1], 1));
-                trans.scale(75);
-                //trans.translate(pos[0], y_pos, pos[1]);
-
-                o->color = vec3(0,1,0);
-                Model *m = this->setSubmodel_hack(o);
-                m->setLocalTransform(trans);
-            }
+            Model *treeModel = this->setSubmodel_hack(obj);
+            treeModel->setLocalTransform(trans);
         }
 
         //cout << "num selected: " << m_currentlySelected.size();
@@ -1315,7 +1208,7 @@ Terrain *Renderer::createTerrain(QImage * image)
 //        std::cout << "got here" << std::endl;
         GLuint terrainVAO;
         QOpenGLFunctions_4_2_Core::glGenVertexArrays(1, &terrainVAO);
-        m_terrain = new Terrain(image, 20);
+        m_terrain = new Terrain(image, 25);
         populateTerrainVAO();
         return m_terrain;
 }
@@ -1405,7 +1298,7 @@ void scale_aim(QMatrix4x4 *t, float r1, float r2, QVector3D from, QVector3D to, 
 
     trans = trans * t1 * r_scale * y_scale ;
 }
-/*
+
 void Renderer::drawCylinder(float r1,float r2, QVector3D p1, QVector3D p2)
 {
     QMatrix4x4 t2;
@@ -1413,7 +1306,10 @@ void Renderer::drawCylinder(float r1,float r2, QVector3D p1, QVector3D p2)
     scale_aim(&t2, r1, r2, p1, p2, QVector3D(0,0,1));
 
     m_cylinder->setLocalTransform(t2);
+    QVector3D test = t2 * QVector3D(0,0,1);
     drawModel(m_cylinder);
+
+    //delete c;
 }
 
 void Renderer::drawTree_cylinders(Tree *t)
@@ -1457,13 +1353,10 @@ void Renderer::drawTree_cylinders(Tree *t)
     {
         mTreeNodes[i]->setDrawn(false);
     }
-}*/
+}
 
 void Renderer::drawTree_wireframe(Tree *t)
 {
-    /*QMatrix4x4 model_matrix;
-    glUniformMatrix4fv(m_MMatrixUniform, 1, false, model_matrix.data());
-*/
     glLineWidth(2);
     glBegin(GL_LINES);
     std::vector<TreeNode *> mLeafNodes = t->getLeafNodes();
@@ -1480,11 +1373,11 @@ void Renderer::drawTree_wireframe(Tree *t)
             {
             case(0):
                 glLineWidth(5);
-                color = QVector3D(0,1,0);
+                color = QVector3D(1,0,0);
                 break;
             case(1):
                 glLineWidth(3);
-                color = QVector3D(0,1,0);
+                color = QVector3D(1,0,0);
                 break;
             case(2):
                 glLineWidth(1);
@@ -1505,15 +1398,9 @@ void Renderer::drawTree_wireframe(Tree *t)
 
     }
     glEnd();
-
-}
-
-void Renderer::setControlMode(ControlMode mode){
-    cntlMode = mode;
-    if (mode == FPS)
+    std::vector<TreeNode *> mTreeNodes = t->getTreeNodes();
+    for (int i = 0; i < mTreeNodes.size(); i++)
     {
-        QVector3D newTarg = camera.getPosition() + camera.getForward() * 0.1f;
-        camera.setTarget(newTarg);    // camera points at the origin
+        mTreeNodes[i]->setDrawn(false);
     }
 }
-

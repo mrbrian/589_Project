@@ -1,14 +1,17 @@
 #include "treenode.h"
 #include "renderer.h"
 
+
 #define PI 3.14159265
 #define WINDOW_START_WIDTH 600
 #define WINDOW_START_HEIGHT 600
 #define POINT_ADDITION_WAIT .25
 
-#define NUM_TRUNK_NODES 12
-#define NUM_PRIMARY_BRANCH_NODES 10
+#define NUM_TRUNK_NODES 5
+#define NUM_PRIMARY_BRANCH_NODES 8
 #define NUM_SECONDARY_BRANCH_NODES 2
+#define SIMULATION_TERRAIN_SCALE 1
+
 
 void scale_aim(QMatrix4x4 *t, float r1, float r2, QVector3D from, QVector3D to, QVector3D up);
 
@@ -39,10 +42,7 @@ TreeNode * TreeNode::getPreviousNode() {return mPreviousNode;}
 void TreeNode::setDrawn(bool drawn) {mDrawn = drawn;}
 bool TreeNode::hasBeenDrawn(){return mDrawn;}
 
-#define NUM_TRUNK_NODES 12
-#define NUM_PRIMARY_BRANCH_NODES 10
-#define NUM_SECONDARY_BRANCH_NODES 2
-#define SIMULATION_TERRAIN_SCALE 1
+
 ObjModel *Tree::getObjModel(float u_step, float v_step, float radius)
 {
     RevSurface *rs = RevSurface::makeCylinder(1, 1);
@@ -65,10 +65,10 @@ ObjModel *Tree::getObjModel(float u_step, float v_step, float radius)
         switch (node->getType())
         {
         case(0):
-            color = QVector3D(1,0,0);
+            color = QVector3D(0,1,0);
             break;
         case(1):
-            color = QVector3D(1,0,0);
+            color = QVector3D(0,1,0);
             break;
         case(2):
             color = QVector3D(0,1,0);
@@ -124,6 +124,8 @@ ObjModel *Tree::getObjModel(float u_step, float v_step, float radius)
             //offset the index of every tri
     }
 
+
+
     for (int i = 0; i < mPBranchNodes.size(); i++)
     {
 
@@ -135,10 +137,10 @@ ObjModel *Tree::getObjModel(float u_step, float v_step, float radius)
         switch (node->getType())
         {
         case(0):
-            color = QVector3D(1,0,0);
+            color = QVector3D(0,1,0);
             break;
         case(1):
-            color = QVector3D(1,0,0);
+            color = QVector3D(0,1,0);
             break;
         case(2):
             color = QVector3D(0,1,0);
@@ -205,10 +207,10 @@ ObjModel *Tree::getObjModel(float u_step, float v_step, float radius)
         switch (node->getType())
         {
         case(0):
-            color = QVector3D(1,0,0);
+            color = QVector3D(0,1,0);
             break;
         case(1):
-            color = QVector3D(1,0,0);
+            color = QVector3D(0,1,0);
             break;
         case(2):
             color = QVector3D(0,1,0);

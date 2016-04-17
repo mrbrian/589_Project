@@ -27,7 +27,7 @@ RevSurface *RevSurface::makeRevSurface(TreeSimulation *tree, float y, QImage *im
     float trunkRad = tree->getTrunkRadius();
     float radius = tree->getCrownRadius();
     float height = tree->getHeight();
-    QVector3D treeClr = QVector3D(1,0,0);
+    QVector3D treeClr = QVector3D(0,1,0);
 
     QVector2D pos = tree->getOrigin();
     QVector3D treePos = QVector3D(pos[0], y, pos[1]);
